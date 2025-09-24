@@ -9,7 +9,8 @@ function createWindow() {
     },
   });
 
-  win.loadFile('src/index.html');
+  win.loadFile('src/simpleView.html');
+  //win.loadFile('src/script/initiateSimpleView.js'); //We want this function, how do we do it? Investigate -Jesper
 }
 
 app.whenReady().then(createWindow);
