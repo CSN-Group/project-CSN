@@ -6,5 +6,15 @@ function formatTime(seconds) {
         return `${hrs}h ${mins}m ${secs}s`;
 }
 
+export async function run() {
+            
+    const restartContainer = document.getElementById("restartInfo");
 
-document.getElementById("restartInfo").innerText = formatTime(window.systemInfo.getStartTime());
+    async function updateUptime() {
+        restartContainer.innerText = formatTime(window.systemInfo.getStartTime());
+    }
+
+    await updateUptime();
+    setInterval(updateUptime, 1000);
+}
+
