@@ -1,0 +1,45 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;    
+         
+}
+
+#grid {
+    display: grid;
+    grid-template-areas: 
+        "buttons buttons"
+        "network computer"
+        "network computer"
+        "network computer"
+        "network computer"
+        "restart herman";
+    grid-gap: 1%;
+    height: 100%;
+    width: 100%;
+    background-color: #DB4C40;
+}
+
+#hermansRestingPlace {
+    grid-area: herman;
+    background-color: #89BD9E; /* light */
+}
+#buttonDiv{
+    grid-area: buttons;
+    background-color: #F0C987; /* secondary */
+}
+#networkInfo {
+    grid-area: network;
+    background-color: #89BD9E; /* light */
+}
+#restartInfo {
+    grid-area: restart;
+    background-color: #89BD9E; /* primary */
+}
+#compInfo {
+    grid-area: computer;
+    background-color: #89BD9E; /* primary */  
+}
+
+
+
