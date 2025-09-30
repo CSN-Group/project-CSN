@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="stylesheet" href="style/style.css">
   <title>My Electron App</title>
 </head>
 <body>
-  <div id="leftSide">
+  <div id=grid>
+
     <div id="buttonDiv">
       <nav>
-        <button id="simpleViewButton"></button>
-        <button id="advancedViewButton"></button>
+        <button id="simpleViewButton">BASIC</button>
+        <button id="advancedViewButton">ADVANCED</button>
       </nav>
     </div>
+
     <div id="hermansRestingPlace">
       <!-- He was loved by all -->
     </div>
-  </div>
-  <div id="rightSide">
+
     <div id="compInfo">
       <!-- Enter useful comp info here -->
     </div>
+
     <div id="networkInfo">
       <!-- Enter useful network info here -->
     </div>
+
     <div id="restartInfo">
       <!-- Enter info here -->
     </div>
-  </div>   
+    
+  </div>      
     
   <script type="module" src="script/loadSimpleView.js"></script>
 </body>
