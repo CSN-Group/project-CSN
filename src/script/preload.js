@@ -1,4 +1,5 @@
 const os = require('os');
+const testmngr = require('../database/dbManager.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const globals = require('../includes/variables');
@@ -43,7 +44,7 @@ async function getInterfaceByIP(ip) {
 
 contextBridge.exposeInMainWorld('systemInfo', {	
 	getStartTime: () => os.uptime(),
-	getPcName: () => os.hostname(),
+	getPcName: () => os.hostname()
 	getCurrentInterface,
 	getInterfaceByIP,
 
@@ -54,3 +55,10 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getGlobal: (key) => globals[key],
 	setGlobal: (key, value) => {globals[key] = value}
 });
+
+contextBridge.exposeInMainWorld('dbManager', {
+	getReadings: function(){
+		return testmngr.getReadings()
+	},	
+	addReading: testmngr.addReading
+});	

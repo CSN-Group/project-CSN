@@ -9,7 +9,7 @@ function formatTime(seconds) {
 export async function run() {
             
     const restartContainer = document.getElementById("restartInfo");
-
+    
     async function updateUptime() {
         restartContainer.innerText = formatTime(window.systemInfo.getStartTime());
     }
