@@ -44,12 +44,14 @@ async function getInterfaceByIP(ip) {
 
 contextBridge.exposeInMainWorld('systemInfo', {	
 	getStartTime: () => os.uptime(),
-	getPcName: () => os.hostname()
-	getCurrentInterface,
-	getInterfaceByIP,
+	getPcName: () => os.hostname(),	
 
 	//Get all global variables
 	getGlobals: () => globals,
+
+	// Network functions
+	getCurrentInterface,
+	getInterfaceByIP,
 
 	//Global variable RW
 	getGlobal: (key) => globals[key],
