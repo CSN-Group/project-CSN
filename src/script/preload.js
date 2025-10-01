@@ -1,7 +1,56 @@
 const os = require('os');
+const dgram = require('dgram');
+const si = require('systeminformation')
+const globals = require('../includes/variables');
 const { contextBridge} = require('electron');
+
+function getCurrentInterface() {
+	return new Promise((resolve, reject) => {
+		const socket = dgram.createSocket('udp4');
+
+		//Try to connect to force routing
+		socket.connect(1337, '8.8.8.8', () => {
+			const address = socket.address().address;
+			socket.close();
+
+			//Find the matching IP among all interfaces
+			const nets = os.networkInterfaces();
+			for (const name of Object.keys(nets)) {
+				for (const net of nets[name]) {
+					if (net.family === 'IPv4' && net.address === address) {
+						return resolve({ name, address });
+					}
+				}
+			}
+
+			//If no match, return null
+			resolve({ name: null, address });
+		});
+
+		socket.on('error', reject);
+	});
+}
+
+async function getInterfaceByIP(ip) {
+	const interfaces = await si.networkInterfaces();
+
+	// Find the interface that has the given IP
+	const iface = interfaces.find(i => i.ip4 === ip);
+
+	if (!iface) return null;
+	else return { name: iface.iface, type: iface.type, operstate: iface.operstate };
+}
 
 contextBridge.exposeInMainWorld('systemInfo', {	
 	getStartTime: () => os.uptime(),
-	getPcName: () => os.hostname()
+	getPcName: () => os.hostname(),
+	getCurrentInterface,
+	getInterfaceByIP,
+
+	//Get all global variables
+	getGlobals: () => globals,
+
+	//Global variable RW
+	getGlobal: (key) => globals[key],
+	setGlobal: (key, value) => {globals[key] = value}
 });
