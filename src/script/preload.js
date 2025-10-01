@@ -1,5 +1,6 @@
 const os = require('os');
 const dbManager = require('../database/dbManager.js');
+const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const globals = require('../includes/variables');
@@ -62,5 +63,6 @@ contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
 		return dbManager.getReadings()
 	},	
-	addReading: dbManager.addReading
+	addReading: dbManager.addReading,	
+	addSupaReading: supaDbManager.addReadingSupabase
 });	
