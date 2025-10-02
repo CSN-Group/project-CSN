@@ -1,5 +1,6 @@
 const os = require('os');
-const testmngr = require('../database/dbManager.js');
+const dbManager = require('../database/dbManager.js');
+const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const globals = require('../includes/variables');
@@ -60,7 +61,8 @@ contextBridge.exposeInMainWorld('systemInfo', {
 
 contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
-		return testmngr.getReadings()
+		return dbManager.getReadings()
 	},	
-	addReading: testmngr.addReading
+	addReading: dbManager.addReading,	
+	addSupaReading: supaDbManager.addReadingSupabase
 });	
