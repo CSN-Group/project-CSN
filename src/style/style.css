@@ -38,7 +38,7 @@ html, body {
 }
 #compInfo {
     grid-area: computer;
-    background-color: #89BD9E; /* primary */  
+    background-color: #89BD9E;   /* primary */
 }
 
 
