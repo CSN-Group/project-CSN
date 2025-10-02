@@ -17,5 +17,16 @@
     "@supabase/supabase-js": "^2.58.0",
     "better-sqlite3": "^12.4.1",
     "systeminformation": "^5.27.10"
+  },
+  "build": {
+    "extraResources": [
+      {
+        "from": "bin/",
+        "to": "bin",
+        "filter": [
+          "speedtest.exe"
+        ]
+      }
+    ]
   }
 }
