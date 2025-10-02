@@ -11,8 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^38.2.0",
-    "electron-rebuild": "^3.2.9"
+    "electron": "^38.2.0"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",
