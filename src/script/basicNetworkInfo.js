@@ -102,9 +102,6 @@ export async function run() {
         await (async () => {
             const iface = await window.systemInfo.getCurrentInterface();
 
-            console.log("First: ");
-            console.log(iface);
-
             let currentIP = iface.address;
 
             if(currentIP != null) window.systemInfo.setGlobal('currentIP', currentIP);

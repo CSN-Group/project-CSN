@@ -36,9 +36,6 @@ function getCurrentInterface() {
 async function getInterfaceByIP(ip) {
 	const interfaces = await si.networkInterfaces();
 
-	console.log("Second: ");
-	console.log(interfaces);
-
 	// Find the interface that has the given IP
 	const iface = interfaces.find(i => i.ip4 === ip);
 
