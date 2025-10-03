@@ -20,9 +20,18 @@ async function runSpeedtest() {
             };
 
             if (speedInfo) {
-                speedtestDiv.innerText = "Download: " + (speedInfo.download * 8).toFixed(1) + " Mbit/s";
-                speedtestDiv.innerText += "\nUpload: " + (speedInfo.upload * 8).toFixed(1) + " Mbit/s";
-                speedtestDiv.innerText += "\nPing: " + speedInfo.ping.toFixed(0);
+                const downSpeed = (speedinfo.download * 8).toFixed(1);
+                const upSpeed = (speedinfo.upload * 8).toFixed(1);
+                const ping = speedInfo.ping.toFixed(0);
+
+                speedtestDiv.innerText = "Download: " + downSpeed + " Mbit/s";
+                speedtestDiv.innerText += "\nUpload: " + upSpeed + " Mbit/s";
+                speedtestDiv.innerText += "\nPing: " + ping + " ms"
+
+                window.systemInfo.setGlobal("lastDownspeed", downSpeed);
+                window.systemInfo.setGlobal("lastUpspeed", upSpeed);
+                window.systemInfo.setGlobal("lastPing", ping);
+
             } else {
                 speedtestDiv.innerText = "Download: error";
                 speedtestDiv.innerText += "\nUpload: error";
@@ -56,6 +65,7 @@ async function updateWifi(){
         else{
             wifiStrength = connections[0].quality;
             connectionText = "Wi-Fi strength: " + wifiStrength + "%";
+            console.log("WiFi: " + wifiStrength + "%");
         }
 
         window.systemInfo.setGlobal("currentWifiStrength", wifiStrength);
@@ -114,6 +124,6 @@ export async function run() {
     }
 
     await updateNetwork();
-    setInterval(updateNetwork, 60000);
+    setInterval(updateNetwork, 5000);
 
 }
