@@ -4,7 +4,7 @@ const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const globals = require('../includes/variables');
-const { contextBridge} = require('electron');
+const { contextBridge, ipcRenderer} = require('electron');
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -43,13 +43,13 @@ async function getInterfaceByIP(ip) {
 	else return { name: iface.iface, type: iface.type, operstate: iface.operstate };
 }
 
-contextBridge.exposeInMainWorld('systemInfo', {	
+contextBridge.exposeInMainWorld('systemInfo', {
 	getStartTime: () => os.uptime(),
 	getPcName: () => os.hostname(),
 	// additional system information 
 	getOsVersion: () => os.version(),
 	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
-  getUserName: () => os.userInfo().username,
+  	getUserName: () => os.userInfo().username,
 
 	//Get all global variables
 	getGlobals: () => globals,
@@ -57,6 +57,10 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	// Network functions
 	getCurrentInterface,
 	getInterfaceByIP,
+	wifiConns: () => si.wifiConnections(),
+
+	//Speedtest
+	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
 	//Global variable RW
 	getGlobal: (key) => globals[key],
