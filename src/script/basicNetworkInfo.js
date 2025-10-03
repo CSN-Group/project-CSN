@@ -65,7 +65,6 @@ async function updateWifi(){
         else{
             wifiStrength = connections[0].quality;
             connectionText = "Wi-Fi strength: " + wifiStrength + "%";
-            console.log("WiFi: " + wifiStrength + "%");
         }
 
         window.systemInfo.setGlobal("currentWifiStrength", wifiStrength);
@@ -124,6 +123,6 @@ export async function run() {
     }
 
     await updateNetwork();
-    setInterval(updateNetwork, 5000);
+    setInterval(updateNetwork, 10000);
 
 }
