@@ -47,13 +47,15 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getStartTime: () => os.uptime(),
 	getPcName: () => os.hostname(),
 	// additional system information 
-	getOsVersion: () => os.version(),
+	//getOsVersion: () => os.version(),
+	getOsVersion: () => process.getSystemVersion(),
 	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
 
 	//Get & sett all global variables
 	//NOTE: Does not create a copy. If there's ever an issue with the variables,
 	//that is probably the reason why.
+
 	getGlobals: () => globals,
 	setGlobals: () => setGlobals(),
 
@@ -66,8 +68,8 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
 	//Global variable RW
-		//getGlobal: (key) => globals[key],
-		//setGlobal: (key, value) => {globals[key] = value},
+	//getGlobal: (key) => globals[key],
+	//setGlobal: (key, value) => {globals[key] = value},
 	getGlobal: (key) => getGlobal(key),
 	setGlobal: (key, value) => setGlobal(key, value)
 });
@@ -79,4 +81,3 @@ contextBridge.exposeInMainWorld('dbManager', {
 	addReading: dbManager.addReading,	
 	addSupaReading: supaDbManager.addReadingSupabase
 });	
-
