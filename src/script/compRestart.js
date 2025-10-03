@@ -1,3 +1,5 @@
+const globals = window.systemInfo.getGlobals();
+
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
         //const mins = Math.floor((seconds % 3600) / 60);
@@ -7,8 +9,8 @@ function formatTime(seconds) {
 
 export async function run() {            
     const restartContainer = document.getElementById("restartInfo");
-    
-        
+    window.dbManager.addReading(globals.lastUpspeed, globals.lastDownspeed, 99, globals.lastPing, globals.currentConnectionType);
+              
     async function updateUptime() {
         const runTimeHrs = formatTime(window.systemInfo.getStartTime());
         window.systemInfo.setGlobal('compOnTimeHours', runTimeHrs);   
