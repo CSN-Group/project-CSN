@@ -12,5 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^38.2.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
+    "better-sqlite3": "^12.4.1",
+    "systeminformation": "^5.27.10"
   }
 }
