@@ -1,4 +1,3 @@
-
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
         //const mins = Math.floor((seconds % 3600) / 60);
@@ -8,10 +7,11 @@ function formatTime(seconds) {
 
 export async function run() {            
     const restartContainer = document.getElementById("restartInfo");
+    
         
     async function updateUptime() {
         const runTimeHrs = formatTime(window.systemInfo.getStartTime());
-        window.systemInfo.setGlobal('compOnTimeHours', runTimeHrs);
+        window.systemInfo.setGlobal('compOnTimeHours', runTimeHrs);   
         restartContainer.innerText = `Computer been running for ${runTimeHrs} hours`;
     }
 

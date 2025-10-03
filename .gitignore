@@ -105,6 +105,9 @@ release/
 *.snap
 *.deb
 
+# Allow certain executables
+!bin/speedtest.exe
+
 # IDE configs
 .vscode/
 .idea/

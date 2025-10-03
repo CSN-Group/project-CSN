@@ -3,8 +3,8 @@ const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
-const globals = require('../includes/variables');
-const { contextBridge} = require('electron');
+const {globals, getGlobal, setGlobal} = require('../includes/variables');
+const { contextBridge, ipcRenderer} = require('electron');
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ async function getInterfaceByIP(ip) {
 	else return { name: iface.iface, type: iface.type, operstate: iface.operstate };
 }
 
-contextBridge.exposeInMainWorld('systemInfo', {	
+contextBridge.exposeInMainWorld('systemInfo', {
 	getStartTime: () => os.uptime(),
 	getPcName: () => os.hostname(),
 	// additional system information 
@@ -51,16 +51,27 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getOsVersion: () => process.getSystemVersion(),
 	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
-	//Get all global variables
+
+	//Get & sett all global variables
+	//NOTE: Does not create a copy. If there's ever an issue with the variables,
+	//that is probably the reason why.
+
 	getGlobals: () => globals,
+	setGlobals: () => setGlobals(),
 
 	// Network functions
 	getCurrentInterface,
 	getInterfaceByIP,
+	wifiConns: () => si.wifiConnections(),
+
+	//Speedtest
+	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
 	//Global variable RW
-	getGlobal: (key) => globals[key],
-	setGlobal: (key, value) => {globals[key] = value}
+	//getGlobal: (key) => globals[key],
+	//setGlobal: (key, value) => {globals[key] = value},
+	getGlobal: (key) => getGlobal(key),
+	setGlobal: (key, value) => setGlobal(key, value)
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
