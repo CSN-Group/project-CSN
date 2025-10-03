@@ -20,8 +20,8 @@ async function runSpeedtest() {
             };
 
             if (speedInfo) {
-                const downSpeed = (speedinfo.download * 8).toFixed(1);
-                const upSpeed = (speedinfo.upload * 8).toFixed(1);
+                const downSpeed = (speedInfo.download * 8).toFixed(1);
+                const upSpeed = (speedInfo.upload * 8).toFixed(1);
                 const ping = speedInfo.ping.toFixed(0);
 
                 speedtestDiv.innerText = "Download: " + downSpeed + " Mbit/s";
@@ -77,6 +77,14 @@ async function updateWifi(){
     return text;
 }
 
+function resolveType(iface) {
+    if (iface.type) return iface.type; //If type is set, trust systemInformation...
+    if (/wifi|wlan|wireless/i.test(iface.iface)) return "wireless";
+    if (/eth|enp|ethernet/i.test(iface.iface)) return "wired";
+    if (/tun|tap|vpn/i.test(iface.iface)) return "vpn";
+    return "Unknown (" + iface.iface + ")";
+}
+
 export async function run() {
     const infoDiv = document.getElementById("basicNetworkInfo");
     let futureInfoText = "";
@@ -103,17 +111,19 @@ export async function run() {
             futureInfoText += "\nName: " + iface.name;
         })();
 
-        let iface = await window.systemInfo.getInterfaceByIP(window.systemInfo.getGlobal('currentIP'));
+        const iface = await window.systemInfo.getInterfaceByIP(window.systemInfo.getGlobal('currentIP'));
 
-        window.systemInfo.setGlobal('currentConnectionType', iface.type);
+        const ifaceType = resolveType(iface);
+
+        window.systemInfo.setGlobal('currentConnectionType', ifaceType);
 
         futureInfoText += "\nConnection: ";
 
-        if(iface.type === 'ethernet' || iface.type === 'wired') {
+        if(ifaceType === 'ethernet' || ifaceType === 'wired') {
             futureInfoText += "Cable connected (Ethernet)"
-        } else if(iface.type === 'wifi'){
+        } else if(ifaceType === 'wifi' || ifaceType === 'wireless'){
             futureInfoText += "Wi-Fi"
-        } else futureInfoText += iface.type;
+        } else futureInfoText += ifaceType;
 
         futureInfoText += "\nInterface status: " + iface.operstate;
 

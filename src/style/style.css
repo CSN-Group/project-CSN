@@ -9,8 +9,8 @@ html, body {
     display: grid;
     grid-template-areas: 
         "buttons buttons"
-        "network computer"
-        "network computer"
+        "network actions"
+        "network actions"
         "network computer"
         "network computer"
         "restart herman";
@@ -41,5 +41,9 @@ html, body {
     background-color: #89BD9E;   /* primary */
 }
 
+#actionDiv {
+    grid-area: actions;
+    background-color: #89BD9E;
+}
 
 
