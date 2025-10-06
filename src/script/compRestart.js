@@ -17,3 +17,4 @@ async function runCompRestart() {
 
     await updateUptime();
     setInterval(updateUptime, 10000); // Completely unnecessary to update this? Only when starting the app?
+}
