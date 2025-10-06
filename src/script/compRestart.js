@@ -8,7 +8,7 @@ function formatTime(seconds) {
 
 async function runCompRestart() {
     const restartContainer = document.getElementById("restartInfo");
-
+  
     async function updateUptime() {
         const runTimeHrs = formatTime(window.systemInfo.getStartTime());
         setGlobal("compOnTimeHours", runTimeHrs);
@@ -17,4 +17,3 @@ async function runCompRestart() {
 
     await updateUptime();
     setInterval(updateUptime, 10000); // Completely unnecessary to update this? Only when starting the app?
-}

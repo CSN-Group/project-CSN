@@ -12,6 +12,11 @@ function addActionItem(text){
     newItem.textContent = text;
     DOMList.appendChild(newItem);
 }
+
+function clearList(){
+    DOMList.innerHTML = '';
+}
+
 function updateActionList(){
     clearList();
 
@@ -20,6 +25,4 @@ function updateActionList(){
     if(globals["currentConnectionType"] !== "wired") addActionItem("Anslut kabel fo hevede");
 }
 
-function clearList(){
-    DOMList.innerHTML = "";
-}
+
