@@ -32,4 +32,26 @@ function setGlobal(key, value){
         shouldUpdateActionList = true; // mark dirty
     }
 }
-module.exports = {globals, getGlobal, setGlobal};
+
+function setGlobals(updates) {
+    if (typeof updates !== "object" || updates === null) {
+        throw new Error("variable \"updates\" is not a list of key-value pairs, or is null.");
+    }
+
+    for (const [key, value] of Object.entries(updates)) {
+        if (!(key in globals)) {
+            throw new Error(`Global key "${key}" does not exist.`);
+        }
+
+        const oldValue = globals[key];
+        if (oldValue !== value) {
+            globals[key] = value;
+            shouldUpdateActionList = true;
+        }
+    }
+
+    if (shouldUpdateActionList) {
+        //window.systemInfo.updateActions();
+        shouldUpdateActionList = false;
+    }
+}
