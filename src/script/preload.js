@@ -3,11 +3,6 @@ const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
-const {globals, getGlobal, setGlobal, setGlobals} = require('../includes/variables.js');
-const basicNetwork = require('./basicNetworkInfo.js');
-const compRestart = require('./compRestart.js');
-const pcName = require('./pcNameInfo.js');
-const actions = require('./actions.js');
 const { contextBridge, ipcRenderer} = require('electron');
 
 function getCurrentInterface() {

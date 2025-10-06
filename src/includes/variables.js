@@ -29,7 +29,7 @@ function setGlobal(key, value){
     const oldValue = globals[key];
     if (oldValue !== value) {
         globals[key] = value;
-        shouldUpdateActionList = true; // mark dirty
+        shouldUpdateActionList = true;
         updateActionList();
         shouldUpdateActionList = false;
     }
@@ -53,7 +53,7 @@ function setGlobals(updates) {
     }
 
     if (shouldUpdateActionList) {
-        //window.systemInfo.updateActions();
+        updateActionList();
         shouldUpdateActionList = false;
     }
 }
