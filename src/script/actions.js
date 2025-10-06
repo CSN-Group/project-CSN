@@ -12,9 +12,11 @@ function addActionItem(text){
     newItem.textContent = text;
     DOMList.appendChild(newItem);
 }
+
 function clearList(){
     DOMList.innerHTML = '';
 }
+
 function updateActionList(){
     clearList();
 
@@ -22,4 +24,5 @@ function updateActionList(){
     if(IP !== "No valid IP") addActionItem("You have a valid IP!");
     if(globals["currentConnectionType"] !== "wired") addActionItem("Anslut kabel fo hevede");
 }
+
 

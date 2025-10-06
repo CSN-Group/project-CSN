@@ -1,4 +1,3 @@
-const globals = window.systemInfo.getGlobals();
 
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
@@ -18,4 +17,3 @@ async function runCompRestart() {
 
     await updateUptime();
     setInterval(updateUptime, 10000); // Completely unnecessary to update this? Only when starting the app?
-}

@@ -59,9 +59,7 @@ contextBridge.exposeInMainWorld('systemInfo', {
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
-
-	//Actions
-	//updateActions: () => actions.updateActionList()
+	
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
