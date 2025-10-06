@@ -1,4 +1,4 @@
-export async function run() {   
+async function runPCName() {
     // Update all the text content with the obtainde value of the system
     
     const pcNameInfoLabel =document.getElementById("pcNameLabel");

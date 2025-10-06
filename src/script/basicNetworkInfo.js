@@ -1,8 +1,8 @@
 async function runSpeedtest() {
-    const currentlySpeedtesting = window.systemInfo.getGlobal('currentlySpeedtesting');
+    const currentlySpeedtesting = getGlobal("currentlySpeedtesting");
 
     if(!currentlySpeedtesting) {
-        window.systemInfo.setGlobal('currentlySpeedtesting', true);
+        setGlobal('currentlySpeedtesting', true);
         console.log("Speedtest!");
         try {
             const speedtestDiv = document.getElementById("speedTestInfo");
@@ -28,9 +28,9 @@ async function runSpeedtest() {
                 speedtestDiv.innerText += "\nUpload: " + upSpeed + " Mbit/s";
                 speedtestDiv.innerText += "\nPing: " + ping + " ms"
 
-                window.systemInfo.setGlobal("lastDownspeed", downSpeed);
-                window.systemInfo.setGlobal("lastUpspeed", upSpeed);
-                window.systemInfo.setGlobal("lastPing", ping);
+                setGlobal("lastDownspeed", downSpeed);
+                setGlobal("lastUpspeed", upSpeed);
+                setGlobal("lastPing", ping);
 
             } else {
                 speedtestDiv.innerText = "Download: error";
@@ -38,7 +38,8 @@ async function runSpeedtest() {
                 speedtestDiv.innerText += "\nPing: error";
             }
 
-            window.systemInfo.setGlobal('currentlySpeedtesting', false);
+            setGlobal('currentlySpeedtesting', false);
+
         } catch (err) {
             console.error("Speedtest failed:", err);
 
@@ -48,7 +49,7 @@ async function runSpeedtest() {
             speedtestDiv.innerText += "\nUpload: error";
             speedtestDiv.innerText += "\nPing: error";
 
-            window.systemInfo.setGlobal('currentlySpeedtesting', false);
+            setGlobal('currentlySpeedtesting', false);
         }
     }
 }
@@ -67,10 +68,10 @@ async function updateWifi(){
             connectionText = "Wi-Fi strength: " + wifiStrength + "%";
         }
 
-        window.systemInfo.setGlobal("currentWifiStrength", wifiStrength);
+        setGlobal("currentWifiStrength", wifiStrength);
         text += "\n" + connectionText;
     } catch (err) {
-        window.systemInfo.setGlobal("currentWifiStrength", 0);
+        setGlobal("currentWifiStrength", 0);
         text += "Wi-Fi strength: An error occurred.";
     }
 
@@ -85,7 +86,7 @@ function resolveType(iface) {
     return "Unknown (" + iface.iface + ")";
 }
 
-export async function run() {
+async function runNetworkInfo() {
     const infoDiv = document.getElementById("basicNetworkInfo");
     let futureInfoText = "";
 
@@ -97,27 +98,32 @@ export async function run() {
     speedtestDiv.innerText += "\nUpload: -";
     speedtestDiv.innerText += "\nPing: -";
 
-
     async function updateNetwork() {
+
         await (async () => {
-            const iface = await window.systemInfo.getCurrentInterface();
+            let iface;
+            try {
+                iface = await window.systemInfo.getCurrentInterface();
+                console.log('iface:', iface);
+            } catch (err) {
+                console.error('Error calling getCurrentInterface:', err);
+            }
 
             let currentIP = iface.address;
 
-            if(currentIP != null) window.systemInfo.setGlobal('currentIP', currentIP);
-            else window.systemInfo.setGlobal('currentIP', "No valid IP");
+            if(currentIP != null) setGlobal('currentIP', currentIP);
+            else setGlobal('currentIP', "No valid IP");
 
             futureInfoText = "IP: " + currentIP;
             futureInfoText += "\nName: " + iface.name;
         })();
 
-        const iface = await window.systemInfo.getInterfaceByIP(window.systemInfo.getGlobal('currentIP'));
+
+        iface = await window.systemInfo.getInterfaceByIP(getGlobal('currentIP'));
 
         const ifaceType = resolveType(iface);
 
-        console.log(ifaceType);
-
-        window.systemInfo.setGlobal('currentConnectionType', ifaceType);
+        setGlobal('currentConnectionType', ifaceType);
 
         futureInfoText += "\nConnection: ";
 
@@ -136,5 +142,4 @@ export async function run() {
 
     await updateNetwork();
     setInterval(updateNetwork, 10000);
-
 }

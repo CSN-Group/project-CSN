@@ -3,7 +3,6 @@ const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
-const {globals, getGlobal, setGlobal} = require('../includes/variables');
 const { contextBridge, ipcRenderer} = require('electron');
 const { execSync } = require('child_process'); //allows to run shell /terminal commands 
 
@@ -47,11 +46,13 @@ async function getInterfaceByIP(ip) {
 contextBridge.exposeInMainWorld('systemInfo', {
 	getStartTime: () => os.uptime(),
 	getPcName: () => os.hostname(),
+
 	// additional system information 
-	//getOsVersion: () => os.version(),
+	getOsVersion: () => os.version(),
 	getOsVersion: () => process.getSystemVersion(),
-	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
+	//getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
+  
 	//Check if update is avialable this returns a bool value 
 	checkForUpdates: () => {
 		try {
@@ -82,18 +83,13 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	setGlobals: () => setGlobals(),
 
 	// Network functions
-	getCurrentInterface,
-	getInterfaceByIP,
+	getCurrentInterface: () => getCurrentInterface(),
+	getInterfaceByIP: (ip) => getInterfaceByIP(ip),
 	wifiConns: () => si.wifiConnections(),
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
-
-	//Global variable RW
-	//getGlobal: (key) => globals[key],
-	//setGlobal: (key, value) => {globals[key] = value},
-	getGlobal: (key) => getGlobal(key),
-	setGlobal: (key, value) => setGlobal(key, value)
+	
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
@@ -102,4 +98,4 @@ contextBridge.exposeInMainWorld('dbManager', {
 	},	
 	addReading: dbManager.addReading,	
 	addSupaReading: supaDbManager.addReadingSupabase
-});	
+});
