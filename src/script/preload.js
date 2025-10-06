@@ -5,7 +5,7 @@ const dgram = require('dgram');
 const si = require('systeminformation')
 const {globals, getGlobal, setGlobal} = require('../includes/variables');
 const { contextBridge, ipcRenderer} = require('electron');
-const { execSync } = require('child_process'); //smret
+const { execSync } = require('child_process'); //allows to run shell /terminal commands 
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -53,28 +53,26 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
 	//Check if update is avialable this returns a bool value 
-  	
 	checkForUpdates: () => {
-    try {
-        	// Use actual Windows Update COM objects (built into Windows)
-        	const psCommand = `
-            	$Session = New-Object -ComObject Microsoft.Update.Session
-            	$Searcher = $Session.CreateUpdateSearcher()
-            	$Result = $Searcher.Search("IsInstalled=0")
-            	$Result.Updates.Count
-        `	;
-        
-        	// Execute the proper PowerShell command
-        	const result = execSync(`powershell -Command "${psCommand}"`, {stdio: 'pipe'}).toString();
-        
-        	// Convert result to number and check if > 0 (updates available)
-        	return parseInt(result.trim()) > 0;
-        
-    	} catch (error) {
-        	console.error('Error checking updates:', error);
-        	return false;
-    	}
+		try {
+			// Use actual Windows Update COM objects (built into Windows)
+			const psCommand = `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0').Updates.Count`;
+			
+			// Execute the proper PowerShell command with reliability fixes
+			const result = execSync(
+				`powershell -ExecutionPolicy Bypass -Command "${psCommand}"`, 
+				{ stdio: 'pipe', timeout: 30000, encoding: 'utf8' }
+			).toString();
+			
+			// Convert result to number and check if > 0 (updates available)
+			return parseInt(result.trim()) > 0;
+			
+		} catch (error) {
+			console.error('Error checking updates:', error);
+			return false;
+		}
 	},
+	
 	
 	//Get & sett all global variables
 	//NOTE: Does not create a copy. If there's ever an issue with the variables,
