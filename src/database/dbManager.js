@@ -11,8 +11,6 @@ function getReadings() { //Get all readings from the database, as an array of ob
     return res;
 }
 
-//Create Unix Timestamp
-
 function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
     const unixStamp = new Date().getTime();
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType)
@@ -33,4 +31,16 @@ function deleteAllReadings() { //Delete all readings from the database.
     stmt.run();
 }
 
-module.exports = { getReadings, addReading, deleteOldReadings, deleteAllReadings };
+function convertToDateString(unixStamp) {
+    const date = new Date(unixStamp);
+    const formattedDate =
+    date.getFullYear() + '-' +
+    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0') + ' ' +
+    String(date.getHours()).padStart(2, '0') + ':' +
+    String(date.getMinutes()).padStart(2, '0') + ':' +
+    String(date.getSeconds()).padStart(2, '0');
+    return formattedDate;
+}
+
+module.exports = { getReadings, addReading, deleteOldReadings, deleteAllReadings, convertToDateString };
