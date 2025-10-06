@@ -1,3 +1,5 @@
+const globals = window.systemInfo.getGlobals();
+
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
         //const mins = Math.floor((seconds % 3600) / 60);
@@ -7,7 +9,7 @@ function formatTime(seconds) {
 
 async function runCompRestart() {
     const restartContainer = document.getElementById("restartInfo");
-
+  
     async function updateUptime() {
         const runTimeHrs = formatTime(window.systemInfo.getStartTime());
         setGlobal("compOnTimeHours", runTimeHrs);

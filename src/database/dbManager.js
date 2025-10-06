@@ -11,7 +11,12 @@ exports.getReadings = function() { //Get all readings from the database, as an a
     return res;
 }
 
-exports.addReading = function(value) { //Add a new reading to the database.
-    const sql = `INSERT INTO readings (lastStart) VALUES ('${value}')`;
-    db.exec(sql);
+//Convert
+
+exports.addReading = function(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
+    const unixStamp = new Date().getTime();
+    const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType)
+    VALUES (?, ?, ?, ?, ?, ?)`;
+    const stmt = db.prepare(sql);
+    stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType);    
 }
