@@ -78,7 +78,7 @@ async function updateWifi(){
 }
 
 function resolveType(iface) {
-    if (iface.type) return iface.type; //If type is set, trust systemInformation...
+    console.log(iface);
     if (/wifi|wlan|wireless/i.test(iface.iface)) return "wireless";
     if (/eth|enp|ethernet/i.test(iface.iface)) return "wired";
     if (/tun|tap|vpn/i.test(iface.iface)) return "vpn";
@@ -114,6 +114,8 @@ export async function run() {
         const iface = await window.systemInfo.getInterfaceByIP(window.systemInfo.getGlobal('currentIP'));
 
         const ifaceType = resolveType(iface);
+
+        console.log(ifaceType);
 
         window.systemInfo.setGlobal('currentConnectionType', ifaceType);
 

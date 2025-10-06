@@ -4,34 +4,29 @@ export async function run() {
     document.getElementById("pcModelLabel").textContent = "PC Model: " + window.systemInfo.getPcModel();
     document.getElementById("osVersionLabel").textContent = "OS Version: " + window.systemInfo.getOsVersion();
     document.getElementById("userNameLabel").textContent = "User Name: " + window.systemInfo.getUserName();
-    document.getElementById("latestVersionLabel").textContent = "Latest Version: " + window.systemInfo.checkForWindowsUpdates();
+    //document.getElementById("latestVersionLabel").textContent = "Latest Version: " + window.systemInfo.checkForWindowsUpdates();
     //
     // get avialable updates in windows 
+    const systemUpdatesInfo = document.getElementById("latestVersionLabel");
     async function checkWindowsUpdates() {
-        if (window.windowsUpdateAPI) {
-            const updatesAvailable = await window.windowsUpdateAPI.checkForUpdates();
-            return updatesAvailable;
-        }
-        return false;
+      try{
+        const updatesAvailable = await window.systemInfo.checkForUpdates();
+        if(updatesAvailable){
+              systemUpdatesInfo.innerHTML = 'Windows updates are available';
+              //console.log('Windows updates are available');
+
+            } else {
+              systemUpdatesInfo.innerHTML = 'No updataes available';
+              //console.log('No updataes available or check failed');
+
+            }
+
+      } catch (error) {
+        systemUpdatesInfo.innerHTML = 'Update check failed';
+        console.error('Update check error:', error);
+      }         
+
     }
-
-    function showUpdateMessage() {
-        const updateDiv = document.getElementById('compInfo');
-        updateDiv.innerHTML = `
-        <div style="padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; margin: 10px;">
-        <p>Windows updates are available and ready to install.</p>
-        <button onclick="require('electron').shell.openExternal('ms-settings:windowsupdate')">
-        Install Updates
-        </button>
-        </div>
-  ` ;
-  document.body.prepend(updateDiv);
-}
- async function initUpdateCheck() {
-  const updatesAvailable = await checkWindowsUpdates();
-  if (updatesAvailable) {
-    showUpdateMessage();
-  }
-}
-
+    await checkWindowsUpdates();
+    
 }

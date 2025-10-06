@@ -5,6 +5,7 @@ const dgram = require('dgram');
 const si = require('systeminformation')
 const {globals, getGlobal, setGlobal} = require('../includes/variables');
 const { contextBridge, ipcRenderer} = require('electron');
+const { execSync } = require('child_process'); //smret
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -51,7 +52,30 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getOsVersion: () => process.getSystemVersion(),
 	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
-
+	//Check if update is avialable this returns a bool value 
+  	
+	checkForUpdates: () => {
+    try {
+        	// Use actual Windows Update COM objects (built into Windows)
+        	const psCommand = `
+            	$Session = New-Object -ComObject Microsoft.Update.Session
+            	$Searcher = $Session.CreateUpdateSearcher()
+            	$Result = $Searcher.Search("IsInstalled=0")
+            	$Result.Updates.Count
+        `	;
+        
+        	// Execute the proper PowerShell command
+        	const result = execSync(`powershell -Command "${psCommand}"`, {stdio: 'pipe'}).toString();
+        
+        	// Convert result to number and check if > 0 (updates available)
+        	return parseInt(result.trim()) > 0;
+        
+    	} catch (error) {
+        	console.error('Error checking updates:', error);
+        	return false;
+    	}
+	},
+	
 	//Get & sett all global variables
 	//NOTE: Does not create a copy. If there's ever an issue with the variables,
 	//that is probably the reason why.
