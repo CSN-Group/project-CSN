@@ -30,6 +30,8 @@ function setGlobal(key, value){
     if (oldValue !== value) {
         globals[key] = value;
         shouldUpdateActionList = true; // mark dirty
+        updateActionList();
+        shouldUpdateActionList = false;
     }
 }
 
