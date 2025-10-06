@@ -4,6 +4,7 @@ const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
+const { execSync } = require('child_process'); //allows to run shell /terminal commands 
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -51,6 +52,35 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	getOsVersion: () => process.getSystemVersion(),
 	//getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
+  
+	//Check if update is avialable this returns a bool value 
+	checkForUpdates: () => {
+		try {
+			// Use actual Windows Update COM objects (built into Windows)
+			const psCommand = `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0').Updates.Count`;
+			
+			// Execute the proper PowerShell command with reliability fixes
+			const result = execSync(
+				`powershell -ExecutionPolicy Bypass -Command "${psCommand}"`, 
+				{ stdio: 'pipe', timeout: 30000, encoding: 'utf8' }
+			).toString();
+			
+			// Convert result to number and check if > 0 (updates available)
+			return parseInt(result.trim()) > 0;
+			
+		} catch (error) {
+			console.error('Error checking updates:', error);
+			return false;
+		}
+	},
+	
+	
+	//Get & sett all global variables
+	//NOTE: Does not create a copy. If there's ever an issue with the variables,
+	//that is probably the reason why.
+
+	getGlobals: () => globals,
+	setGlobals: () => setGlobals(),
 
 	// Network functions
 	getCurrentInterface: () => getCurrentInterface(),
