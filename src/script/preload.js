@@ -3,7 +3,11 @@ const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
-const {globals, getGlobal, setGlobal} = require('../includes/variables');
+const {globals, getGlobal, setGlobal, setGlobals} = require('../includes/variables.js');
+const basicNetwork = require('./basicNetworkInfo.js');
+const compRestart = require('./compRestart.js');
+const pcName = require('./pcNameInfo.js');
+const actions = require('./actions.js');
 const { contextBridge, ipcRenderer} = require('electron');
 
 function getCurrentInterface() {
@@ -46,32 +50,23 @@ async function getInterfaceByIP(ip) {
 contextBridge.exposeInMainWorld('systemInfo', {
 	getStartTime: () => os.uptime(),
 	getPcName: () => os.hostname(),
+
 	// additional system information 
-	//getOsVersion: () => os.version(),
+	getOsVersion: () => os.version(),
 	getOsVersion: () => process.getSystemVersion(),
-	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
+	//getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
 
-	//Get & sett all global variables
-	//NOTE: Does not create a copy. If there's ever an issue with the variables,
-	//that is probably the reason why.
-
-	getGlobals: () => globals,
-	setGlobals: () => setGlobals(),
-
 	// Network functions
-	getCurrentInterface,
-	getInterfaceByIP,
+	getCurrentInterface: () => getCurrentInterface(),
+	getInterfaceByIP: (ip) => getInterfaceByIP(ip),
 	wifiConns: () => si.wifiConnections(),
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
-	//Global variable RW
-	//getGlobal: (key) => globals[key],
-	//setGlobal: (key, value) => {globals[key] = value},
-	getGlobal: (key) => getGlobal(key),
-	setGlobal: (key, value) => setGlobal(key, value)
+	//Actions
+	//updateActions: () => actions.updateActionList()
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
@@ -80,4 +75,4 @@ contextBridge.exposeInMainWorld('dbManager', {
 	},	
 	addReading: dbManager.addReading,	
 	addSupaReading: supaDbManager.addReadingSupabase
-});	
+});
