@@ -11,18 +11,17 @@ html, body {
         "buttons buttons"
         "network actions"
         "network actions"
-        "network actions"
         "gauge computer"
         "gauge computer"
-        "restart herman";
+        "restart graph";
     grid-gap: 1%;
     height: 100%;
     width: 100%;
     background-color: #DB4C40;
 }
 
-#hermansRestingPlace {
-    grid-area: herman;
+#graphDiv {
+    grid-area: graph;
     background-color: #89BD9E; /* light */
 }
 #buttonDiv{
