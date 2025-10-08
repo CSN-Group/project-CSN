@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
 <head>
   <link rel="stylesheet" href="style/style.css">
   <title>My Electron App</title>
@@ -13,11 +16,7 @@
         <button id="advancedViewButton">ADVANCED</button>
       </nav>
     </div>
-
-    <div id="hermansRestingPlace">
-      <!-- He was loved by all -->
-    </div>
-
+    
     <div id="compInfo">
       <!-- Enter useful comp info here -->
       <label id="pcNameLabel">PC Name: Loading...</label><br>
@@ -42,13 +41,18 @@
       <h1><u>Åtgärder</u></h1>
       <ul id="actionList"></ul>
     </div>
-    
+
+    <div id="graphDiv">
+      <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
+    </div>
+
   </div>      
 
   <script src="includes/variables.js"></script>
+  <script src="script/graph.js"></script>
   <script src="script/basicNetworkInfo.js"></script>
   <script src="script/compRestart.js"></script>
-  <script src="script/pcNameInfo.js"></script>
+  <script src="script/pcNameInfo.js"></script>  
   <script src="script/actions.js"></script>
   <script src="script/loadSimpleView.js"></script>
 </body>

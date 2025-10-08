@@ -5,6 +5,7 @@ const dgram = require('dgram');
 const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
 const { execSync } = require('child_process'); //allows to run shell /terminal commands 
+const { get } = require('http');
 
 function getCurrentInterface() {
 	return new Promise((resolve, reject) => {
@@ -50,7 +51,7 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	// additional system information 
 	getOsVersion: () => os.version(),
 	getOsVersion: () => process.getSystemVersion(),
-	//getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
+	getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
   	getUserName: () => os.userInfo().username,
   
 	//Check if update is avialable this returns a bool value 
@@ -95,7 +96,10 @@ contextBridge.exposeInMainWorld('systemInfo', {
 contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
 		return dbManager.getReadings()
-	},	
-	addReading: dbManager.addReading,	
+	},
+	convertToHourMin: (timestamps) => dbManager.convertToHourMin(timestamps),
+	getTodaysReadings: (todayDayNumber) => dbManager.getTodaysReadings(todayDayNumber),
+	deleteAllReadings: () => dbManager.deleteAllReadings(),
+	addReading: dbManager.addReading,		
 	addSupaReading: supaDbManager.addReadingSupabase
 });
