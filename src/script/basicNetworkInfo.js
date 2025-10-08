@@ -78,15 +78,22 @@ async function updateWifi(){
     return text;
 }
 
-function resolveType(iface) {
-    console.log(iface);
-    if (/wifi|wlan|wireless/i.test(iface.iface)) return "wireless";
-    if (/eth|enp|ethernet/i.test(iface.iface)) return "wired";
-    if (/tun|tap|vpn/i.test(iface.iface)) return "vpn";
-    return "Unknown (" + iface.iface + ")";
+async function updateNetwork(){
+    const infoDiv = document.getElementById("basicNetworkInfo");
+
+    let futureText = "";
+
+    futureText = "Connection: " + await window.systemInfo.getGlobal('currentConnectionType');
+    futureText += "\nWiFi Strength: " + await window.systemInfo.getGlobal('currentWifiStrength') + "%";
+
+    infoDiv.innerText = futureText;
+
+    //const runTimeHrs = formatTime(await window.systemInfo.getGlobal("compOnTimeHours"));
+    //restartContainer.innerText = `Computer been running for ${runTimeHrs} hours`;
 }
 
-async function runNetworkInfo() {
+
+async function initNetworkInfo() {
     const infoDiv = document.getElementById("basicNetworkInfo");
     let futureInfoText = "";
 
@@ -97,7 +104,7 @@ async function runNetworkInfo() {
     speedtestDiv.innerText = "Download: -";
     speedtestDiv.innerText += "\nUpload: -";
     speedtestDiv.innerText += "\nPing: -";
-
+/*
     async function updateNetwork() {
 
         await (async () => {
@@ -142,4 +149,5 @@ async function runNetworkInfo() {
 
     await updateNetwork();
     setInterval(updateNetwork, 10000);
+ */
 }

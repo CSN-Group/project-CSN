@@ -6,90 +6,12 @@ const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
 const { execSync } = require('child_process'); //allows to run shell /terminal commands 
 
-function getCurrentInterface() {
-	return new Promise((resolve, reject) => {
-		const socket = dgram.createSocket('udp4');
-
-		//Try to connect to force routing
-		socket.connect(1337, '8.8.8.8', () => {
-			const address = socket.address().address;
-			socket.close();
-
-			//Find the matching IP among all interfaces
-			const nets = os.networkInterfaces();
-			for (const name of Object.keys(nets)) {
-				for (const net of nets[name]) {
-					if (net.family === 'IPv4' && net.address === address) {
-						return resolve({ name, address });
-					}
-				}
-			}
-
-			//If no match, return null
-			resolve({ name: null, address });
-		});
-
-		socket.on('error', reject);
-	});
-}
-
-async function getInterfaceByIP(ip) {
-	const interfaces = await si.networkInterfaces();
-
-	// Find the interface that has the given IP
-	const iface = interfaces.find(i => i.ip4 === ip);
-
-	if (!iface) return null;
-	else return { name: iface.iface, type: iface.type, operstate: iface.operstate };
-}
-
 contextBridge.exposeInMainWorld('systemInfo', {
-	getStartTime: () => os.uptime(),
-	getPcName: () => os.hostname(),
-
-	// additional system information 
-	getOsVersion: () => os.version(),
-	getOsVersion: () => process.getSystemVersion(),
-	//getPcModel: () => `${os.type()} ${os.arch()}`, // Basic version
-  	getUserName: () => os.userInfo().username,
-  
-	//Check if update is avialable this returns a bool value 
-	checkForUpdates: () => {
-		try {
-			// Use actual Windows Update COM objects (built into Windows)
-			const psCommand = `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0').Updates.Count`;
-			
-			// Execute the proper PowerShell command with reliability fixes
-			const result = execSync(
-				`powershell -ExecutionPolicy Bypass -Command "${psCommand}"`, 
-				{ stdio: 'pipe', timeout: 30000, encoding: 'utf8' }
-			).toString();
-			
-			// Convert result to number and check if > 0 (updates available)
-			return parseInt(result.trim()) > 0;
-			
-		} catch (error) {
-			console.error('Error checking updates:', error);
-			return false;
-		}
-	},
-	
-	
-	//Get & sett all global variables
-	//NOTE: Does not create a copy. If there's ever an issue with the variables,
-	//that is probably the reason why.
-
-	getGlobals: () => globals,
-	setGlobals: () => setGlobals(),
-
-	// Network functions
-	getCurrentInterface: () => getCurrentInterface(),
-	getInterfaceByIP: (ip) => getInterfaceByIP(ip),
-	wifiConns: () => si.wifiConnections(),
+	getGlobal: (key) => ipcRenderer.invoke('getGlobal', key),
+	//setGlobals: () => setGlobals(),
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
-	
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
@@ -98,4 +20,13 @@ contextBridge.exposeInMainWorld('dbManager', {
 	},	
 	addReading: dbManager.addReading,	
 	addSupaReading: supaDbManager.addReadingSupabase
+});
+
+contextBridge.exposeInMainWorld('updates', {
+	onUpdateDone: (callback) => ipcRenderer.on('updateDone', callback),
+	onActionsUpdated: (callback) => {
+		ipcRenderer.on("updateActions", async (event, list) => {
+			await callback(list);
+		});
+	}
 });

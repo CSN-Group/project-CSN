@@ -1,5 +1,5 @@
 const DOMList = document.getElementById("actionList");
-function initiateList(){
+function initActionList(){
     DOMList.addEventListener("click", (event) => {
         if (event.target.tagName === "LI") {
             event.target.remove();
@@ -17,12 +17,12 @@ function clearList(){
     DOMList.innerHTML = '';
 }
 
-function updateActionList(){
+function updateActionList(list){
     clearList();
 
-    const IP = globals["currentIP"];
-    if(IP !== "No valid IP") addActionItem("You have a valid IP!");
-    if(globals["currentConnectionType"] !== "wired") addActionItem("Anslut kabel fo hevede");
+    list.forEach(item => {
+        addActionItem(item);
+    });
 }
 
 

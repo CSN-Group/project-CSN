@@ -19,13 +19,7 @@
     </div>
 
     <div id="compInfo">
-      <!-- Enter useful comp info here -->
-      <label id="pcNameLabel">PC Name: Loading...</label><br>
-      <label id="osVersionLabel">OS Version: Loading...</label><br>
-      <label id="pcModelLabel">PC Model: Loading...</label><br>
-      <label id="userNameLabel">User Name: Loading...</label><br>
-      <label id="latestVersionLabel">Latest Version: Loading...</label><br>
-      <!-- the end of div -->
+
     </div>
 
     <div id="networkInfo">
@@ -38,6 +32,10 @@
       <!-- Enter info here -->
     </div>
 
+    <div id="gaugeDiv">
+      <canvas id="speedometer" width="200" height="200"></canvas>
+    </div>
+
     <div id="actionDiv">
       <h1><u>Åtgärder</u></h1>
       <ul id="actionList"></ul>
@@ -45,11 +43,14 @@
     
   </div>      
 
-  <script src="includes/variables.js"></script>
-  <script src="script/basicNetworkInfo.js"></script>
   <script src="script/compRestart.js"></script>
+  <script src="script/basicNetworkInfo.js"></script>
   <script src="script/pcNameInfo.js"></script>
   <script src="script/actions.js"></script>
+
+  <script src="../node_modules/gaugeJS/dist/gauge.min.js"></script>
+  <script src="script/gauge.js"></script>
+
   <script src="script/loadSimpleView.js"></script>
 </body>
 </html>

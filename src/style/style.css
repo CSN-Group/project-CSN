@@ -11,8 +11,9 @@ html, body {
         "buttons buttons"
         "network actions"
         "network actions"
-        "network computer"
-        "network computer"
+        "network actions"
+        "gauge computer"
+        "gauge computer"
         "restart herman";
     grid-gap: 1%;
     height: 100%;
@@ -44,6 +45,16 @@ html, body {
 #actionDiv {
     grid-area: actions;
     background-color: #89BD9E;
+}
+
+#gaugeDiv{
+    grid-area: gauge;
+    background-color: #89BD9E;
+}
+
+#speedometer{
+    margin-left: 20px;
+    border: 1px solid black;
 }
 
 
