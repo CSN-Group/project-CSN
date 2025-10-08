@@ -14,5 +14,16 @@ async function updateSystemInfo(){
     futureText += "\nModel: " + await window.systemInfo.getGlobal('pcModel');
     futureText += "\nUser: " + await window.systemInfo.getGlobal('userName');
 
+    const updatesAvailable = await window.systemInfo.getGlobal('updatesAvailable');
+
+    if(updatesAvailable === null){
+        futureText += "\nUpdates: Initializing...";
+    } else if(updatesAvailable){
+        futureText += "\nUpdates: Available";
+    } else if(!updatesAvailable){
+        futureText += "\nUpdates: None";
+    } else futureText += "\nUpdates: Unknown";
+
+
     sysInfoDiv.innerText = futureText;
 }

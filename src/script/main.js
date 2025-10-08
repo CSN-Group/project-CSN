@@ -14,6 +14,7 @@ let currentlyUpdating = false;
 const updateInterval = 1000; //ms
 
 let globalsUpdated = false;
+let initialUpdateCheck = false;
 
 //Globals
 const globals = {
@@ -29,6 +30,7 @@ const globals = {
   osVersion: "Loading..",
   pcModel: "Loading..",
   userName: "Loading..",
+  updatesAvailable: null,
 
   //last speedtest
   lastDownspeed: 0.0,
@@ -84,7 +86,6 @@ function generateActionList() {
 }
 
 //Network functions
-
 async function updateCurrentInterface() {
   return new Promise((resolve) => {
     try {
@@ -186,6 +187,39 @@ async function getWifiInfo() {
   }
 }
 
+//System functions
+async function isUpdatesAvailable(){
+  try {
+    const { spawn } = require('child_process');
+    const psCommand = `try { (New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0').Updates.Count } catch { 0 }`;
+
+    return new Promise((resolve) => {
+      const ps = spawn('powershell', [
+        '-ExecutionPolicy', 'Bypass',
+        '-Command', psCommand
+      ]);
+
+      let output = '';
+      const timeout = setTimeout(() => { ps.kill(); resolve(false); }, 30000);
+
+      ps.stdout.on('data', (data) => output += data.toString());
+      ps.on('close', () => {
+        clearTimeout(timeout);
+        const updateCount = parseInt(output.trim());
+        resolve(!isNaN(updateCount) && updateCount > 0);
+      });
+
+      ps.on('error', () => {
+        clearTimeout(timeout);
+        resolve(false);
+      });
+    });
+
+  } catch (error) {
+    return false;
+  }
+
+}
 
 //IPC
 ipcMain.handle('run-speedtest', async () => {
@@ -251,6 +285,14 @@ async function measureSystem() {
     setGlobal('pcModel', `${os.type()} ${os.arch()}`);
     setGlobal('userName', os.userInfo().username);
   }
+
+  /*
+  if(!initialUpdateCheck || updateCounter % 3600 === 0){
+    const updatesAvailable = await isUpdatesAvailable();
+    setGlobal('updatesAvailable', updatesAvailable);
+    initialUpdateCheck = true;
+  }*/
+  
   updateCounter++;
 }
 async function runFullUpdate() {
