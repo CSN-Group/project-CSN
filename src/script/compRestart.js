@@ -1,4 +1,3 @@
-
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
         //const mins = Math.floor((seconds % 3600) / 60);
@@ -6,17 +5,18 @@ function formatTime(seconds) {
         return hrs//`${hrs}h ${mins}m ${secs}s`;
 }
 
-async function runCompRestart() {
+async function initCompRestart() {
     const restartContainer = document.getElementById("restartInfo");
-  
-    async function updateUptime() {
-        const runTimeHrs = formatTime(window.systemInfo.getStartTime());
-        setGlobal("compOnTimeHours", runTimeHrs);
-        restartContainer.innerText = `Computer been running for ${runTimeHrs} hours`;
-    }
-
-    await updateUptime();
-    setInterval(updateUptime, 10000); // Completely unnecessary to update this? Only when starting the app?
-
+    restartContainer.innerText = `Computer been running for - hours`;
 }
 
+async function updateRestart(){
+    console.log("Updating comp restart info...");
+    const restartContainer = document.getElementById("restartInfo");
+
+    const runTimeHrs = formatTime(await window.systemInfo.getGlobal("compOnTimeHours"));
+    restartContainer.innerText = `Computer been running for ${runTimeHrs} hours`;
+}
+
+
+        
