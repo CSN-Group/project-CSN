@@ -1,52 +1,18 @@
-async function runPCName() {
-    // Update all the text content with the obtainde value of the system
-    
-    const pcNameInfoLabel =document.getElementById("pcNameLabel");
-    const pcModelInfoLabel = document.getElementById("pcModelLabel");
-    const osVersionInfoLabel = document.getElementById("osVersionLabel");
-    const userNameInfoLabel = document.getElementById("userNameLabel");
-    
-  try {
-      //obtain the system information in to a constant vairable.
-      const pcNameInfo = window.systemInfo.getPcName();
-      const pcModelInfo = window.systemInfo.getPcModel();
-      const osVersionInfo = window.systemInfo.getOsVersion();
-      const userNameInfo = window.systemInfo.getUserName();
-      
-      pcNameInfoLabel.textContent = "Pc Name: " + pcNameInfo;
-      pcModelInfoLabel.textContent = "Pc Model: " + pcModelInfo;
-      osVersionInfoLabel.textContent = "Os Version: " + osVersionInfo;
-      userNameInfoLabel.textContent = "User Name: " + userNameInfo;
-      
-  } catch (error) {
-      console.error("Error loading system info:", error);
-      // Show user-friendly error messages
-      pcNameInfoLabel.textContent = "Pc Name: Unable to load";
-      pcModelInfoLabel.textContent = "Pc Model: Unable to load ";
-      osVersionInfoLabel.textContent = "Os Version: Unable to load";
-      userNameInfoLabel.textContent = "User Name: Unable to load";
-  } 
-    // get avialable updates in windows 
-  const systemUpdatesInfo = document.getElementById("latestVersionLabel");
-  async function checkWindowsUpdates() {
-      try{
-        const updatesAvailable = await window.systemInfo.checkForUpdates();
-        if(updatesAvailable){
-              systemUpdatesInfo.innerHTML = 'Windows updates are available';
-              //console.log('Windows updates are available');
+async function initSystemInfo() {
+    const restartContainer = document.getElementById("restartInfo");
+    restartContainer.innerText = `Computer been running for - hours`;
+}
 
-            } else {
-              systemUpdatesInfo.innerHTML = 'No updataes available';
-              //console.log('No updataes available or check failed');
+async function updateSystemInfo(){
+    let futureText = "";
+    const sysInfoDiv = document.getElementById("compInfo");
 
-            }
 
-      } catch (error) {
-        systemUpdatesInfo.innerHTML = 'Update check failed';
-        console.error('Update check error:', error);
-      }         
+    futureText = "PC Name: " + await window.systemInfo.getGlobal('pcName');
+    futureText += "\nIP: " + await window.systemInfo.getGlobal('currentIP');
+    futureText += "\nOS: " + await window.systemInfo.getGlobal('osVersion');
+    futureText += "\nModel: " + await window.systemInfo.getGlobal('pcModel');
+    futureText += "\nUser: " + await window.systemInfo.getGlobal('userName');
 
-  }
-  await checkWindowsUpdates();
-
+    sysInfoDiv.innerText = futureText;
 }
