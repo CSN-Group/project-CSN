@@ -1,5 +1,22 @@
-const unixStamp = new Date().getTime();
-const readings = dbManager.getTodaysReadings(unixStamp);
+const graphContainer = document.getElementById('historyGraph');
+let graph = null;
+
+async function initGraph(){
+  //const unixStamp = new Date().getTime();
+  //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD
+  const readings = await dbManager.getDayReadings(20251008); //CHECK HERE! Hardcoded for now  
+  createDayGraph(readings, 'ping');  
+}
+
+//dbManager.summarizeDay(20251008);
+
+async function historyGraph(){
+  //graph.destroy();
+  const myMac = await window.systemInfo.getGlobal('mac');  
+  const history= await dbManager.fetchHistory(myMac);
+  console.log(history);
+  createGraph(graphContainer,history);
+}
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
 function extractValue(data,key) {
@@ -14,7 +31,7 @@ function extractValue(data,key) {
 function convertTimes(timestamps) {
     const times = [];
     timestamps.forEach(stamp => {        
-        const time = dbManager.convertToHourMin(stamp);        
+        const time = dbManager.convertToHourMin(stamp);
         times.push(time);
     });
     return times;
@@ -27,24 +44,29 @@ function findStartOfDay(timestamp) {
 }
 
 
-function createGraph(){
+function createDayGraph(readings, mainMetric = "upSpeed"){  
   const times= extractValue(readings, 'timeStamp');
   const upSpeeds = extractValue(readings, 'upSpeed');
+  const downSpeeds = extractValue(readings, 'downSpeed');
   const pings = extractValue(readings, 'ping');
   const wifiStrs = extractValue(readings, 'wifiStr');
   const startOfDay = findStartOfDay(times[0]);
-  const endOfDay = startOfDay + 86400000; // 24 hours in milliseconds MAGIC NUMBER!
+  const endOfDay = startOfDay + 86400000; // 24 hours in milliseconds MAGIC NUMBER!  
 
-  const graph = document.getElementById('historyGraph');
+  const metrics = { upSpeed: upSpeeds, downSpeeds: downSpeeds, ping: pings, wifiStr: wifiStrs};
+  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeeds: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)' };
+  const borderColors = { upSpeed: 'blue', downSpeeds: 'yellow', ping: 'green', wifiStr: 'orange'};
 
-  new Chart(graph, {
+  const mainData = metrics[mainMetric];
+
+  graph = new Chart(graphContainer, {
     type: "line",
     data: {
       labels: times,
       datasets: [{
-        label: "Upload Speed (Mbps)",
-        data: upSpeeds,
-        borderColor: 'blue',
+        label: labels[mainMetric],
+        data: mainData,
+        borderColor: borderColors[mainMetric],
         borderWidth: 1,
         tension: 0,
         pointRadius: 1,
@@ -59,7 +81,7 @@ function createGraph(){
           max: endOfDay             
         },
         y: {
-          title: { display: true, text: 'Speed (Mbps)' }
+          title: { display: true, text: labels[mainMetric] }
         }
       },
       plugins: {
@@ -69,17 +91,22 @@ function createGraph(){
           displayColors: false,
           callbacks: {
           label: function(context) {
-          const i = context.dataIndex;
-          const speed = upSpeeds[i];
-          const ping = pings[i];
-          const wifi = wifiStrs[i];
-          return [`Speed: ${speed} Mbps`, `Ping: ${ping} ms`, `WiFi Strength: ${wifi}%`];
+          const i = context.dataIndex;         
+         // Build all the tooltip lines
+          const tooltipLines = {
+          upSpeed: `Upspeed: ${upSpeeds[i]} Mbps`,
+          downSpeed: `Downspeed: ${downSpeeds[i]} Mbps`,
+          ping: `Ping: ${pings[i]} ms`,
+          wifiStr: `WiFi Strength: ${wifiStrs[i]}%`
+        };
+
+        // Put the main metric first
+        const order = ['upSpeed', 'ping','downSpeed', 'wifiStr'].filter(k => k !== mainMetric);
+        return [tooltipLines[mainMetric], ...order.map(k => tooltipLines[k])];
           }
           }
-          }
+        }
       }
       }
   });
 }
-
-createGraph();

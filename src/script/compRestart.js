@@ -1,8 +1,8 @@
+//const { getUniqueTimeStampsBefore } = require("../database/dbManager");
+
 function formatTime(seconds) {
-        const hrs = Math.floor(seconds / 3600);
-        //const mins = Math.floor((seconds % 3600) / 60);
-        //const secs = Math.floor(seconds % 60);
-        return hrs//`${hrs}h ${mins}m ${secs}s`;
+        const hrs = Math.floor(seconds / 3600);        
+        return hrs
 }
 
 async function initCompRestart() {
@@ -16,7 +16,5 @@ async function updateRestart(){
 
     const runTimeHrs = formatTime(await window.systemInfo.getGlobal("compOnTimeHours"));
     restartContainer.innerText = `Computer been running for ${runTimeHrs} hours`;
-}
+}        
 
-
-        

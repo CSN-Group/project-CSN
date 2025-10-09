@@ -4,7 +4,7 @@ const supaDbManager = require('../database/supabaseHandler.js');
 const dgram = require('dgram');
 const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
-const { execSync } = require('child_process'); //allows to run shell /terminal commands 
+const { execSync } = require('child_process');
 const { get } = require('http');
 
 contextBridge.exposeInMainWorld('systemInfo', {
@@ -19,11 +19,15 @@ contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
 		return dbManager.getReadings()
 	},
-	convertToHourMin: (timestamps) => dbManager.convertToHourMin(timestamps),
-	getTodaysReadings: (todayDayNumber) => dbManager.getTodaysReadings(todayDayNumber),
+	//convertToHourMin: (timestamps) => dbManager.convertToHourMin(timestamps), Not needed anymore?
+	getDayReadings: (dateStamp) => dbManager.getDayReadings(dateStamp),
+	getUniqueTimeStampsBefore: (limit) => dbManager.getUniqueTimeStampsBefore(limit),
 	deleteAllReadings: () => dbManager.deleteAllReadings(),
+	convertToDateStamp: (unix) => dbManager.convertToDateStamp(unix),
+	summarizeDay: (dateStamp) => dbManager.summarizeDay(dateStamp),	
 	addReading: dbManager.addReading,		
-	addSupaReading: supaDbManager.addReadingSupabase
+	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
+	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
 });
 
 contextBridge.exposeInMainWorld('updates', {

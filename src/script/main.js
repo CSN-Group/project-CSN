@@ -31,6 +31,7 @@ const globals = {
   pcModel: "Loading..",
   userName: "Loading..",
   updatesAvailable: null,
+  mac: null,
 
   //last speedtest
   lastDownspeed: 0.0,
@@ -153,6 +154,7 @@ Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" | For
                 Name = $adapter.NetConnectionID
                 IPv4 = $addr
                 IfType = $ifType
+                mac = $_.MACAddress
             }
         }
     }
@@ -263,7 +265,10 @@ async function measureSystem() {
   //Find connection type
   const ifaceType = await getInterfaceByIP(ifaceInfo.address);
 
-  if(ifaceType !== null) setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+  if(ifaceType !== null){
+    setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+    setGlobal('mac', ifaceType.mac);
+  }
   else setGlobal('currentConnectionType', "None");
 
   //If WiFi, get strength
@@ -279,7 +284,7 @@ async function measureSystem() {
     //Uptime
     setGlobal('compOnTimeHours', os.uptime());
 
-    //System info
+    //Systeminfo
     setGlobal('pcName', os.hostname());
     setGlobal('osVersion', os.release());
     setGlobal('pcModel', `${os.type()} ${os.arch()}`);
