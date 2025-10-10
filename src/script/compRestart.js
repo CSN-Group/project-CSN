@@ -11,7 +11,6 @@ async function initCompRestart() {
 }
 
 async function updateRestart(){
-    console.log("Updating comp restart info...");
     const restartContainer = document.getElementById("restartInfo");
 
     const runTimeHrs = formatTime(await window.systemInfo.getGlobal("compOnTimeHours"));

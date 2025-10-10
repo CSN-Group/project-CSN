@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const {exec} = require('child_process');
+const {execFile, exec} = require('child_process');
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -12,6 +12,7 @@ const dgram = require('dgram');
 let updateCounter = 0;
 let currentlyUpdating = false;
 const updateInterval = 1000; //ms
+const dbSaveInterval = 600;
 
 let globalsUpdated = false;
 let initialUpdateCheck = false;
@@ -31,6 +32,7 @@ const globals = {
   pcModel: "Loading..",
   userName: "Loading..",
   updatesAvailable: null,
+  mac: null,
 
   //last speedtest
   lastDownspeed: 0.0,
@@ -153,6 +155,7 @@ Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" | For
                 Name = $adapter.NetConnectionID
                 IPv4 = $addr
                 IfType = $ifType
+                mac    = $_.MACAddress
             }
         }
     }
@@ -187,6 +190,67 @@ async function getWifiInfo() {
   }
 }
 
+async function runSpeedtest(){
+  return new Promise((resolve, reject) => {
+
+    const binaryPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'bin', 'speedtest.exe')
+        : path.join(__dirname, '..', '..', 'bin', 'speedtest.exe');
+
+    execFile(binaryPath,
+        ['--accept-license',
+          '--accept-gdpr',
+          '--format=json'],
+        (error, stdout, stderr) => {
+          if (error) return reject(error);
+
+          try {
+            const result = JSON.parse(stdout);
+            resolve(result);
+          } catch (e) {
+            reject(e);
+          }
+        });
+  });
+}
+
+async function performSpeedtest(triggeredBy = 'main') {
+  const currentlyTesting = getGlobal('currentlySpeedtesting');
+
+  if(!currentlyTesting) {
+    setGlobal('currentlySpeedtesting', true);
+
+    setGlobal("lastDownspeed", "testing..");
+    setGlobal("lastUpspeed", "testing..");
+    setGlobal("lastPing", "testing..");
+
+    //updateDoneEvent();
+
+    const result = await runSpeedtest();
+
+    const speedInfo = {
+      download: result.download.bandwidth / 1000000,
+      upload: result.upload.bandwidth / 1000000,
+      ping: result.ping.latency
+    };
+
+    if (speedInfo) {
+      const downSpeed = (speedInfo.download * 8).toFixed(1);
+      const upSpeed = (speedInfo.upload * 8).toFixed(1);
+      const ping = speedInfo.ping.toFixed(0);
+
+      setGlobal("lastDownspeed", downSpeed);
+      setGlobal("lastUpspeed", upSpeed);
+      setGlobal("lastPing", ping);
+    }
+
+    if (triggeredBy === 'renderer') {
+      //updateDoneEvent();
+    }
+
+    setGlobal('currentlySpeedtesting', false)
+  }
+}
 //System functions
 async function isUpdatesAvailable(){
   try {
@@ -222,6 +286,9 @@ async function isUpdatesAvailable(){
 }
 
 //IPC
+ipcMain.handle('run-speedtest', async () => performSpeedtest('renderer'));
+
+/*
 ipcMain.handle('run-speedtest', async () => {
   return new Promise((resolve, reject) => {
 
@@ -244,13 +311,19 @@ ipcMain.handle('run-speedtest', async () => {
       }
     });
   });
-});
+});*/
 ipcMain.handle('getGlobal', (event, key) => getGlobal(key));
 ipcMain.handle('setGlobal', (event, key, value) => setGlobal(key, value));
-
 ipcMain.handle("getList", () => {
   return generateList();
 });
+
+//Events
+function updateDoneEvent() {
+  BrowserWindow.getAllWindows().forEach(win =>
+      win.webContents.send('updateDone')
+  );
+}
 
 //Update
 async function measureSystem() {
@@ -263,7 +336,10 @@ async function measureSystem() {
   //Find connection type
   const ifaceType = await getInterfaceByIP(ifaceInfo.address);
 
-  if(ifaceType !== null) setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+  if(ifaceType !== null) {
+    setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+    setGlobal('mac', ifaceType.mac);
+  }
   else setGlobal('currentConnectionType', "None");
 
   //If WiFi, get strength
@@ -286,34 +362,38 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
+  //Need to solve bug first...
   /*
   if(!initialUpdateCheck || updateCounter % 3600 === 0){
     const updatesAvailable = await isUpdatesAvailable();
     setGlobal('updatesAvailable', updatesAvailable);
     initialUpdateCheck = true;
   }*/
-  
+
   updateCounter++;
 }
 async function runFullUpdate() {
   if (currentlyUpdating) return;
 
   currentlyUpdating = true;
+
   try {
     await measureSystem();
 
     //Tell renderer that update is done
-    BrowserWindow.getAllWindows().forEach(win =>
-        win.webContents.send('updateDone')
-    );
+    updateDoneEvent();
 
-    //If globals are updates, update action list
+    //If globals are updated, update action list
     if(globalsUpdated){
       BrowserWindow.getAllWindows().forEach(win =>
           win.webContents.send("updateActions", generateActionList())
       );
     }
 
+    //Every now and then, save values to database
+    if(updateCounter % dbSaveInterval === 0){
+
+    }
   } finally {
     currentlyUpdating = false;
   }
