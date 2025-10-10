@@ -4,12 +4,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     await initSystemInfo();
     await initGraph();
     initActionList();
-    initGauges();    
+    initGauges();
+    initWifiDisplay();
 
     window.updates.onUpdateDone(async () => {
         await updateNetwork();
         await updateRestart();
-        await updateSystemInfo();                   
+        await updateSystemInfo();
+        await updateGauges();
+        await updateWifiDisplay();
     });
 
     window.updates.onActionsUpdated(async (list) => {
