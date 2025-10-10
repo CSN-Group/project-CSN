@@ -342,7 +342,10 @@ async function measureSystem() {
 
   if(updateCounter % 600 === 0){
     await performSpeedtest();
+    console.log("BRRRRRRR");
+    //addReading(globals.lastUpspeed, globals.lastDownspeed, globals.currentWifiStrength, globals.lastPing, globals.currentConnectionType);
   }
+  
 
   //Need to solve bug first...
   /*

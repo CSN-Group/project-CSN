@@ -1,15 +1,17 @@
+
+
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
 async function initGraph(){ 
-
-  createDayGraph();
-
+  createDayGraph();  
+  dbManager.cleanLocalDatabase();
   document.getElementById('graphPingButton').addEventListener('click', () => createDayGraph('ping'));
   document.getElementById('graphUpspeedButton').addEventListener('click', () => createDayGraph('upSpeed'));
   document.getElementById('graphDownspeedButton').addEventListener('click', () => createDayGraph('downSpeed'));
   document.getElementById('graphWifiButton').addEventListener('click', () => createDayGraph('wifiStr'));
-  document.getElementById('weekButton').addEventListener('click', () => createDayGraph('upSpeed', 'week'));  
+  document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
+  document.getElementById('monthButton').addEventListener('click', () => createDayGraph('ping', 'month'));  
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -21,45 +23,52 @@ function extractValue(data,key) {
     return values;
 }
 
-// Convert unix timestamps to human-readable time (HH:MM)! NOT NEEDED!
-function convertTimes(timestamps) {
-    const times = [];
-    timestamps.forEach(stamp => {        
-        const time = dbManager.convertToHourMin(stamp);
-        times.push(time);
-    });
-    return times;
+function dateStampToDate(dateStamp) {
+  const year = Math.floor(dateStamp / 10000);
+  const month = Math.floor((dateStamp % 10000) / 100) - 1; // JS months are 0-based
+  const day = dateStamp % 100;
+  return new Date(year, month, day);
 }
 
-/* NOT USED ANYMORE!
-function findStartOfDay(timestamp) {
-  date=new Date(timestamp);
-  const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  return startOfDay.getTime();
-}*/
-
 //Set your mainmetric and choose between day or week for readings.
-async function createDayGraph(mainMetric = "upSpeed", range = "day"){ 
+async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, month=10){ 
   if(graph){graph.destroy()}; //There can only be ONE graph in a canvas.
   
   let readings;
+
+  //Based on range, fetch data in different ways.
   if(range === 'week'){
-    readings = await dbManager.getReadings();    
-  }else{
+    const datestamps = dbManager.getUniqueDateStamps();    
+    readings = [];
+    datestamps.forEach( stamp => {
+      readings.push(dbManager.summarizeDay(stamp));
+    })            
+  }
+  else if(range === "month"){    
+    readings = await dbManager.fetchMonthlyHistory(year,month);    
+  }
+  else{
     //const unixStamp = new Date().getTime();
     //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
     readings = await dbManager.getDayReadings(20251007); //HARDCODED! CHANGE WHEN NOT TESTING!
   }
 
-  const times= extractValue(readings, 'timeStamp');
+  //Time and metric arrays
+  const times = range === 'week' || range === 'month'
+  ? readings.map(r => dateStampToDate(r.dateStamp))
+  : extractValue(readings, 'timeStamp');
+
+  
   const upSpeeds = extractValue(readings, 'upSpeed');
   const downSpeeds = extractValue(readings, 'downSpeed');
   const pings = extractValue(readings, 'ping');
   const wifiStrs = extractValue(readings, 'wifiStr');
-
-  
+    
   const start = times[0];
-  const end = times[times.length-1] 
+  const end = times[times.length-1]
+  console.log(times)
+  //console.log(start);
+  //console.log(end);
 
   const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds, ping: pings, wifiStr: wifiStrs};
   const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)' };
@@ -85,7 +94,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day"){
         x: { 
           type: 'time', 
           time: {
-            unit: range === 'week' ?'day':'hour',
+            unit: range === 'month' ? 'day' : range === 'week' ? 'day' : 'hour',
             displayFormats: range === 'week'
             ? {day: 'MMM dd' }
             : { hour: 'HH:mm' }
@@ -94,7 +103,11 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day"){
           max: end             
         },
         y: {
-          title: { display: true, text: labels[mainMetric] }
+          title: {
+            display: true,
+            text: range != 'day'            
+              ? `${labels[mainMetric]} (Daily average)`
+              : labels[mainMetric] }
         }
       },
       plugins: {
