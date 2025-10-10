@@ -1,7 +1,8 @@
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {    
     await initNetworkInfo();
     await initCompRestart();
     await initSystemInfo();
+    await initGraph();
     initActionList();
     initGauges();
     initWifiDisplay();
