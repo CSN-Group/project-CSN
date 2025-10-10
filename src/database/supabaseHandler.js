@@ -16,7 +16,7 @@ function sleep(ms) {
 async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) {  
   let mac = await getGlobal('mac'); //Spin to WIN!
   while(!mac || mac=== null){
-    sleep(10);
+    sleep(5);
     mac = await getGlobal('mac');    
   }  
   const result = await supabase
@@ -33,11 +33,16 @@ async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, da
 }
 
 //Returns all the logged days from a specific MAC address.
-async function fetchHistory(myMac){
+async function fetchMonthlyHistory(year,month,myMac){
+  const startOfMonth = Number(`${year}${String(month).padStart(2, "0")}01`);
+  const endOfMonth = Number(`${year}${String(month).padStart(2, "0")}${new Date(year, month, 0).getDate()}`);
+
   const { data, error } = await supabase
       .from('readings')
-      .select('*') // Fetch all columns
+      .select('avgUpSpeed','avgDownSpeed','avgPing','avgWifi', 'dateStamp') // Fetch all columns
       .eq('mac', myMac) // Filter by MAC
+      .gte('dateStamp', startOfMonth)  // greater than or equal to startOfMonth
+      .lte('dateStamp', endOfMonth)    // less than or equal to endOfMonth
       .order('dateStamp', { ascending: false }); // Optional: newest first
   if (error) {
       console.error("Error fetching data:", error);
@@ -49,4 +54,4 @@ async function fetchHistory(myMac){
 
 }
 
-module.exports = { addReadingSupabase, fetchHistory };
+module.exports = { addReadingSupabase, fetchMonthlyHistory };
