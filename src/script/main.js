@@ -287,31 +287,6 @@ async function isUpdatesAvailable(){
 
 //IPC
 ipcMain.handle('run-speedtest', async () => performSpeedtest('renderer'));
-
-/*
-ipcMain.handle('run-speedtest', async () => {
-  return new Promise((resolve, reject) => {
-
-    const binaryPath = app.isPackaged
-        ? path.join(process.resourcesPath, 'bin', 'speedtest.exe')
-        : path.join(__dirname, '..', '..', 'bin', 'speedtest.exe');
-
-    execFile(binaryPath,
-        ['--accept-license',
-          '--accept-gdpr',
-          '--format=json'],
-        (error, stdout, stderr) => {
-      if (error) return reject(error);
-
-      try {
-        const result = JSON.parse(stdout);
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-});*/
 ipcMain.handle('getGlobal', (event, key) => getGlobal(key));
 ipcMain.handle('setGlobal', (event, key, value) => setGlobal(key, value));
 ipcMain.handle("getList", () => {
@@ -360,6 +335,10 @@ async function measureSystem() {
     setGlobal('osVersion', os.release());
     setGlobal('pcModel', `${os.type()} ${os.arch()}`);
     setGlobal('userName', os.userInfo().username);
+  }
+
+  if(updateCounter % 600 === 0){
+    await performSpeedtest();
   }
 
   //Need to solve bug first...
