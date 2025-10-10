@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const {exec} = require('child_process');
+const {addReading} = require('../database/dbManager.js')
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -31,8 +32,9 @@ const globals = {
   pcModel: "Loading..",
   userName: "Loading..",
   updatesAvailable: null,
+  mac: null,
 
-  //last speedtest
+  //Last speedtest
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
   lastPing: 0
@@ -153,6 +155,7 @@ Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" | For
                 Name = $adapter.NetConnectionID
                 IPv4 = $addr
                 IfType = $ifType
+                mac = $_.MACAddress
             }
         }
     }
@@ -263,7 +266,10 @@ async function measureSystem() {
   //Find connection type
   const ifaceType = await getInterfaceByIP(ifaceInfo.address);
 
-  if(ifaceType !== null) setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+  if(ifaceType !== null){
+    setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
+    setGlobal('mac', ifaceType.mac);
+  }
   else setGlobal('currentConnectionType', "None");
 
   //If WiFi, get strength
@@ -279,22 +285,27 @@ async function measureSystem() {
     //Uptime
     setGlobal('compOnTimeHours', os.uptime());
 
-    //System info
+    //Systeminfo
     setGlobal('pcName', os.hostname());
     setGlobal('osVersion', os.release());
     setGlobal('pcModel', `${os.type()} ${os.arch()}`);
     setGlobal('userName', os.userInfo().username);
   }
 
+  //Store Reading in local Database
+  if(updateCounter % 600 === 0){
+    //addReading(5,5,5,5,"Crap");    
+  }
   /*
   if(!initialUpdateCheck || updateCounter % 3600 === 0){
     const updatesAvailable = await isUpdatesAvailable();
     setGlobal('updatesAvailable', updatesAvailable);
     initialUpdateCheck = true;
   }*/
-  
+
   updateCounter++;
 }
+
 async function runFullUpdate() {
   if (currentlyUpdating) return;
 
