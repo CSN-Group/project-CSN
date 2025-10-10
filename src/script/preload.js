@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld('dbManager', {
 	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
 	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
 	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
+	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),
 });
 
 contextBridge.exposeInMainWorld('updates', {

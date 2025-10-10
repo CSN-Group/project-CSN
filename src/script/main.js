@@ -340,7 +340,7 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
-  if(updateCounter % 60 === 0){
+  if(updateCounter % 600 === 0){
     await performSpeedtest();
     console.log("BRRRRRRR");
     //addReading(globals.lastUpspeed, globals.lastDownspeed, globals.currentWifiStrength, globals.lastPing, globals.currentConnectionType);

@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js')
 const {ipcRenderer} = require('electron');
+const { get } = require('systeminformation');
 
 const supabaseUrl = 'https://vawmwnetilhsxmgjrrmm.supabase.co' // Dont forget to change the way the key is shown?
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhd213bmV0aWxoc3htZ2pycm1tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTI2NjcyOSwiZXhwIjoyMDc0ODQyNzI5fQ.0ED6IBCcHgTo4mZO5Qx_x6QE9kWlaUd5gFUIZKAeGTk'
@@ -33,17 +34,18 @@ async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, da
 }
 
 //Returns all the logged days from a specific MAC address.
-async function fetchMonthlyHistory(year,month,myMac){
-  const startOfMonth = Number(`${year}${String(month).padStart(2, "0")}01`);
+async function fetchMonthlyHistory(year,month){  
+  const startOfMonth = Number(`${year}${String(month).padStart(2, "0")}01`);  
   const endOfMonth = Number(`${year}${String(month).padStart(2, "0")}${new Date(year, month, 0).getDate()}`);
-
+  const myMac = await getGlobal('mac');
+  
   const { data, error } = await supabase
       .from('readings')
-      .select('avgUpSpeed','avgDownSpeed','avgPing','avgWifi', 'dateStamp') // Fetch all columns
+      .select('upSpeed,downSpeed,ping,wifiStr,dateStamp') // Fetch all columns
       .eq('mac', myMac) // Filter by MAC
       .gte('dateStamp', startOfMonth)  // greater than or equal to startOfMonth
       .lte('dateStamp', endOfMonth)    // less than or equal to endOfMonth
-      .order('dateStamp', { ascending: false }); // Optional: newest first
+      .order('dateStamp', { ascending: true }); // Optional: newest first
   if (error) {
       console.error("Error fetching data:", error);
       return [];
