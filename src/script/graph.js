@@ -1,21 +1,15 @@
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
-async function initGraph(){
-  //const unixStamp = new Date().getTime();
-  //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD
-  const readings = await dbManager.getDayReadings(20251008); //CHECK HERE! Hardcoded for now  
-  createDayGraph(readings, 'ping');  
-}
+async function initGraph(){ 
 
-//dbManager.summarizeDay(20251008);
+  createDayGraph();
 
-async function historyGraph(){
-  //graph.destroy();
-  const myMac = await window.systemInfo.getGlobal('mac');  
-  const history= await dbManager.fetchHistory(myMac);
-  console.log(history);
-  createGraph(graphContainer,history);
+  document.getElementById('graphPingButton').addEventListener('click', () => createDayGraph('ping'));
+  document.getElementById('graphUpspeedButton').addEventListener('click', () => createDayGraph('upSpeed'));
+  document.getElementById('graphDownspeedButton').addEventListener('click', () => createDayGraph('downSpeed'));
+  document.getElementById('graphWifiButton').addEventListener('click', () => createDayGraph('wifiStr'));
+  document.getElementById('weekButton').addEventListener('click', () => createDayGraph('upSpeed', 'week'));  
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -37,25 +31,39 @@ function convertTimes(timestamps) {
     return times;
 }
 
+/* NOT USED ANYMORE!
 function findStartOfDay(timestamp) {
   date=new Date(timestamp);
   const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   return startOfDay.getTime();
-}
+}*/
 
+//Set your mainmetric and choose between day or week for readings.
+async function createDayGraph(mainMetric = "upSpeed", range = "day"){ 
+  if(graph){graph.destroy()}; //There can only be ONE graph in a canvas.
+  
+  let readings;
+  if(range === 'week'){
+    readings = await dbManager.getReadings();    
+  }else{
+    //const unixStamp = new Date().getTime();
+    //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
+    readings = await dbManager.getDayReadings(20251007); //HARDCODED! CHANGE WHEN NOT TESTING!
+  }
 
-function createDayGraph(readings, mainMetric = "upSpeed"){  
   const times= extractValue(readings, 'timeStamp');
   const upSpeeds = extractValue(readings, 'upSpeed');
   const downSpeeds = extractValue(readings, 'downSpeed');
   const pings = extractValue(readings, 'ping');
   const wifiStrs = extractValue(readings, 'wifiStr');
-  const startOfDay = findStartOfDay(times[0]);
-  const endOfDay = startOfDay + 86400000; // 24 hours in milliseconds MAGIC NUMBER!  
 
-  const metrics = { upSpeed: upSpeeds, downSpeeds: downSpeeds, ping: pings, wifiStr: wifiStrs};
-  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeeds: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)' };
-  const borderColors = { upSpeed: 'blue', downSpeeds: 'yellow', ping: 'green', wifiStr: 'orange'};
+  
+  const start = times[0];
+  const end = times[times.length-1] 
+
+  const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds, ping: pings, wifiStr: wifiStrs};
+  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)' };
+  const borderColors = { upSpeed: 'blue', downSpeed: 'yellow', ping: 'green', wifiStr: 'orange'};
 
   const mainData = metrics[mainMetric];
 
@@ -76,9 +84,14 @@ function createDayGraph(readings, mainMetric = "upSpeed"){
       scales: { 
         x: { 
           type: 'time', 
-          time: { unit: 'hour', displayFormats: { hour: 'HH:mm' } },
-          min: times[0],  
-          max: endOfDay             
+          time: {
+            unit: range === 'week' ?'day':'hour',
+            displayFormats: range === 'week'
+            ? {day: 'MMM dd' }
+            : { hour: 'HH:mm' }
+          },
+          min: start,  
+          max: end             
         },
         y: {
           title: { display: true, text: labels[mainMetric] }

@@ -4,7 +4,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await initSystemInfo();
     await initGraph();
     initActionList();
-    initGauges();
+    initGauges();    
 
     window.updates.onUpdateDone(async () => {
         await updateNetwork();

@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const {exec} = require('child_process');
+const {addReading} = require('../database/dbManager.js')
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -33,7 +34,7 @@ const globals = {
   updatesAvailable: null,
   mac: null,
 
-  //last speedtest
+  //Last speedtest
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
   lastPing: 0
@@ -291,15 +292,20 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
+  //Store Reading in local Database
+  if(updateCounter % 600 === 0){
+    //addReading(5,5,5,5,"Crap");    
+  }
   /*
   if(!initialUpdateCheck || updateCounter % 3600 === 0){
     const updatesAvailable = await isUpdatesAvailable();
     setGlobal('updatesAvailable', updatesAvailable);
     initialUpdateCheck = true;
   }*/
-  
+
   updateCounter++;
 }
+
 async function runFullUpdate() {
   if (currentlyUpdating) return;
 

@@ -1,11 +1,7 @@
-const os = require('os');
 const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
-const dgram = require('dgram');
-const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
-const { execSync } = require('child_process');
-const { get } = require('http');
+
 
 contextBridge.exposeInMainWorld('systemInfo', {
 	getGlobal: (key) => ipcRenderer.invoke('getGlobal', key),
@@ -13,6 +9,8 @@ contextBridge.exposeInMainWorld('systemInfo', {
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
+
+	
 });
 
 contextBridge.exposeInMainWorld('dbManager', {

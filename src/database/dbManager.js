@@ -5,6 +5,18 @@ const {addReadingSupabase} = require('./supabaseHandler.js');
 const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite(dbPath);
 
+async function cleanDatabase(){
+    const date = new Date().getTime();
+    const dateStamp = convertToDateStamp(date);
+    const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);    
+    const oldDates = getUniqueTimeStampsBefore(cutoffDate);
+    console.log(oldDates);
+    oldDates.forEach(date => {
+        summarizeDay(date);
+    })
+    deleteOldReadings(cutoffDate);
+}
+
 function getReadings() { //Get all readings from the database, as an array of objects.
     const sql = 'SELECT * FROM readings';
     let stmt = db.prepare(sql);
@@ -24,16 +36,16 @@ function getUniqueTimeStampsBefore(limit) {
     const sql = 'SELECT DISTINCT dateStamp FROM readings WHERE dateStamp < ? ORDER BY dateStamp';
     const stmt = db.prepare(sql);
     const res = stmt.all(limit);
-    return res;
+    return res.map(row => row.dateStamp);
 }
 
 function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
     const unixStamp = new Date().getTime();
-    const day = unixStamp.getDay(); //Using for potential future history filtering.
+    const dateStamp = convertToDateStamp(unixStamp);
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
     VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const stmt = db.prepare(sql);
-    stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, day);    
+    stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
 }
 /*
 function addReading(unix,upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp) { //Add a new reading to the database.
@@ -52,6 +64,7 @@ function summarizeDay(dateStamp) {
     let avgPing = 0;
     let avgWifi = 0;
     const count = reading.length;
+    if (count === 0){return;}
 
     reading.forEach(reading => {
         avgUpSpeed += reading.upSpeed;
@@ -63,7 +76,7 @@ function summarizeDay(dateStamp) {
     avgDownSpeed = (avgDownSpeed / count).toFixed(2);
     avgPing = Math.floor(avgPing / count);
     avgWifi = Math.floor(avgWifi / count);          
-    addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp);   
+    addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp);
 }
 
 function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime. Needed?
@@ -86,14 +99,14 @@ function convertToDateStamp(unixStamp) {
     return parseInt(`${year}${month}${day}`,10);
 }
 
-function subtract3FromDatestamp(dateStamp){ 
+function subtractDaysFromDatestamp(dateStamp, dayAmount){ 
     //Split the dateStamp into year, month, day
     const months31 = [1,3,5,7,8,10,12];
     const months30 = [4,6,9,11];    
-    const year = Math.floor(dateStamp / 10000);
-    const month = Math.floor((dateStamp % 10000) / 100);
-    const day = dateStamp % 100;            
-    for (let i = 0; i < 3; i++) {
+    let year = Math.floor(dateStamp / 10000);
+    let month = Math.floor((dateStamp % 10000) / 100);
+    let day = dateStamp % 100;            
+    for (let i = 0; i < dayAmount; i++) {
         day--;
         if (day < 1) {
             month--;
@@ -113,6 +126,9 @@ function subtract3FromDatestamp(dateStamp){
     const newDateStamp = parseInt(`${year}${String(month).padStart(2,'0')}${String(day).padStart(2,'0')}`,10);
     return newDateStamp;
 }
+
+
+
 
 /*
 function convertToHourMin(unixStamp) {    //Not needed anymore?
