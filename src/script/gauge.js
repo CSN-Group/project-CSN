@@ -27,7 +27,7 @@ function initGauges() {
 }
 
 function initWifiDisplay() {
-    paths = document.querySelectorAll('#wifi-icon path');
+    paths = document.querySelectorAll('#wifiIconDiv path');
 }
 
 async function updateGauges(){
@@ -52,15 +52,18 @@ function setWifiColor(level) {
 let currentLevel = 0;
 let currentColor = 0;
 
-function updateWifiDisplay(level, color) {
+async function updateWifiDisplay(level, color) {
     setWifiBars(currentLevel);
     setWifiColor(currentColor);
 
-    if(currentLevel === 4){
+    if (currentLevel === 4) {
         currentLevel = 0;
-        if(currentColor === 3){
+        if (currentColor === 3) {
             currentColor = 0;
         } else currentColor++;
     } else currentLevel++;
 
+    const tooltip = document.getElementById("wifiTooltip");
+    const wifiStr = await window.systemInfo.getGlobal("currentWifiStrength");
+    tooltip.innerText = "Wifi strength: " + wifiStr + "% är jättebra/jättedåligt";
 }
