@@ -5,7 +5,7 @@ html, body {
          
 }
 
-#grid {
+#simpleGrid {
     display: grid;
     grid-template-areas: 
         "buttons buttons"
@@ -13,6 +13,24 @@ html, body {
         "network actions"
         "gauge computer"
         "gauge computer"
+        "restart graph";
+    grid-gap: 1%;
+    height: 100%;
+    width: 100%;
+    background-color: #DB4C40;
+}
+
+#detailedGrid {
+    display: grid;
+    grid-template-areas:
+        "buttons buttons"
+        "innernav innernav"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
         "restart graph";
     grid-gap: 1%;
     height: 100%;
@@ -92,4 +110,8 @@ html, body {
     opacity: 1;
 }
 
+#contentDiv{
+    grid-area: content;
+    background-color: #89BD9E; /* primary */
+}
 

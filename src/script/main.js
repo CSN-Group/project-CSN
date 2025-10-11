@@ -296,6 +296,16 @@ ipcMain.handle("getList", () => {
   return generateList();
 });
 
+ipcMain.on('navigateDetailed', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.loadFile("src/detailedView.html");
+});
+
+ipcMain.on('navigateSimple', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.loadFile("src/simpleView.html");
+});
+
 //Events
 function updateDoneEvent() {
   BrowserWindow.getAllWindows().forEach(win =>

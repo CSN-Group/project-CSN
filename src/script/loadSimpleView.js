@@ -19,6 +19,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         updateActionList(list);
     });
 
+    const advancedButton = document.getElementById("advancedViewButton");
+
+    advancedButton.addEventListener('click', () => {
+        window.nav.detailedPage();
+    });
+
     console.log('All done, Captain!');
 });
 
