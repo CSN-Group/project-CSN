@@ -5,7 +5,7 @@ html, body {
          
 }
 
-#grid {
+#simpleGrid {
     display: grid;
     grid-template-areas: 
         "buttons buttons"
@@ -13,6 +13,24 @@ html, body {
         "network actions"
         "gauge computer"
         "gauge computer"
+        "restart graph";
+    grid-gap: 1%;
+    height: 100%;
+    width: 100%;
+    background-color: #DB4C40;
+}
+
+#detailedGrid {
+    display: grid;
+    grid-template-areas:
+        "buttons buttons"
+        "innernav innernav"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
         "restart graph";
     grid-gap: 1%;
     height: 100%;
@@ -55,6 +73,11 @@ html, body {
     border: 1px solid black;
 }
 
+#wifiIconDiv{
+    position: relative;
+    display: inline-block;
+}
+
 .wifi path {
     fill: none;
     stroke: #ccc;
@@ -63,4 +86,32 @@ html, body {
     transition: opacity 0.3s, stroke 0.3s;
 }
 
+.tooltip {
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    visibility: hidden;
+    opacity: 0;
+    background-color: rgba(0,0,0,0.8);
+    color: #fff;
+    text-align: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;     /* prevent wrapping */
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+}
+
+
+#wifiIconDiv:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+#contentDiv{
+    grid-area: content;
+    background-color: #89BD9E; /* primary */
+}
 

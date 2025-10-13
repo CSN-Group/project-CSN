@@ -227,7 +227,7 @@ async function performSpeedtest(triggeredBy = 'main') {
     setGlobal("lastUpspeed", "testing..");
     setGlobal("lastPing", "testing..");
 
-    //updateDoneEvent();
+    updateDoneEvent();
 
     const result = await runSpeedtest();
 
@@ -248,7 +248,7 @@ async function performSpeedtest(triggeredBy = 'main') {
     }
 
     if (triggeredBy === 'renderer') {
-      //updateDoneEvent();
+      updateDoneEvent();
     }
 
     setGlobal('currentlySpeedtesting', false)
@@ -296,6 +296,16 @@ ipcMain.handle("getList", () => {
   return generateList();
 });
 
+ipcMain.on('navigateDetailed', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.loadFile("src/detailedView.html");
+});
+
+ipcMain.on('navigateSimple', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.loadFile("src/simpleView.html");
+});
+
 //Events
 function updateDoneEvent() {
   BrowserWindow.getAllWindows().forEach(win =>
@@ -329,7 +339,7 @@ async function measureSystem() {
   }
 
   //OS Uptime
-  if(updateCounter < 10 || updateCounter % 60 === 0){
+  if(updateCounter % 60 === 0){
     //Uptime
     setGlobal('compOnTimeHours', os.uptime());
 
@@ -340,20 +350,24 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
+  //Database logging here
   if(updateCounter % 600 === 0){
-    await performSpeedtest();
-    console.log("BRRRRRRR");
-    //addReading(globals.lastUpspeed, globals.lastDownspeed, globals.currentWifiStrength, globals.lastPing, globals.currentConnectionType);
+    performSpeedtest()
+        .then(() => {
+          addReading(globals.lastUpspeed, globals.lastDownspeed, globals.currentWifiStrength, globals.lastPing, globals.currentConnectionType);
+        })
+        .catch(err => {
+          console.error('Speedtest failed:', err);
+          //Do something even it speedtest fails?
+        });
   }
   
 
-  //Need to solve bug first...
-  /*
-  if(!initialUpdateCheck || updateCounter % 3600 === 0){
-    const updatesAvailable = await isUpdatesAvailable();
-    setGlobal('updatesAvailable', updatesAvailable);
-    initialUpdateCheck = true;
-  }*/
+  if(updateCounter % 3600 === 0){
+    isUpdatesAvailable()
+        .then(updatesAvailable => setGlobal('updatesAvailable', updatesAvailable))
+        .catch(() => setGlobal('updatesAvailable', false));
+  }
 
   updateCounter++;
 }
@@ -371,6 +385,7 @@ async function runFullUpdate() {
 
     //If globals are updated, update action list
     if(globalsUpdated){
+      globalsUpdated = false;
       BrowserWindow.getAllWindows().forEach(win =>
           win.webContents.send("updateActions", generateActionList())
       );

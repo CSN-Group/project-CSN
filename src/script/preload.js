@@ -39,3 +39,8 @@ contextBridge.exposeInMainWorld('updates', {
 		});
 	}
 });
+
+contextBridge.exposeInMainWorld('nav', {
+	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
+	simplePage: (channel) => ipcRenderer.send('navigateSimple')
+});
