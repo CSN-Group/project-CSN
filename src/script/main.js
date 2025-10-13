@@ -354,13 +354,14 @@ async function measureSystem() {
   if(updateCounter % 600 === 0){
     performSpeedtest()
         .then(() => {
-          //logInDB();
+          addReading(globals.lastUpspeed, globals.lastDownspeed, globals.currentWifiStrength, globals.lastPing, globals.currentConnectionType);
         })
         .catch(err => {
           console.error('Speedtest failed:', err);
           //Do something even it speedtest fails?
         });
   }
+  
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
