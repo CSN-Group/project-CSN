@@ -1,6 +1,6 @@
 const { createClient } = require('@supabase/supabase-js')
 const {ipcRenderer} = require('electron');
-const { get } = require('systeminformation');
+const {addAdminInfo,getAdminInfoId,deleteAll} = require('../database/dbManager.js')
 
 const supabaseUrl = 'https://vawmwnetilhsxmgjrrmm.supabase.co' // Dont forget to change the way the key is shown?
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhd213bmV0aWxoc3htZ2pycm1tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTI2NjcyOSwiZXhwIjoyMDc0ODQyNzI5fQ.0ED6IBCcHgTo4mZO5Qx_x6QE9kWlaUd5gFUIZKAeGTk'
@@ -45,7 +45,7 @@ async function fetchMonthlyHistory(year,month){
       .eq('mac', myMac) // Filter by MAC
       .gte('dateStamp', startOfMonth)  // greater than or equal to startOfMonth
       .lte('dateStamp', endOfMonth)    // less than or equal to endOfMonth
-      .order('dateStamp', { ascending: true }); // Optional: newest first
+      .order('dateStamp', { ascending: true });
   if (error) {
       console.error("Error fetching data:", error);
       return [];
@@ -56,4 +56,31 @@ async function fetchMonthlyHistory(year,month){
 
 }
 
-module.exports = { addReadingSupabase, fetchMonthlyHistory };
+async function fetchAdminInfo(){
+  const { data,error} = await supabase
+    .from('adminMessage')
+    .select('id,docText,suppNr,suppLink') 
+    .eq('orgNr', 5741)
+    .order('id', {ascending:false})
+    .limit(1)
+    .single(); //Returns only ONE object
+
+if (error){
+  console.error("Error fetching data:", error);
+  return null;
+}else{
+  return data;
+}}
+
+async function syncLocalDatabase(){
+    const adminInfo = await fetchAdminInfo();    
+    if(
+      adminInfo && 
+      (!getAdminInfoId() ||adminInfo.id > getAdminInfoId().id)) //If we successfully fetched the data, we put it into our database!
+      { 
+        deleteAll('admin'); //Clears out old admindata!
+        addAdminInfo(adminInfo.id,adminInfo.docText,adminInfo.suppNr,adminInfo.suppLink);  
+    }    
+}
+
+module.exports = { addReadingSupabase, fetchMonthlyHistory, syncLocalDatabase };

@@ -1,9 +1,8 @@
-
-
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
-async function initGraph(){ 
+async function initGraph(){
+  //dbManager.syncLocalDatabase();  
   createDayGraph();  
   dbManager.cleanLocalDatabase();
   document.getElementById('graphPingButton').addEventListener('click', () => createDayGraph('ping'));
@@ -48,9 +47,9 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
     readings = await dbManager.fetchMonthlyHistory(year,month);    
   }
   else{
-    //const unixStamp = new Date().getTime();
-    //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
-    readings = await dbManager.getDayReadings(20251007); //HARDCODED! CHANGE WHEN NOT TESTING!
+    const unixStamp = new Date().getTime();
+    const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
+    readings = await dbManager.getDayReadings(dateStamp); 
   }
 
   //Time and metric arrays
