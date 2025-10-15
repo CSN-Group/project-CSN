@@ -1,9 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
+const network = require('../mainincludes/network.js');
 
 const {execFile, exec} = require('child_process');
 const {addReading} = require('../database/dbManager.js')
-
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -15,12 +15,18 @@ const dgram = require('dgram');
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
-const updateInterval = 1000; //msm 
 
 const dbLogIntervalMs = 600000 //10 mins
 let lastDbLog = 0; //ms
+const updateInterval = 1000; //ms
+
+const standardSleepInterval = 30 * 60 * 1000;
 
 let globalsUpdated = false;
+let initialUpdateCheck = false;
+let updateLoopRunning = false;
+
+let dismissedActions = [];
 
 //Globals
 const globals = {
@@ -29,6 +35,7 @@ const globals = {
   currentConnectionType: "Checking...",
   currentlySpeedtesting: false,
   currentWifiStrength: 0,
+  currentIdleTime: 0,
 
   //System information
   compOnTimeHours: 0,
@@ -83,116 +90,60 @@ function ifCodeToType(ifCode) {
 
 //Actions
 function generateActionList() {
+  updateDismissedList();
   const list = [];
 
-  if (globals['currentIP'] !== "No valid IP") {
-    list.push("You have a valid IP!");
+
+  // TEST //
+
+  if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
+    list.push(createAction("valid-ip", "check", "You have a valid IP!!!", true, 5000))
+  }
+
+  // END TEST //
+
+  if(globals['currentIP'] === "No valid IP"){
+    list.push(createAction("invalid-ip", "error", "No valid IP"));
   }
 
   return list;
 }
 
-//Network functions
-async function updateCurrentInterface() {
-  return new Promise((resolve) => {
-    try {
-      const socket = dgram.createSocket('udp4');
-
-      socket.on('error', (err) => {
-        console.error('Socket error in updateCurrentInterface:', err);
-        socket.close();
-        resolve({ address: null, name: null });
-      });
-
-      socket.connect(1337, '8.8.8.8', () => {
-        let address = null;
-        if (socket.address() && socket.address().address) {
-          address = socket.address().address;
-        }
-        socket.close();
-
-        let name = null;
-
-        if (address) {
-          try {
-            const nets = os.networkInterfaces();
-            for (const ifaceName of Object.keys(nets)) {
-              for (const net of nets[ifaceName]) {
-                if (net.family === 'IPv4' && net.address === address) {
-                  name = ifaceName;
-                  break;
-                }
-              }
-              if (name) break;
-            }
-          } catch (err) {
-            console.error('Error while reading network interfaces:', err);
-          }
-        }
-
-        resolve({ address, name });
-      });
-    } catch (err) {
-      console.error('Unexpected error in updateCurrentInterface:', err);
-      resolve({ address: null, name: null });
-    }
-  });
+function createAction(id, severity, text,
+                      dismissable = false,
+                      sleepDuration = 0,
+                      isTechnical = true)
+{
+  return {
+    id,
+    severity,
+    text,
+    dismissable,
+    sleepDuration,
+    isTechnical
+  };
 }
 
-async function getInterfaceByIP(ip) {
-  if (!ip) throw new Error("IP address is required.");
-
-  const psScript = `
-$results = @()
-Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" | ForEach-Object {
-    $adapter = $null
-    try {
-        $adapter = Get-CimInstance -Namespace root/StandardCimv2 -ClassName MSFT_NetAdapter -Filter "InterfaceIndex=$($_.InterfaceIndex)" -ErrorAction Stop
-    } catch {
-        $adapter = Get-CimInstance Win32_NetworkAdapter -Filter "InterfaceIndex=$($_.InterfaceIndex)" -ErrorAction SilentlyContinue
-    }
-    $ifType = $adapter.ifType
-    if (-not $ifType -and $adapter.InterfaceType) { $ifType = $adapter.InterfaceType }
-
-    foreach ($addr in $_.IPAddress) {
-        if ($addr -match '^\\d+\\.\\d+\\.\\d+\\.\\d+$') {
-            $results += [PSCustomObject]@{
-                Name = $adapter.NetConnectionID
-                IPv4 = $addr
-                IfType = $ifType
-                mac = $_.MACAddress
-            }
-        }
-    }
-}
-$match = $results | Where-Object { $_.IPv4 -eq '${ip}' }
-if ($match) { $match | ConvertTo-Json -Compress } else { $null | ConvertTo-Json }
-`;
-
-  // Encode to base64 to safely pass multi-line script
-  const psBase64 = Buffer.from(psScript, 'utf16le').toString('base64');
-
-  const { stdout } = await execProm(`powershell -NoProfile -EncodedCommand ${psBase64}`);
-
-  if (!stdout.trim() || stdout.trim() === "null") return null;
-  return JSON.parse(stdout);
-}
-
-async function getWifiInfo() {
-  try {
-    const { stdout } = await execProm("netsh wlan show interfaces");
-    const ssidMatch = stdout.match(/^\s*SSID\s*:\s*(.+)$/m);
-    const signalMatch = stdout.match(/^\s*Signal\s*:\s*(\d+)%/m);
-
-    if (!ssidMatch || !signalMatch) return null;
-
-    return {
-      ssid: ssidMatch[1].trim(),
-      strength: parseInt(signalMatch[1], 10)
-    };
-  } catch (err) {
-    return null;
+function createDismissedAction(id, sleepDuration, dismissTimestamp){
+  return{
+    id,
+    sleepDuration,
+    dismissTimestamp
   }
+}
+
+function updateDismissedList() {
+  const now = Date.now();
+  dismissedActions = dismissedActions.filter(
+      item => now < item.dismissTimestamp + item.sleepDuration
+  );
+}
+
+function isDismissed(id){
+  return dismissedActions.some(obj => obj.id === id);
+}
+function dismissAction(id, sleepDuration = standardSleepInterval){
+  if(!isDismissed(id)) dismissedActions.push(createDismissedAction(id, sleepDuration, Date.now()));
 }
 
 async function runSpeedtest(){
@@ -322,6 +273,10 @@ ipcMain.handle("getList", () => {
   return generateList();
 });
 
+ipcMain.on("dismiss-action", (event, { id, sleepDuration }) => {
+  dismissAction(id, sleepDuration);
+});
+
 ipcMain.on('navigateDetailed', (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   win.loadFile("src/detailedView.html");
@@ -341,14 +296,16 @@ function updateDoneEvent() {
 
 //Update
 async function measureSystem() {
+  //setGlobal('currentIdleTime', powerMonitor.getSystemIdleTime());
+
   //Find used IP and interface
-  const ifaceInfo = await updateCurrentInterface();
+  const ifaceInfo = await network.updateCurrentInterface();
 
   if(ifaceInfo.address !== null && ifaceInfo.address !== "0.0.0.0") setGlobal('currentIP', ifaceInfo.address);
   else setGlobal('currentIP', "No valid IP");
 
   //Find connection type
-  const ifaceType = await getInterfaceByIP(ifaceInfo.address);
+  const ifaceType = await network.getInterfaceByIP(ifaceInfo.address);
 
   if(ifaceType !== null) {
     setGlobal('currentConnectionType', ifCodeToType(ifaceType.IfType));
@@ -358,7 +315,7 @@ async function measureSystem() {
 
   //If WiFi, get strength
   if(getGlobal('currentConnectionType') === "WiFi") {
-    const wifiInfo = await getWifiInfo();
+    const wifiInfo = await network.getWifiInfo();
 
     if (wifiInfo !== null) setGlobal('currentWifiStrength', wifiInfo.strength);
     else setGlobal('currentWifiStrength', 0);
@@ -401,13 +358,13 @@ async function runFullUpdate() {
     updateDoneEvent();
 
     //If globals are updated, update action list
-    if(globalsUpdated){
+    //if(globalsUpdated){
+    if(true){
       globalsUpdated = false;
       BrowserWindow.getAllWindows().forEach(win =>
           win.webContents.send("updateActions", generateActionList())
       );
     }
-    
   } finally {
     currentlyUpdating = false;
   }
@@ -429,7 +386,10 @@ function createWindow() {
   win.loadFile('src/simpleView.html');
 
   win.webContents.on('did-finish-load', () => {
-    setInterval(runFullUpdate, updateInterval);
+    if(!updateLoopRunning){
+      updateLoopRunning = true;
+      setInterval(runFullUpdate, updateInterval);
+    }
   });
 }
 

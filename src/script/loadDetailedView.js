@@ -1,7 +1,9 @@
 window.addEventListener('DOMContentLoaded', async () => {
+    //inits
+
 
     window.updates.onUpdateDone(async () => {
-
+        //updates
     });
 
 
