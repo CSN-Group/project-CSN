@@ -9,6 +9,7 @@ async function initGraph(){
   document.getElementById('graphUpspeedButton').addEventListener('click', () => createDayGraph('upSpeed'));
   document.getElementById('graphDownspeedButton').addEventListener('click', () => createDayGraph('downSpeed'));
   document.getElementById('graphWifiButton').addEventListener('click', () => createDayGraph('wifiStr'));
+  document.getElementById('graphInterruptButton').addEventListener('click', () => createDayGraph('interrupts'));
   document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
   document.getElementById('monthButton').addEventListener('click', () => createDayGraph('ping', 'month'));  
 }
@@ -54,7 +55,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
 
   //Time and metric arrays
   const times = range === 'week' || range === 'month'
-  ? readings.map(r => dateStampToDate(r.dateStamp))
+  ? readings.map(row => dateStampToDate(row.dateStamp))
   : extractValue(readings, 'timeStamp');
 
   
@@ -62,16 +63,15 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
   const downSpeeds = extractValue(readings, 'downSpeed');
   const pings = extractValue(readings, 'ping');
   const wifiStrs = extractValue(readings, 'wifiStr');
+  let interrupts = createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs);
+  
     
   const start = times[0];
   const end = times[times.length-1]
-  console.log(times)
-  //console.log(start);
-  //console.log(end);
-
-  const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds, ping: pings, wifiStr: wifiStrs};
-  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)' };
-  const borderColors = { upSpeed: 'blue', downSpeed: 'yellow', ping: 'green', wifiStr: 'orange'};
+  
+  const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds, ping: pings, wifiStr: wifiStrs, interrupts: interrupts};
+  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)', interrupt: 'Interrupts: 1=Interrupt, 0 = OK'};
+  const borderColors = { upSpeed: 'blue', downSpeed: 'yellow', ping: 'green', wifiStr: 'orange', interrupts:'red'};
 
   const mainData = metrics[mainMetric];
 
@@ -86,6 +86,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
         borderWidth: 1,
         tension: 0,
         pointRadius: 1,
+        stepped: mainMetric === 'interrupts'  //Binary look on graph..?
       }]
     },
     options: {
@@ -106,8 +107,21 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
             display: true,
             text: range != 'day'            
               ? `${labels[mainMetric]} (Daily average)`
-              : labels[mainMetric] }
-        }
+              : labels[mainMetric] },
+          min:mainMetric === 'interrupts' ? -0.1: undefined,
+          max:mainMetric === 'interrupts' ? 1.1: undefined,
+          ticks: mainMetric === 'interrupts'
+          ? {
+            stepSize: 1,
+            callback: value => {
+              if (value === 0) return 'OK';
+              if (value === 1) return 'Interrupt';
+              return ''; // ← hide any other tick labels
+            }
+          }
+          : {}
+        },
+              
       },
       plugins: {
         legend: { display: false },
@@ -134,4 +148,27 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
       }
       }
   });
+}
+
+function createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs){
+  interrupts = [];
+  const iterations = upSpeeds.length;
+  const upDownSpeedLimit = 10;
+  const wifiLimit = 60;
+  const pingLimit = 30;
+
+  for(let i = 0; i < iterations-1; i++){
+    if(
+      upSpeeds[i] < upDownSpeedLimit ||
+      downSpeeds[i] < upDownSpeedLimit ||
+      pings[i] > pingLimit ||
+      wifiStrs[i] < wifiLimit
+    ){
+      interrupts.push(1);
+    }
+    else{
+      interrupts.push(0);
+    }    
+  }    
+  return interrupts;
 }

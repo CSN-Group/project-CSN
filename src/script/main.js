@@ -15,7 +15,7 @@ const dgram = require('dgram');
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
-const updateInterval = 1000; //ms
+const updateInterval = 1000; //msm 
 
 const dbLogIntervalMs = 600000 //10 mins
 let lastDbLog = 0; //ms
