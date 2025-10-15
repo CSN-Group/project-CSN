@@ -104,7 +104,6 @@ html, body {
     transition: opacity 0.2s ease-in-out;
 }
 
-
 #wifiIconDiv:hover .tooltip {
     visibility: visible;
     opacity: 1;
@@ -113,5 +112,33 @@ html, body {
 #contentDiv{
     grid-area: content;
     background-color: #89BD9E; /* primary */
+}
+
+.actionItem{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.actionItem.fadeOut {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.actionCheckbox {
+    width: 24px;
+    height: 24px;
+}
+
+.actionText {
+    flex-grow: 1;
+}
+
+.actionIcon {
+    width: 24px;
+    height: 24px;
 }
 

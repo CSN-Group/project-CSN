@@ -37,7 +37,11 @@ contextBridge.exposeInMainWorld('updates', {
 		ipcRenderer.on("updateActions", async (event, list) => {
 			await callback(list);
 		});
+	},
+	dismissAction: (id, sleepDuration) => {
+		ipcRenderer.send("dismiss-action", {id, sleepDuration });
 	}
+
 });
 
 contextBridge.exposeInMainWorld('nav', {

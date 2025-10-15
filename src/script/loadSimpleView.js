@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', async () => {    
+window.addEventListener('DOMContentLoaded', async () => {
     await initNetworkInfo();
     await initCompRestart();
     await initSystemInfo();
@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     window.updates.onActionsUpdated(async (list) => {
+        actionList = list;
         updateActionList(list);
     });
 
