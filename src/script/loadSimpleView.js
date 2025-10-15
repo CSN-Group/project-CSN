@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await initGraph();
     initActionList();
     initGauges();
-    initWifiDisplay();
+    initWifiDisplay();    
 
     window.updates.onUpdateDone(async () => {
         await updateNetwork();
@@ -28,5 +28,3 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     console.log('All done, Captain!');
 });
-
-

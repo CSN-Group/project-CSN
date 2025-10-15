@@ -19,13 +19,15 @@ const dgram = require('dgram');
 
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
-const DB_SAVE_INTERVAL = 600; // * updateInterval
 const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
 const ALLOWED_DOWNTIME_DURATION = 50 * 1000;
 
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
+
+const dbLogIntervalMs = 600000 //10 mins
+let lastDbLog = 0; //ms
 
 let globalsUpdated = false;
 let initialUpdateCheck = false;
@@ -220,6 +222,30 @@ async function performSpeedtest(triggeredBy = 'main') {
     setGlobal('currentlySpeedtesting', false)
   }
 }
+
+async function logReading() {
+  const now = Date.now();
+  // Skip if not enough time has passed since last DB log
+  if (now - lastDbLog < dbLogIntervalMs) return;
+  lastDbLog = now;
+
+  try {
+    // Run a new speedtest using the existing function
+    await performSpeedtest('main');   
+    // Store in database
+    await addReading(
+      getGlobal('lastUpspeed'),
+      getGlobal('lastDownspeed'),
+      getGlobal('currentWifiStrength'),
+      getGlobal('lastPing'),
+      getGlobal('currentConnectionType'));
+    
+  } catch (err) {
+    console.error('[AutoLogger] Failed to log reading:', err);
+  }
+}
+
+
 //System functions
 async function isUpdatesAvailable(){
   try {
@@ -348,16 +374,8 @@ async function measureSystem() {
   }
 
   //Database logging here
-  if(updateCounter % 600 === 0){
-     performSpeedtest()
-        .then(() => {
-          //logInDB();
-        })
-        .catch(err => {
-          console.error('Speedtest failed:', err);
-          //Do something even if speedtest fails?
-        });
-  }
+  await logReading();
+      
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
@@ -375,7 +393,7 @@ async function runFullUpdate() {
   currentlyUpdating = true;
 
   try {
-    await measureSystem();
+    await measureSystem();    
 
     //Tell renderer that update is done
     updateDoneEvent();

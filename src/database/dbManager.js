@@ -1,16 +1,14 @@
 const sqlite = require('better-sqlite3');
 const path = require('path');
-const {addReadingSupabase} = require('./supabaseHandler.js');
 
 const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite(dbPath);
 
-async function cleanDatabase(){
+async function cleanLocalDatabase(){
     const date = new Date().getTime();
     const dateStamp = convertToDateStamp(date);
     const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);    
-    const oldDates = getUniqueTimeStampsBefore(cutoffDate);
-    console.log(oldDates);
+    const oldDates = getUniqueDateStampsBefore(cutoffDate);   
     oldDates.forEach(date => {
         summarizeDay(date);
     })
@@ -24,6 +22,20 @@ function getReadings() { //Get all readings from the database, as an array of ob
     return res;
 }
 
+function getAdminInfoId(){
+    const sql = 'SELECT id FROM admin ORDER BY id DESC LIMIT 1';
+    const stmt = db.prepare(sql);
+    const res = stmt.get(); //Returns one single object!
+    return res;
+}
+
+function getAdminInfo(){
+    const sql = 'SELECT * FROM admin ORDER BY id DESC LIMIT 1';
+    const stmt = db.prepare(sql);
+    const res = stmt.get(); //Returns one single object!
+    return res;
+}
+
 //get today's readings? Might be needed.
 function getDayReadings(dateStamp) {    
     const sql = 'SELECT * FROM readings WHERE dateStamp = ?';
@@ -32,14 +44,22 @@ function getDayReadings(dateStamp) {
     return res;
 }
 
-function getUniqueTimeStampsBefore(limit) {
+function getUniqueDateStampsBefore(limit) {
     const sql = 'SELECT DISTINCT dateStamp FROM readings WHERE dateStamp < ? ORDER BY dateStamp';
     const stmt = db.prepare(sql);
     const res = stmt.all(limit);
     return res.map(row => row.dateStamp);
 }
 
-function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
+function getUniqueDateStamps() {
+    const sql = 'SELECT DISTINCT dateStamp FROM readings ORDER BY dateStamp';
+    const stmt = db.prepare(sql);
+    const res = stmt.all();
+    return res.map(row => row.dateStamp);
+}
+
+
+async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
     const unixStamp = new Date().getTime();
     const dateStamp = convertToDateStamp(unixStamp);
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
@@ -47,10 +67,10 @@ function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a ne
     const stmt = db.prepare(sql);
     stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
 }
+
 /*
-function addReading(unix,upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp) { //Add a new reading to the database.
-    //const unixStamp = new Date().getTime();
-    //const day = unixStamp.getDay(); //Using for potential future history filtering.
+function addReading(unix,upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.    
+    const dateStamp = convertToDateStamp(unix) ; //Using for potential future history filtering.
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
     VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const stmt = db.prepare(sql);
@@ -59,24 +79,25 @@ function addReading(unix,upSpeed, downSpeed, wifiStr, ping, connectType, dateSta
 
 function summarizeDay(dateStamp) {
     const reading = getDayReadings(dateStamp);   
-    let avgUpSpeed = 0;
-    let avgDownSpeed = 0;
-    let avgPing = 0;
-    let avgWifi = 0;
+    let upSpeed = 0;
+    let downSpeed = 0;
+    let ping = 0;
+    let wifiStr = 0;
     const count = reading.length;
     if (count === 0){return;}
 
     reading.forEach(reading => {
-        avgUpSpeed += reading.upSpeed;
-        avgDownSpeed += reading.downSpeed;
-        avgPing += reading.ping;
-        avgWifi += reading.wifiStr;        
+        upSpeed += reading.upSpeed;
+        downSpeed += reading.downSpeed;
+        ping += reading.ping;
+        wifiStr += reading.wifiStr;        
     })
-    avgUpSpeed = (avgUpSpeed / count).toFixed(2);
-    avgDownSpeed = (avgDownSpeed / count).toFixed(2);
-    avgPing = Math.floor(avgPing / count);
-    avgWifi = Math.floor(avgWifi / count);          
-    addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp);
+    upSpeed = (upSpeed / count).toFixed(2);
+    downSpeed = (downSpeed / count).toFixed(2);
+    ping = Math.floor(ping / count);
+    wifiStr = Math.floor(wifiStr / count);   
+    const avgValues = {upSpeed, downSpeed, ping ,wifiStr, dateStamp};
+    return avgValues;
 }
 
 function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime. Needed?
@@ -85,8 +106,8 @@ function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime
     stmt.run(cutoffTime);
 }
 
-function deleteAllReadings() { //Delete all readings from the database.
-    const sql = 'DELETE FROM readings';
+function deleteAll(table) { //Delete all rows from a table in the local DB
+    const sql = 'DELETE FROM ' + table;
     const stmt = db.prepare(sql);
     stmt.run();
 }
@@ -127,16 +148,12 @@ function subtractDaysFromDatestamp(dateStamp, dayAmount){
     return newDateStamp;
 }
 
+function addAdminInfo(id, docText, suppNr, suppLink){
+    const sql = `INSERT INTO admin (id, docText, suppNr, suppLink)
+    VALUES (?, ?, ?, ?)`;
+    const stmt = db.prepare(sql);
+    stmt.run(id, docText, suppNr, suppLink);
+}
 
 
-
-/*
-function convertToHourMin(unixStamp) {    //Not needed anymore?
-    const date = new Date(unixStamp);    
-    const formattedTime =
-    String(date.getHours()).padStart(2, '0') + ':' +
-    String(date.getMinutes()).padStart(2, '0');    
-    return formattedTime;
-}*/
-
-module.exports = { getReadings,getDayReadings, getUniqueTimeStampsBefore, addReading, deleteOldReadings, deleteAllReadings, convertToDateStamp, summarizeDay };
+module.exports = { getAdminInfo, getAdminInfoId,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo  };

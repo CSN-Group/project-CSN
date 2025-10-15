@@ -17,15 +17,20 @@ contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
 		return dbManager.getReadings()
 	},
-	//convertToHourMin: (timestamps) => dbManager.convertToHourMin(timestamps), Not needed anymore?
 	getDayReadings: (dateStamp) => dbManager.getDayReadings(dateStamp),
-	getUniqueTimeStampsBefore: (limit) => dbManager.getUniqueTimeStampsBefore(limit),
+	getUniqueDateStampsBefore: (limit) => dbManager.getUniqueDateStampsBefore(limit),
+	getUniqueDateStamps: dbManager.getUniqueDateStamps,
 	deleteAllReadings: () => dbManager.deleteAllReadings(),
 	convertToDateStamp: (unix) => dbManager.convertToDateStamp(unix),
 	summarizeDay: (dateStamp) => dbManager.summarizeDay(dateStamp),	
-	addReading: dbManager.addReading,		
+	addReading: dbManager.addReading,
+	addAdminInfo: dbManager.addAdminInfo,
+	getAdminInfo: dbManager.getAdminInfo,		
 	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
 	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
+	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
+	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),	
+	syncLocalDatabase: () => supaDbManager.syncLocalDatabase()
 });
 
 contextBridge.exposeInMainWorld('updates', {
