@@ -28,5 +28,3 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     console.log('All done, Captain!');
 });
-
-

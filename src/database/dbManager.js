@@ -1,6 +1,5 @@
 const sqlite = require('better-sqlite3');
 const path = require('path');
-const {addReadingSupabase} = require('./supabaseHandler.js');
 
 const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite(dbPath);
@@ -20,6 +19,20 @@ function getReadings() { //Get all readings from the database, as an array of ob
     const sql = 'SELECT * FROM readings';
     let stmt = db.prepare(sql);
     let res = stmt.all();
+    return res;
+}
+
+function getAdminInfoId(){
+    const sql = 'SELECT id FROM admin ORDER BY id DESC LIMIT 1';
+    const stmt = db.prepare(sql);
+    const res = stmt.get(); //Returns one single object!
+    return res;
+}
+
+function getAdminInfo(){
+    const sql = 'SELECT * FROM admin ORDER BY id DESC LIMIT 1';
+    const stmt = db.prepare(sql);
+    const res = stmt.get(); //Returns one single object!
     return res;
 }
 
@@ -46,7 +59,7 @@ function getUniqueDateStamps() {
 }
 
 
-function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
+async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
     const unixStamp = new Date().getTime();
     const dateStamp = convertToDateStamp(unixStamp);
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
@@ -82,8 +95,7 @@ function summarizeDay(dateStamp) {
     upSpeed = (upSpeed / count).toFixed(2);
     downSpeed = (downSpeed / count).toFixed(2);
     ping = Math.floor(ping / count);
-    wifiStr = Math.floor(wifiStr / count);          
-    //addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp);
+    wifiStr = Math.floor(wifiStr / count);   
     const avgValues = {upSpeed, downSpeed, ping ,wifiStr, dateStamp};
     return avgValues;
 }
@@ -94,8 +106,8 @@ function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime
     stmt.run(cutoffTime);
 }
 
-function deleteAllReadings() { //Delete all readings from the database.
-    const sql = 'DELETE FROM readings';
+function deleteAll(table) { //Delete all rows from a table in the local DB
+    const sql = 'DELETE FROM ' + table;
     const stmt = db.prepare(sql);
     stmt.run();
 }
@@ -136,4 +148,12 @@ function subtractDaysFromDatestamp(dateStamp, dayAmount){
     return newDateStamp;
 }
 
-module.exports = { getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAllReadings, convertToDateStamp, summarizeDay, cleanLocalDatabase };
+function addAdminInfo(id, docText, suppNr, suppLink){
+    const sql = `INSERT INTO admin (id, docText, suppNr, suppLink)
+    VALUES (?, ?, ?, ?)`;
+    const stmt = db.prepare(sql);
+    stmt.run(id, docText, suppNr, suppLink);
+}
+
+
+module.exports = { getAdminInfo, getAdminInfoId,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo  };
