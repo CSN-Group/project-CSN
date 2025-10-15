@@ -1,6 +1,22 @@
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
+async function initDrop(){
+  const dropdown = document.getElementById("dayDropdown");
+  //const dropdownBtn = document.getElementById("dayButton");
+
+  const dates = dbManager.getUniqueDateStamps();
+
+  dates.forEach(num => {
+    const btn = document.createElement("button");
+    btn.textContent = num;
+    btn.addEventListener("click", () => {
+      console.log("Clicked:", num); //Handle click here
+    });
+    dropdown.appendChild(btn);
+  });
+}
+
 async function initGraph(){
   //dbManager.syncLocalDatabase();  
   createDayGraph();  

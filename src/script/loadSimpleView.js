@@ -2,6 +2,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await initNetworkInfo();
     await initCompRestart();
     await initSystemInfo();
+    await initDrop();
     await initGraph();
     initActionList();
     initGauges();
