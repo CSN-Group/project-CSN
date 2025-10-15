@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const network = require('../mainincludes/network.js');
+const si = require('systeminformation');
 
 const {execFile, exec} = require('child_process');
 const {addReading} = require('../database/dbManager.js')
@@ -11,12 +12,15 @@ const execProm = util.promisify(exec);
 const os = require('os');
 const dgram = require('dgram');
 
+//Constants
+const UPDATE_INTERVAL = 1000; //ms
+const DB_SAVE_INTERVAL = 600; // * updateInterval
+const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
+const ALLOWED_DOWNTIME_DURATION = 50 * 1000;
+
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
-const updateInterval = 1000; //ms
-const dbSaveInterval = 600; // * updateInterval
-const standardSleepInterval = 30 * 60 * 1000;
 
 let globalsUpdated = false;
 let initialUpdateCheck = false;
@@ -31,7 +35,6 @@ const globals = {
   currentConnectionType: "Checking...",
   currentlySpeedtesting: false,
   currentWifiStrength: 0,
-  currentIdleTime: 0,
 
   //System information
   compOnTimeHours: 0,
@@ -39,8 +42,13 @@ const globals = {
   osVersion: "Loading..",
   pcModel: "Loading..",
   userName: "Loading..",
-  updatesAvailable: null,
+  updatesAvailable: "Loading..",
   mac: null,
+  usingBattery: si.battery(),
+
+  //Activity
+  currentlyPausing: false,
+  userActiveStartTime: Date.now(),
 
   //Last speedtest
   lastDownspeed: 0.0,
@@ -102,6 +110,10 @@ function generateActionList() {
     list.push(createAction("invalid-ip", "error", "No valid IP"));
   }
 
+  if(globals['usingBattery']){
+    list.push(createAction("using-battery", "error", "ANSLUT LADDARE DIN DÅRE!!!"));
+  }
+
   return list;
 }
 
@@ -138,7 +150,7 @@ function updateDismissedList() {
 function isDismissed(id){
   return dismissedActions.some(obj => obj.id === id);
 }
-function dismissAction(id, sleepDuration = standardSleepInterval){
+function dismissAction(id, sleepDuration = STANDARD_SLEEP_INTERVAL){
   if(!isDismissed(id)) dismissedActions.push(createDismissedAction(id, sleepDuration, Date.now()));
 }
 
@@ -266,10 +278,18 @@ function updateDoneEvent() {
   );
 }
 
+//Activity
+function startActivePeriod(){
+  globals["currentlyPausing"] = false;
+  globals['userActiveStartTime'] = Date.now();
+}
+
+function saveActivityToDatabase(start, stop){
+  //Woooo spara till db
+}
+
 //Update
 async function measureSystem() {
-  //setGlobal('currentIdleTime', powerMonitor.getSystemIdleTime());
-
   //Find used IP and interface
   const ifaceInfo = await network.updateCurrentInterface();
 
@@ -291,6 +311,20 @@ async function measureSystem() {
 
     if (wifiInfo !== null) setGlobal('currentWifiStrength', wifiInfo.strength);
     else setGlobal('currentWifiStrength', 0);
+  }
+
+  //User activity
+  const userIdleTime = powerMonitor.getSystemIdleTime();
+
+  if(userIdleTime > ALLOWED_DOWNTIME_DURATION && !globals['currentlyPausing']){
+    setGlobal('currentlyPausing', true);
+    //
+    // Spara till DB - starttid (Timestamp) och stopptid (Timestamp)
+    // Dessa bildar ett tidsspann för en aktiv tid.
+    //
+    saveActivityToDB(globals["userActiveStartTime"], Date.now());
+  } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION && globals["currentlyPausing"]){
+    startActivePeriod();
   }
 
   //OS Uptime
@@ -324,6 +358,7 @@ async function measureSystem() {
   }
 
   updateCounter++;
+  console.log(updateCounter);
 }
 
 async function runFullUpdate() {
@@ -338,8 +373,7 @@ async function runFullUpdate() {
     updateDoneEvent();
 
     //If globals are updated, update action list
-    //if(globalsUpdated){
-    if(true){
+    if(globalsUpdated){
       globalsUpdated = false;
       BrowserWindow.getAllWindows().forEach(win =>
           win.webContents.send("updateActions", generateActionList())
@@ -368,13 +402,34 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     if(!updateLoopRunning){
       updateLoopRunning = true;
-      setInterval(runFullUpdate, updateInterval);
+      setInterval(runFullUpdate, UPDATE_INTERVAL);
     }
   });
 }
 
 app.whenReady().then(() => {
   createWindow();
+
+  powerMonitor.on('suspend', () => {
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+  });
+
+  powerMonitor.on('resume', () => {
+    startActivePeriod();
+    console.log('System has resumed from sleep');
+  });
+
+  powerMonitor.on('on-ac', () => {
+    setGlobal('usingBattery', false);
+  });
+
+  powerMonitor.on('on-battery', () => {
+    setGlobal('usingBattery', true);
+  });
+
+  powerMonitor.on('shutdown', (e) => {
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+  });
 });
 
 app.on('window-all-closed', () => {
