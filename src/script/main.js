@@ -375,7 +375,6 @@ async function measureSystem() {
 
   //Database logging here
   await logReading();
-      
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
