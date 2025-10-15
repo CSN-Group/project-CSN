@@ -9,6 +9,11 @@ const {addReading} = require('../database/dbManager.js')
 const util = require('util');
 const execProm = util.promisify(exec);
 
+async function getBatteryStatus(){
+  const bat = await si.battery();
+  return !bat.isCharging;
+}
+
 const os = require('os');
 const dgram = require('dgram');
 
@@ -44,7 +49,7 @@ const globals = {
   userName: "Loading..",
   updatesAvailable: "Loading..",
   mac: null,
-  usingBattery: si.battery(),
+  usingBattery: false,
 
   //Activity
   currentlyPausing: false,
@@ -290,6 +295,9 @@ function saveActivityToDatabase(start, stop){
 
 //Update
 async function measureSystem() {
+  if(updateCounter === 0){
+    setGlobal('usingBattery', await getBatteryStatus());
+  }
   //Find used IP and interface
   const ifaceInfo = await network.updateCurrentInterface();
 
