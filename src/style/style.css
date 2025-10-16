@@ -9,15 +9,17 @@ html, body {
     display: grid;
     grid-template-areas: 
         "buttons buttons"
-        "network actions"
-        "network actions"
-        "gauge computer"
-        "gauge computer"
-        "restart graph";
-    grid-gap: 1%;
+        "network softActions"
+        "speedtest techActions"
+        "speedtest techActions"
+        "speedtest techActions"
+        "speedtest techActions"
+        "speedtest techActions"
+        "speedtest techActions";
+    grid-gap: 1rem;
     height: 100%;
     width: 100%;
-    background-color: #DB4C40;
+    background-color: #E5E5E5;
 }
 
 #detailedGrid {
@@ -35,7 +37,16 @@ html, body {
     grid-gap: 1%;
     height: 100%;
     width: 100%;
-    background-color: #DB4C40;
+    background-color: #E5E5E5;
+}
+
+h2 {
+    text-align: center;
+}
+
+.innerContainer{
+    border-radius: 20px;
+    padding: 10px;
 }
 
 #graphDiv {
@@ -45,11 +56,175 @@ html, body {
 #buttonDiv{
     grid-area: buttons;
     background-color: #F0C987; /* secondary */
+    padding: 0;
 }
-#networkInfo {
+#connectionInfoDiv {
     grid-area: network;
-    background-color: #89BD9E; /* light */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 1rem;
+    background: #F3F3F3;
+    color: #000000;
+    border-radius: 8px;
+    height: 100%;
+    box-sizing: border-box;
 }
+
+#connectionInfo {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* centers horizontally within box */
+    gap: 0.75rem; /* even spacing between each element */
+}
+
+#speedtestDiv {
+    grid-area: speedtest;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    background-color: #F3F3F3;
+    color: #000000;
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100%;
+    box-sizing: border-box;
+    gap: 0.75rem; /* spacing between rows */
+}
+
+#speedtestHeader {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+#lastUpdatedHeader {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+#speedtestToggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+#lastUpdatedText {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.3rem 0.5rem;
+    background: #444;
+    border-radius: 4px;
+}
+
+#speedtestDetails {
+    flex: 1;
+    background: #222;
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-style: italic;
+}
+
+#speedtestButton {
+    background-color: #707070;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#speedtestButton:hover {
+    background-color: #404040;
+}
+
+#pingRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+#pingIcon {
+    width: 24px;
+    height: 24px;
+}
+
+#pingValue {
+    font-size: 1rem;
+    font-weight: 600;
+    background: #F3F3F3;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    min-width: 40px;
+    text-align: right;
+}
+
+#softActionsDiv{ grid-area: softActions;}
+#techActionsDiv{ grid-area: techActions;}
+
+#softActionsDiv,
+#techActionsDiv {
+    background: #F3F3F3;
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Lists */
+#softActionsList,
+#techActionsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* List items */
+#softActionsList li,
+#techActionsList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #878fe6;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+}
+
+/* Icon + text */
+.actionIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+}
+
+.actionText {
+    flex-grow: 1;
+    color: #eee;
+    font-size: 1rem;
+}
+
+/* Optional checkbox */
+.actionCheckbox {
+    transform: scale(1.1);
+}
+
+
 #restartInfo {
     grid-area: restart;
     background-color: #89BD9E; /* primary */
@@ -94,8 +269,8 @@ html, body {
     visibility: hidden;
     opacity: 0;
     background-color: rgba(0,0,0,0.8);
-    color: #fff;
     text-align: center;
+    color: #fff;
     padding: 4px 8px;
     border-radius: 4px;
     white-space: nowrap;     /* prevent wrapping */
@@ -126,19 +301,5 @@ html, body {
 .actionItem.fadeOut {
     opacity: 0;
     transform: translateX(20px);
-}
-
-.actionCheckbox {
-    width: 24px;
-    height: 24px;
-}
-
-.actionText {
-    flex-grow: 1;
-}
-
-.actionIcon {
-    width: 24px;
-    height: 24px;
 }
 

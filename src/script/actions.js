@@ -41,7 +41,7 @@ function getActionItem(itemObject){
 
                 setTimeout(() => {
                     newItem.remove();
-                    window.updates.dismissAction(itemObject.id, itemObject.sleepDuration); // Dismiss action for dismissTime through IPC
+                    window.updates.dismissAction(itemObject.id, itemObject.sleepDuration);
                 }, 300);
             }
         });
