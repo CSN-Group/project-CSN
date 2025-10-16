@@ -9,7 +9,7 @@
 
     <div id="buttonDiv">
       <nav>
-        <button id="simpleViewButton">BASIC</button>
+        <button id="simpleViewButton" class="currentPage">BASIC</button>
         <button id="advancedViewButton">ADVANCED</button>
       </nav>
     </div>
@@ -45,7 +45,15 @@
       <span id="lastUpdatedText">INGEN MÄTNING</span>
 
       <div id="speedtestDetails">
-        <!-- Will fill in later -->
+        <div class="gaugeWrapper">
+          <span class="speedValue" id="downloadValue">-- Mbps</span>
+          <canvas id="downSpeedometer" width="200" height="100"></canvas>
+        </div>
+
+        <div class="gaugeWrapper">
+          <span class="speedValue" id="uploadValue">-- Mbps</span>
+          <canvas id="upSpeedometer" width="200" height="100"></canvas>
+        </div>
       </div>
 
       <div id="pingRow">
@@ -87,6 +95,8 @@
         </li>
       </ul>
     </div>
+
+    <footer></footer>
 
 
     <!--

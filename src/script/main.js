@@ -20,7 +20,8 @@ const dgram = require('dgram');
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
 const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
-const ALLOWED_DOWNTIME_DURATION = 50 * 1000;
+const ALLOWED_DOWNTIME_DURATION_SECONDS = 300;
+const ALLOWED_DOWNTIME_DURATION_MILLIS = ALLOWED_DOWNTIME_DURATION_SECONDS * 1000;
 
 //Local variables
 let updateCounter = 0;
@@ -108,7 +109,7 @@ function generateActionList() {
   // TEST //
 
   if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
-    list.push(createAction("valid-ip", "check", "You have a valid IP!!!", true, 5000))
+    list.push(createAction("valid-ip", "check", "You have a valid IP!", true, 5000))
   }
 
   // END TEST //
@@ -118,7 +119,7 @@ function generateActionList() {
   }
 
   if(globals['usingBattery']){
-    list.push(createAction("using-battery", "error", "ANSLUT LADDARE DIN DÅRE!!!"));
+    list.push(createAction("using-battery", "error", "Anslut laddaren"));
   }
 
   return list;
@@ -223,23 +224,18 @@ async function performSpeedtest(triggeredBy = 'main') {
   }
 }
 
-async function logReading() {
-  const now = Date.now();
-  // Skip if not enough time has passed since last DB log
-  if (now - lastDbLog < dbLogIntervalMs) return;
-  lastDbLog = now;
+isUpdatesAvailable()
+    .then(updatesAvailable => setGlobal('updatesAvailable', updatesAvailable))
+    .catch(() => setGlobal('updatesAvailable', false));
 
+async function logReading() {
   try {
-    // Run a new speedtest using the existing function
-    await performSpeedtest('main');   
-    // Store in database
-    await addReading(
-      getGlobal('lastUpspeed'),
-      getGlobal('lastDownspeed'),
-      getGlobal('currentWifiStrength'),
-      getGlobal('lastPing'),
-      getGlobal('currentConnectionType'));
-    
+    return addReading(
+        getGlobal('lastUpspeed'),
+        getGlobal('lastDownspeed'),
+        getGlobal('currentWifiStrength'),
+        getGlobal('lastPing'),
+        getGlobal('currentConnectionType'));
   } catch (err) {
     console.error('[AutoLogger] Failed to log reading:', err);
   }
@@ -350,14 +346,14 @@ async function measureSystem() {
   //User activity
   const userIdleTime = powerMonitor.getSystemIdleTime();
 
-  if(userIdleTime > ALLOWED_DOWNTIME_DURATION && !globals['currentlyPausing']){
+  if(userIdleTime > ALLOWED_DOWNTIME_DURATION_SECONDS && !globals['currentlyPausing']){
     setGlobal('currentlyPausing', true);
     //
     // Spara till DB - starttid (Timestamp) och stopptid (Timestamp)
     // Dessa bildar ett tidsspann för en aktiv tid.
     //
     saveActivityToDB(globals["userActiveStartTime"], Date.now());
-  } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION && globals["currentlyPausing"]){
+  } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
   }
 
@@ -373,8 +369,12 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
-  //Database logging here
-  await logReading();
+  //Speedtest
+  if(updateCounter % 600 === 0){
+    performSpeedtest('main')
+        .then(logReading)
+        .catch(() => setGlobal('updatesAvailable', false));
+  }
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
@@ -413,7 +413,7 @@ async function runFullUpdate() {
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -457,5 +457,6 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
   app.quit();
 });

@@ -4,6 +4,10 @@ async function updateNetwork(){
 
     const wifiText = document.getElementById('wifiText');
     wifiText.innerText = wifiStr;
+
+    const pingValue = document.getElementById('pingValue');
+    pingValue.innerText = window.systemInfo.getGlobal('lastPing');
+
     /*
     const speedtestDiv = document.getElementById("speedTestInfo");
 

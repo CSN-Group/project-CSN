@@ -25,7 +25,6 @@ let downSpeedometer;
 
 
 function initGauges() {
-    /*
     upSpeedometerDOM = document.getElementById('upSpeedometer');
     upSpeedometer = new Gauge(upSpeedometerDOM).setOptions(gaugeOptions);
 
@@ -33,25 +32,23 @@ function initGauges() {
     downSpeedometer = new Gauge(downSpeedometerDOM).setOptions(gaugeOptions);
 
     upSpeedometer.maxValue = 100;
-    //upSpeedometer.setMinValue(0);
     upSpeedometer.minValue = 0;
     upSpeedometer.set(0);
 
     downSpeedometer.maxValue = 100;
     downSpeedometer.minValue = 0;
     downSpeedometer.set(0);
-     */
 }
 
 
 async function updateGauges(){
-    /*
+
     const downspeed = await window.systemInfo.getGlobal('lastDownspeed');
     const upspeed = await window.systemInfo.getGlobal('lastUpspeed');
 
     downSpeedometer.set(downspeed);
     upSpeedometer.set(upspeed);
-     */
+
 }
 
 let paths;

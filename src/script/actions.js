@@ -1,7 +1,10 @@
-const DOMList = document.getElementById("actionList");
+let DOMTechList;
+let DOMSoftList;
 
 let actionList = [];
 function initActionList(){
+    DOMTechList = document.getElementById("techActionsList");
+    DOMSoftList = document.getElementById("softActionsList");
 }
 
 function getImage(imageString){
@@ -51,7 +54,8 @@ function getActionItem(itemObject){
 }
 
 function clearList(){
-    DOMList.innerHTML = '';
+    DOMTechList.innerHTML = '';
+    DOMSoftList.innerHTML = '';
 }
 
 function updateActionList(list){
@@ -60,8 +64,8 @@ function updateActionList(list){
     list.forEach(itemObject => {
         const DOMItem = getActionItem(itemObject);
 
-        if(itemObject.isTechnical) DOMList.appendChild(DOMItem);
-        else DOMList.appendChild(DOMItem); //Change to soft issues list later!!!
+        if(itemObject.isTechnical) DOMTechList.appendChild(DOMItem);
+        else DOMSoftList.appendChild(DOMItem);
     });
 }
 
