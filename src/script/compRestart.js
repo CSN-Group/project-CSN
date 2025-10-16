@@ -1,5 +1,3 @@
-//const { getUniqueTimeStampsBefore } = require("../database/dbManager");
-
 function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);        
         return hrs

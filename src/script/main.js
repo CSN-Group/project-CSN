@@ -441,7 +441,6 @@ app.whenReady().then(() => {
 
   powerMonitor.on('resume', () => {
     startActivePeriod();
-    console.log('System has resumed from sleep');
   });
 
   powerMonitor.on('on-ac', () => {
