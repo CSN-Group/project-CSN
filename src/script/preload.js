@@ -30,7 +30,8 @@ contextBridge.exposeInMainWorld('dbManager', {
 	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
 	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
 	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),	
-	syncLocalDatabase: () => supaDbManager.syncLocalDatabase()
+	syncLocalDatabase: () => supaDbManager.syncLocalDatabase(),
+	fetchAvailableMonths: () => supaDbManager.fetchAvailableMonths(),
 });
 
 contextBridge.exposeInMainWorld('updates', {

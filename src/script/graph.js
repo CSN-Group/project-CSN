@@ -1,33 +1,87 @@
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
+let currentGraphMetric = 'upSpeed';
+let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
+let currentGraphRange = 'day';
+let currentGraphYear = 2025; //Because why not.
+let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
+
+
 async function initDrop(){
-  const dropdown = document.getElementById("dayDropdown");
-  //const dropdownBtn = document.getElementById("dayButton");
+  const dayDrop = document.getElementById("dayDropdown");
+  const weekDrop = document.getElementById("weekDropdown");
+  const monthDrop = document.getElementById("monthDropdown");  
 
-  const dates = dbManager.getUniqueDateStamps();
-
-  dates.forEach(num => {
-    const btn = document.createElement("button");
-    btn.textContent = num;
-    btn.addEventListener("click", () => {
-      console.log("Clicked:", num); //Handle click here
+  const days = dbManager.getUniqueDateStamps();
+  const months = await dbManager.fetchAvailableMonths();
+ 
+  days.forEach(day => {
+    const button = document.createElement("button");
+    button.textContent = day;
+    button.addEventListener("click", () => {
+      currentGraphDatestamp = day;
+      currentGraphRange = 'day';
+      createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
-    dropdown.appendChild(btn);
+    dayDrop.appendChild(button);
   });
+
+  const weekButton = document.createElement("button");
+  weekButton.textContent = "Last 7 days";
+  weekButton.addEventListener("click", () => {
+    currentGraphRange = 'week';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
+  })
+  weekDrop.appendChild(weekButton);
+
+  months.forEach(month => {
+    const button = document.createElement("button");    
+    button.textContent = month.month;
+    button.addEventListener("click", () => {
+      currentGraphRange = 'month';
+      currentGraphMonth = month.month;
+      currentGraphYear = month.year;   
+      createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear,currentGraphMonth);
+    });
+    monthDrop.append(button);
+  });
+
+  
 }
 
 async function initGraph(){
-  //dbManager.syncLocalDatabase();  
-  createDayGraph();  
-  dbManager.cleanLocalDatabase();
-  document.getElementById('graphPingButton').addEventListener('click', () => createDayGraph('ping'));
-  document.getElementById('graphUpspeedButton').addEventListener('click', () => createDayGraph('upSpeed'));
-  document.getElementById('graphDownspeedButton').addEventListener('click', () => createDayGraph('downSpeed'));
-  document.getElementById('graphWifiButton').addEventListener('click', () => createDayGraph('wifiStr'));
-  document.getElementById('graphInterruptButton').addEventListener('click', () => createDayGraph('interrupts'));
-  document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
-  document.getElementById('monthButton').addEventListener('click', () => createDayGraph('ping', 'month'));  
+  //dbManager.syncLocalDatabase();
+    
+  dbManager.cleanLocalDatabase(); 
+
+  document.getElementById('graphPingButton').addEventListener('click', () =>{
+    currentGraphMetric = 'ping';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  });
+
+  document.getElementById('graphUpspeedButton').addEventListener('click', () =>{
+    currentGraphMetric = 'upSpeed';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphDownspeedButton').addEventListener('click', () =>{
+    currentGraphMetric = 'downSpeed';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphWifiButton').addEventListener('click', () =>{
+    currentGraphMetric = 'wifiStr';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphInterruptButton').addEventListener('click', () =>{
+    currentGraphMetric = 'interrupts';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  });
+
+  //document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
+  //document.getElementById('monthButton').addEventListener('click', () => createDayGraph(20251013,'ping', 'month'));  
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -47,7 +101,7 @@ function dateStampToDate(dateStamp) {
 }
 
 //Set your mainmetric and choose between day or week for readings.
-async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, month=10){ 
+async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, month=10){ 
   if(graph){graph.destroy()}; //There can only be ONE graph in a canvas.
   
   let readings;
@@ -64,8 +118,8 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
     readings = await dbManager.fetchMonthlyHistory(year,month);    
   }
   else{
-    const unixStamp = new Date().getTime();
-    const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
+    //const unixStamp = new Date().getTime();
+    //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
     readings = await dbManager.getDayReadings(dateStamp); 
   }
 
@@ -167,7 +221,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
 }
 
 function createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs){
-  interrupts = [];
+  let interrupts = [];
   const iterations = upSpeeds.length;
   const upDownSpeedLimit = 10;
   const wifiLimit = 60;

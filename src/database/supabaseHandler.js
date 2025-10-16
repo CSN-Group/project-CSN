@@ -37,7 +37,7 @@ async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, da
 async function fetchMonthlyHistory(year,month){  
   const startOfMonth = Number(`${year}${String(month).padStart(2, "0")}01`);  
   const endOfMonth = Number(`${year}${String(month).padStart(2, "0")}${new Date(year, month, 0).getDate()}`);
-  const myMac = await getGlobal('mac');
+  const myMac = await getGlobal('mac'); 
   
   const { data, error } = await supabase
       .from('readings')
@@ -54,6 +54,31 @@ async function fetchMonthlyHistory(year,month){
     return data;
   }
 
+}
+
+async function fetchAvailableMonths(){
+  let myMac = await getGlobal('mac');
+  while(!myMac || myMac=== null){ //Waiting for the mac to be found
+    sleep(5);
+    myMac = await getGlobal('mac');    
+  } 
+  const { data, error } = await supabase
+      .from('readings')
+      .select('dateStamp') // Datestamp
+      .eq('mac', myMac) // Filter by MAC 
+      
+  if (error) {
+      console.error("Error fetching data:", error);
+      return []; }
+ 
+ const yearsMonths = [...new Set(   //Save unique year month combos into an array. The set makes sure everything is unique
+  data.map(item => item.dateStamp.toString().slice(0, 6))
+)].map(yearMonth => ({
+  year: yearMonth.slice(0,4),
+  month: yearMonth.slice(4,6)
+}));
+
+  return yearsMonths;
 }
 
 async function fetchAdminInfo(){
@@ -83,4 +108,4 @@ async function syncLocalDatabase(){
     }    
 }
 
-module.exports = { addReadingSupabase, fetchMonthlyHistory, syncLocalDatabase };
+module.exports = { addReadingSupabase, fetchMonthlyHistory, syncLocalDatabase, fetchAvailableMonths};

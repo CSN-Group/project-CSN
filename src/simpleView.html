@@ -56,14 +56,17 @@
       <button id="graphWifiButton">Wifi</button>
       <button id="graphInterruptButton">Interrupt</button>
       <div class="dropdown">
-        <button id="dayButton">Day</button>
-        <div id="dayDropdown" class="dropdown-content">
-                    
-        </div>
+        <button class="dropButton">Day</button>
+        <div id="dayDropdown" class="dropdownContent"></div>       
       </div>
-      
-      <button id="weekButton">Week</button>
-      <button id="monthButton">Month</button>      
+      <div class="dropdown">
+        <button class="dropButton">Week</button>
+        <div id="weekDropdown" class="dropdownContent"></div>       
+      </div>     
+      <div class="dropdown">
+        <button class="dropButton">Month</button>
+        <div id="monthDropdown" class="dropdownContent"></div>       
+      </div>           
       <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
     </div>
 
