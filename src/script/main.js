@@ -4,7 +4,7 @@ const network = require('../mainincludes/network.js');
 const si = require('systeminformation');
 
 const {execFile, exec} = require('child_process');
-const {addReading} = require('../database/dbManager.js')
+const {addReading,addActiveTime} = require('../database/dbManager.js')
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -316,7 +316,14 @@ function startActivePeriod(){
 }
 
 function saveActivityToDatabase(start, stop){
-  //Woooo spara till db
+  //Sparar data varje dag, det är roligt.
+  //Massa data vill man ha, mycket troligt!
+  //För då kan man plotta
+  //En graf eller åtta!
+  //Databas! Wioooo!
+  //(Ducktales)
+  const totalMin = (stop - start) / 60; //Do we want this?
+  addActiveTime(start,stop,totalMin);
 }
 
 //Update

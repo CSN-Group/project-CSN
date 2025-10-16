@@ -1,6 +1,6 @@
 const { createClient } = require('@supabase/supabase-js')
 const {ipcRenderer} = require('electron');
-const {addAdminInfo,getAdminInfoId,deleteAll} = require('../database/dbManager.js')
+const {addAdminInfo,getAdminInfoTime,deleteAll} = require('../database/dbManager.js')
 
 const supabaseUrl = 'https://vawmwnetilhsxmgjrrmm.supabase.co' // Dont forget to change the way the key is shown?
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhd213bmV0aWxoc3htZ2pycm1tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTI2NjcyOSwiZXhwIjoyMDc0ODQyNzI5fQ.0ED6IBCcHgTo4mZO5Qx_x6QE9kWlaUd5gFUIZKAeGTk'
@@ -84,7 +84,7 @@ async function fetchAvailableMonths(){
 async function fetchAdminInfo(){
   const { data,error} = await supabase
     .from('adminMessage')
-    .select('id,docText,suppNr,suppLink') 
+    .select('docText,suppNr,suppLink,timeStamp') 
     .eq('orgNr', 5741)
     .order('id', {ascending:false})
     .limit(1)
@@ -98,13 +98,13 @@ if (error){
 }}
 
 async function syncLocalDatabase(){
-    const adminInfo = await fetchAdminInfo();    
+    const adminInfo = await fetchAdminInfo();      
     if(
       adminInfo && 
-      (!getAdminInfoId() ||adminInfo.id > getAdminInfoId().id)) //If we successfully fetched the data, we put it into our database!
+      (!getAdminInfoTime() ||adminInfo.timeStamp > getAdminInfoTime().timeStamp)) //If we successfully fetched the data, we put it into our database!
       { 
         deleteAll('admin'); //Clears out old admindata!
-        addAdminInfo(adminInfo.id,adminInfo.docText,adminInfo.suppNr,adminInfo.suppLink);  
+        addAdminInfo(adminInfo.docText,adminInfo.suppNr,adminInfo.suppLink,adminInfo.timeStamp);  
     }    
 }
 

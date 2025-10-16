@@ -40,7 +40,7 @@ async function initDrop(){
     button.textContent = month.month;
     button.addEventListener("click", () => {
       currentGraphRange = 'month';
-      currentGraphMonth = month.month;
+      currentGraphMonth = parseInt(month.month);
       currentGraphYear = month.year;   
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear,currentGraphMonth);
     });
@@ -51,8 +51,8 @@ async function initDrop(){
 }
 
 async function initGraph(){
-  //dbManager.syncLocalDatabase();
-    
+  //Databasestuff! Move somewhere else?
+  dbManager.syncLocalDatabase();    
   dbManager.cleanLocalDatabase(); 
 
   document.getElementById('graphPingButton').addEventListener('click', () =>{
@@ -79,9 +79,7 @@ async function initGraph(){
     currentGraphMetric = 'interrupts';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   });
-
-  //document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
-  //document.getElementById('monthButton').addEventListener('click', () => createDayGraph(20251013,'ping', 'month'));  
+    
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -115,11 +113,17 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
     })            
   }
   else if(range === "month"){    
-    readings = await dbManager.fetchMonthlyHistory(year,month);    
+    readings = await dbManager.fetchMonthlyHistory(year,month);
+    const currentMonth = (new Date().getMonth()+1);
+     
+    if(month === currentMonth){ //If we want to plot the current month, the last week is not in Supabase!
+      const datestamps = dbManager.getUniqueDateStamps();      
+      datestamps.forEach( stamp => {
+        readings.push(dbManager.summarizeDay(stamp));
+      })     
+    }    
   }
-  else{
-    //const unixStamp = new Date().getTime();
-    //const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
+  else{    
     readings = await dbManager.getDayReadings(dateStamp); 
   }
 

@@ -22,8 +22,8 @@ function getReadings() { //Get all readings from the database, as an array of ob
     return res;
 }
 
-function getAdminInfoId(){
-    const sql = 'SELECT id FROM admin ORDER BY id DESC LIMIT 1';
+function getAdminInfoTime(){
+    const sql = 'SELECT timeStamp FROM admin ORDER BY id DESC LIMIT 1';
     const stmt = db.prepare(sql);
     const res = stmt.get(); //Returns one single object!
     return res;
@@ -68,14 +68,13 @@ async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Ad
     stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
 }
 
-/*
-function addReading(unix,upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.    
-    const dateStamp = convertToDateStamp(unix) ; //Using for potential future history filtering.
-    const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+async function addActiveTime(start, stop, totMin){
+    const sql = `INSERT INTO activeTime (startTime,stopTime,minutesWorked)
+    VALUES (?, ?, ?)`;
     const stmt = db.prepare(sql);
-    stmt.run(unix, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
-}*/
+    stmt.run(start,stop,totMin);
+}
+
 
 function summarizeDay(dateStamp) {
     const reading = getDayReadings(dateStamp);   
@@ -148,12 +147,12 @@ function subtractDaysFromDatestamp(dateStamp, dayAmount){
     return newDateStamp;
 }
 
-function addAdminInfo(id, docText, suppNr, suppLink){
-    const sql = `INSERT INTO admin (id, docText, suppNr, suppLink)
+function addAdminInfo(docText, suppNr, suppLink, timeStamp){
+    const sql = `INSERT INTO admin (docText, suppNr, suppLink,timeStamp)
     VALUES (?, ?, ?, ?)`;
     const stmt = db.prepare(sql);
-    stmt.run(id, docText, suppNr, suppLink);
+    stmt.run(docText, suppNr, suppLink, timeStamp);
 }
 
 
-module.exports = { getAdminInfo, getAdminInfoId,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo  };
+module.exports = { getAdminInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
