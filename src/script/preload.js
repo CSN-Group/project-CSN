@@ -1,11 +1,7 @@
-const os = require('os');
 const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
-const dgram = require('dgram');
-const si = require('systeminformation')
 const { contextBridge, ipcRenderer} = require('electron');
-const { execSync } = require('child_process'); //allows to run shell /terminal commands 
-const { get } = require('http');
+
 
 contextBridge.exposeInMainWorld('systemInfo', {
 	getGlobal: (key) => ipcRenderer.invoke('getGlobal', key),
@@ -13,17 +9,28 @@ contextBridge.exposeInMainWorld('systemInfo', {
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
+
+	
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
 	getReadings: function(){
 		return dbManager.getReadings()
 	},
-	convertToHourMin: (timestamps) => dbManager.convertToHourMin(timestamps),
-	getTodaysReadings: (todayDayNumber) => dbManager.getTodaysReadings(todayDayNumber),
+	getDayReadings: (dateStamp) => dbManager.getDayReadings(dateStamp),
+	getUniqueDateStampsBefore: (limit) => dbManager.getUniqueDateStampsBefore(limit),
+	getUniqueDateStamps: dbManager.getUniqueDateStamps,
 	deleteAllReadings: () => dbManager.deleteAllReadings(),
-	addReading: dbManager.addReading,		
-	addSupaReading: supaDbManager.addReadingSupabase
+	convertToDateStamp: (unix) => dbManager.convertToDateStamp(unix),
+	summarizeDay: (dateStamp) => dbManager.summarizeDay(dateStamp),	
+	addReading: dbManager.addReading,
+	addAdminInfo: dbManager.addAdminInfo,
+	getAdminInfo: dbManager.getAdminInfo,		
+	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
+	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
+	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
+	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),	
+	syncLocalDatabase: () => supaDbManager.syncLocalDatabase()
 });
 
 contextBridge.exposeInMainWorld('updates', {
@@ -32,5 +39,14 @@ contextBridge.exposeInMainWorld('updates', {
 		ipcRenderer.on("updateActions", async (event, list) => {
 			await callback(list);
 		});
+	},
+	dismissAction: (id, sleepDuration) => {
+		ipcRenderer.send("dismiss-action", {id, sleepDuration });
 	}
+
+});
+
+contextBridge.exposeInMainWorld('nav', {
+	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
+	simplePage: (channel) => ipcRenderer.send('navigateSimple')
 });
