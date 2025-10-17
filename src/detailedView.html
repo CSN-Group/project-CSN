@@ -2,7 +2,6 @@
 <html>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-
 <head>
     <link rel="stylesheet" href="style/style.css">
     <title>My Electron App</title>
@@ -12,20 +11,19 @@
     <div id="buttonDiv">
         <nav>
             <button id="simpleViewButton">BASIC</button>
-            <button id="advancedViewButton">ADVANCED</button>
+            <button id="advancedViewButton" class="currentPage">ADVANCED</button>
         </nav>
     </div>
 
-    <nav id="innernav">
-        <button id="settingsButton">SETTINGS</button>
-        <button id="systemInfoButton">SYSTEM INFORMATION</button>
-        <button id="graphsButton">GRAPHS</button>
-        <button id="documentationButton">DOCUMENTATION</button>
-        <button>MORE STUFF</button>
+    <nav id="innerNav">
+        <button id="settingsButton" class="secondaryNavButton">SETTINGS</button>
+        <button id="systemInfoButton" class="secondaryNavButton">SYSTEM INFORMATION</button>
+        <button id="graphsButton" class="secondaryNavButton">GRAPHS</button>
+        <button id="documentationButton" class="secondaryNavButton">DOCUMENTATION</button>
+        <button class="secondaryNavButton">SOMETHING</button>
     </nav>
 
-    <div id="contentDiv" style="text-align: center">
-        <img src="https://media1.tenor.com/m/P-X7geFnV-sAAAAC/slay-funny.gif">
+    <div id="contentDiv">
     </div>
 
 </div>

@@ -9,9 +9,13 @@ const {addReading,addActiveTime} = require('../database/dbManager.js')
 const util = require('util');
 const execProm = util.promisify(exec);
 
-async function getBatteryStatus(){
+async function isUsingBattery() {
   const bat = await si.battery();
-  return !bat.isCharging;
+
+  if (!bat.hasBattery) return false;
+  if (!bat.isCharging) return true;
+  if (bat.percent < 100 && bat.timeRemaining > 0) return true;
+  else return false;
 }
 
 const os = require('os');
@@ -106,7 +110,7 @@ function generateActionList() {
   // TEST //
 
   if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
-    list.push(createAction("valid-ip", "check", "You have a valid IP!!!", true, 5000))
+    list.push(createAction("valid-ip", "check", "You have a valid IP!", true, 5000))
   }
 
   // END TEST //
@@ -116,7 +120,7 @@ function generateActionList() {
   }
 
   if(globals['usingBattery']){
-    list.push(createAction("using-battery", "error", "ANSLUT LADDARE DIN DÅRE!!!"));
+    list.push(createAction("using-battery", "error", "Anslut laddaren"));
   }
 
   return list;
@@ -213,27 +217,23 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastPing", ping);
     }
 
-    if (triggeredBy === 'renderer') {
-      updateDoneEvent();
-    }
-
     setGlobal('currentlySpeedtesting', false)
   }
 }
 
+isUpdatesAvailable()
+    .then(updatesAvailable => setGlobal('updatesAvailable', updatesAvailable))
+    .catch(() => setGlobal('updatesAvailable', false));
+
 async function logReading() {
-
-   try {
+  try {
     return addReading(
-      getGlobal('lastUpspeed'),
-      getGlobal('lastDownspeed'),
-      getGlobal('currentWifiStrength'),
-      getGlobal('lastPing'),
-      getGlobal('currentConnectionType')
-      );
-    }
-
-  catch (err) {
+        getGlobal('lastUpspeed'),
+        getGlobal('lastDownspeed'),
+        getGlobal('currentWifiStrength'),
+        getGlobal('lastPing'),
+        getGlobal('currentConnectionType'));
+  } catch (err) {
     console.error('[AutoLogger] Failed to log reading:', err);
   }
 }
@@ -323,9 +323,10 @@ function saveActivityToDatabase(start, stop){
 
 //Update
 async function measureSystem() {
-  if(updateCounter === 0){
-    setGlobal('usingBattery', await getBatteryStatus());
-  }
+
+  //Battery
+  if(updateCounter % 60 === 0) setGlobal('usingBattery', await isUsingBattery());
+
   //Find used IP and interface
   const ifaceInfo = await network.updateCurrentInterface();
 
@@ -351,7 +352,7 @@ async function measureSystem() {
 
   //User activity
   const userIdleTime = powerMonitor.getSystemIdleTime();
-  console.log("UIT =" + userIdleTime);
+
   if(userIdleTime > ALLOWED_DOWNTIME_DURATION_SECONDS && !globals['currentlyPausing']){
     setGlobal('currentlyPausing', true);
     
@@ -381,8 +382,6 @@ async function measureSystem() {
         .then(logReading)
         .catch(() => setGlobal('updatesAvailable', false));
   }
-  
-  
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
@@ -421,7 +420,7 @@ async function runFullUpdate() {
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -449,7 +448,6 @@ app.whenReady().then(() => {
 
   powerMonitor.on('resume', () => {
     startActivePeriod();
-    console.log('System has resumed from sleep');
   });
 
   powerMonitor.on('on-ac', () => {

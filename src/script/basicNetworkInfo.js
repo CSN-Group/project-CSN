@@ -1,13 +1,14 @@
 async function updateNetwork(){
-    const infoDiv = document.getElementById("basicNetworkInfo");
+    const connType = await window.systemInfo.getGlobal('currentConnectionType');
+    const wifiStr = await window.systemInfo.getGlobal('currentWifiStrength');
 
-    let futureText = "";
+    const wifiText = document.getElementById('wifiText');
+    wifiText.innerText = wifiStr;
 
-    futureText = "Connection: " + await window.systemInfo.getGlobal('currentConnectionType');
-    futureText += "\nWiFi Strength: " + await window.systemInfo.getGlobal('currentWifiStrength') + "%";
+    const pingValue = document.getElementById('pingValue');
+    pingValue.innerText = window.systemInfo.getGlobal('lastPing');
 
-    infoDiv.innerText = futureText;
-
+    /*
     const speedtestDiv = document.getElementById("speedTestInfo");
 
     const downSpeed = await window.systemInfo.getGlobal('lastDownspeed');
@@ -22,20 +23,13 @@ async function updateNetwork(){
 
     if(ping) speedtestDiv.innerText += "\nPing: " + ping + " ms";
     else speedtestDiv.innerText += "\nPing: error";
+
+     */
 }
 
 
 async function initNetworkInfo() {
-    const infoDiv = document.getElementById("basicNetworkInfo");
-    let futureInfoText = "";
-
-    document.getElementById('runSpeedTestButton').addEventListener(
+    document.getElementById('runSpeedtestButton').addEventListener(
         'click',
         await window.systemInfo.runSpeedtest);
-
-    const speedtestDiv = document.getElementById("speedTestInfo");
-
-    speedtestDiv.innerText = "Download: -";
-    speedtestDiv.innerText += "\nUpload: -";
-    speedtestDiv.innerText += "\nPing: -";
 }

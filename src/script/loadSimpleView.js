@@ -1,17 +1,11 @@
 window.addEventListener('DOMContentLoaded', async () => {
     await initNetworkInfo();
-    await initCompRestart();
-    await initSystemInfo();
-    await initDrop();
-    await initGraph();
     initActionList();
     initGauges();
     initWifiDisplay();    
 
     window.updates.onUpdateDone(async () => {
         await updateNetwork();
-        await updateRestart();
-        await updateSystemInfo();
         await updateGauges();
         await updateWifiDisplay();
     });

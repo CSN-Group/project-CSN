@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-
 <head>
   <link rel="stylesheet" href="style/style.css">
   <title>My Electron App</title>
@@ -12,25 +9,97 @@
 
     <div id="buttonDiv">
       <nav>
-        <button id="simpleViewButton">BASIC</button>
+        <button id="simpleViewButton" class="currentPage">BASIC</button>
         <button id="advancedViewButton">ADVANCED</button>
       </nav>
     </div>
-    
-    <div id="compInfo">
 
+    <div id="connectionInfoDiv" class="innerContainer">
+     <h2>NÄTVERKSANSLUTNING</h2>
+      <div id="connectionInfo">
+        <div id="wifiIconDiv" class="wifi">
+          <svg viewBox="0 0 24 24" width="64" height="64">
+            <path class="bar1" d="M12 20a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+            <path class="bar2" d="M9.4 16.6a1 1 0 0 1-1.4-1.4 6 6 0 0 1 8.5 0 1 1 0 1 1-1.4 1.4 4 4 0 0 0-5.7 0z" />
+            <path class="bar3" d="M6.3 13.5a1 1 0 0 1-1.4-1.4 10 10 0 0 1 14.2 0 1 1 0 1 1-1.4 1.4 8 8 0 0 0-11.4 0z" />
+            <path class="bar4" d="M3.1 10.3a1 1 0 0 1-1.4-1.4 14 14 0 0 1 20.6 0 1 1 0 1 1-1.4 1.4 12 12 0 0 0-17.8 0z" />
+          </svg>
+          <span class="tooltip" id='wifiTooltip'>Wifi info yay</span>
+        </div>
+        <span id="wifiText">LOADING</span><label>%</label>
+
+        <img src="img/ethernet.png" alt="Ethernet" class="ethernet-icon">
+        <span id="ethernetText">LOADING</span>
+      </div>
     </div>
 
-    <div id="networkInfo">
-      <div id="basicNetworkInfo"></div>
-      <button id="runSpeedTestButton">Speedtest</button>
-      <div id="speedTestInfo"></div>
+    <div id="speedtestDiv" class="innerContainer">
+      <h2 id="speedtestHeader">MÄTNINGAR</h2>
+      <label id="speedtestToggle">
+        I MÖTE
+        <input type="checkbox" id="speedtestToggleCheckbox">
+      </label>
+
+      <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
+
+      <span id="lastUpdatedText">INGEN MÄTNING</span>
+
+      <div id="speedtestDetails">
+        <div class="gaugeWrapper">
+          <span class="speedValue" id="downloadValue">-- Mbps</span>
+          <canvas id="downSpeedometer" width="200" height="100"></canvas>
+        </div>
+
+        <div class="gaugeWrapper">
+          <span class="speedValue" id="uploadValue">-- Mbps</span>
+          <canvas id="upSpeedometer" width="200" height="100"></canvas>
+        </div>
+      </div>
+
+      <div id="pingRow">
+        <img id="pingIcon" src="ping-icon.png" alt="Ping Icon">
+        <label id="pingLabel">Svarstid: </label>
+        <span id="pingValue">-</span>
+        <label id="pingUnit"> ms</label>
+      </div>
+
+      <button id="runSpeedtestButton">UPPDATERA</button>
     </div>
 
-    <div id="restartInfo">
-      <!-- Enter info here -->
+    <div id="softActionsDiv" class="innerContainer">
+      <h2>Soft Actions</h2>
+      <ul id="softActionsList">
+        <li>
+          <img src="icon1.png" alt="Action Icon" class="actionIcon">
+          <span class="actionText">Restart Service</span>
+          <input type="checkbox" class="actionCheckbox">
+        </li>
+        <li>
+          <img src="icon2.png" alt="Action Icon" class="actionIcon">
+          <span class="actionText">Clear Cache</span>
+        </li>
+      </ul>
     </div>
 
+    <div id="techActionsDiv" class="innerContainer">
+      <h2>Tech Actions</h2>
+      <ul id="techActionsList">
+        <li>
+          <img src="icon3.png" alt="Action Icon" class="actionIcon">
+          <span class="actionText">Reboot Router</span>
+          <input type="checkbox" class="actionCheckbox">
+        </li>
+        <li>
+          <img src="icon4.png" alt="Action Icon" class="actionIcon">
+          <span class="actionText">Update Firmware</span>
+        </li>
+      </ul>
+    </div>
+
+    <footer></footer>
+
+
+    <!--
     <div id="gaugeDiv">
       <canvas id="speedometer" width="200" height="100"></canvas>
       <div id="wifiIconDiv" class="wifi">
@@ -42,8 +111,9 @@
         </svg>
         <span class="tooltip" id='wifiTooltip'>Wifi info yay</span>
       </div>
-    </div>
+    </div>-->
 
+    <!--
     <div id="actionDiv">
       <h1><u>Åtgärder</u></h1>
       <ul id="actionList"></ul>
@@ -70,14 +140,11 @@
       </div>           
       <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
     </div>
-
+    -->
   </div>      
 
- 
-  <script src="script/graph.js"></script>  
+
   <script src="script/basicNetworkInfo.js"></script>
-  <script src="script/compRestart.js"></script>
-  <script src="script/pcNameInfo.js"></script>  
   <script src="script/actions.js"></script>
 
   <script src="../node_modules/gaugeJS/dist/gauge.min.js"></script>

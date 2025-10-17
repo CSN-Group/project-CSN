@@ -1,4 +1,4 @@
-const opts = {
+const gaugeOptions = {
     angle: 0.0,             // arc angle
     lineWidth: 1.0,         // thickness
     radiusScale: 0.8,
@@ -17,25 +17,45 @@ const opts = {
     ]
 };
 
-const target = document.getElementById('speedometer');
-const gauge = new Gauge(target).setOptions(opts);
+let upSpeedometerDOM;
+let upSpeedometer;
+
+let downSpeedometerDOM;
+let downSpeedometer;
+
 
 function initGauges() {
-    gauge.maxValue = 100;
-    gauge.setMinValue(0);
-    gauge.set(0);
+    upSpeedometerDOM = document.getElementById('upSpeedometer');
+    upSpeedometer = new Gauge(upSpeedometerDOM).setOptions(gaugeOptions);
+
+    downSpeedometerDOM = document.getElementById('downSpeedometer');
+    downSpeedometer = new Gauge(downSpeedometerDOM).setOptions(gaugeOptions);
+
+    upSpeedometer.maxValue = 100;
+    upSpeedometer.minValue = 0;
+    upSpeedometer.set(0);
+
+    downSpeedometer.maxValue = 100;
+    downSpeedometer.minValue = 0;
+    downSpeedometer.set(0);
 }
+
+
+async function updateGauges(){
+
+    const downspeed = await window.systemInfo.getGlobal('lastDownspeed');
+    const upspeed = await window.systemInfo.getGlobal('lastUpspeed');
+
+    downSpeedometer.set(downspeed);
+    upSpeedometer.set(upspeed);
+
+}
+
+let paths;
 
 function initWifiDisplay() {
     paths = document.querySelectorAll('#wifiIconDiv path');
 }
-
-async function updateGauges(){
-    const speed = await window.systemInfo.getGlobal('currentWifiStrength');
-    gauge.set(speed);
-}
-
-let paths;
 
 function setWifiBars(level) {
     paths.forEach((p, i) => {
