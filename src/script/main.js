@@ -9,9 +9,13 @@ const {addReading} = require('../database/dbManager.js')
 const util = require('util');
 const execProm = util.promisify(exec);
 
-async function getBatteryStatus(){
+async function isUsingBattery() {
   const bat = await si.battery();
-  return !bat.isCharging;
+
+  if (!bat.hasBattery) return false;
+  if (!bat.isCharging) return true;
+  if (bat.percent < 100 && bat.timeRemaining > 0) return true;
+  else return false;
 }
 
 const os = require('os');
@@ -216,10 +220,6 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastPing", ping);
     }
 
-    if (triggeredBy === 'renderer') {
-      updateDoneEvent();
-    }
-
     setGlobal('currentlySpeedtesting', false)
   }
 }
@@ -317,9 +317,10 @@ function saveActivityToDatabase(start, stop){
 
 //Update
 async function measureSystem() {
-  if(updateCounter === 0){
-    setGlobal('usingBattery', await getBatteryStatus());
-  }
+
+  //Battery
+  if(updateCounter % 60 === 0) setGlobal('usingBattery', await isUsingBattery());
+
   //Find used IP and interface
   const ifaceInfo = await network.updateCurrentInterface();
 
@@ -352,7 +353,7 @@ async function measureSystem() {
     // Spara till DB - starttid (Timestamp) och stopptid (Timestamp)
     // Dessa bildar ett tidsspann för en aktiv tid.
     //
-    saveActivityToDB(globals["userActiveStartTime"], Date.now());
+    //saveActivityToDB(globals["userActiveStartTime"], Date.now());
   } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
   }

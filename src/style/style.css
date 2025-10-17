@@ -327,13 +327,12 @@ footer{
     border-top-right-radius: 10px;
     width: 106px;
     height: 38px;
-    -moz-border-radius-topleft: 10px;
-    -moz-border-radius-topright: 10px;
 }
 #simpleViewButton,
 #advancedViewButton .currentPage{
     background: #E5E5E5;
 }
+
 
 .secondaryNavButton{
     background: none;
