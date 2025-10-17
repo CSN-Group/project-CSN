@@ -4,7 +4,7 @@ const network = require('../mainincludes/network.js');
 const si = require('systeminformation');
 
 const {execFile, exec} = require('child_process');
-const {addReading} = require('../database/dbManager.js')
+const {addReading,addActiveTime} = require('../database/dbManager.js')
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -30,9 +30,6 @@ const ALLOWED_DOWNTIME_DURATION_MILLIS = ALLOWED_DOWNTIME_DURATION_SECONDS * 100
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
-
-const dbLogIntervalMs = 600000 //10 mins
-let lastDbLog = 0; //ms
 
 let globalsUpdated = false;
 let initialUpdateCheck = false;
@@ -312,7 +309,16 @@ function startActivePeriod(){
 }
 
 function saveActivityToDatabase(start, stop){
-  //Woooo spara till db
+  //Sparar data varje dag, det är roligt.
+  //Massa data vill man ha, mycket troligt!
+  //För då kan man plotta
+  //En graf eller åtta!
+  //Databaser! Wioooo!
+  //(Ducktales)
+  const totalMin = (stop - start) / 60000;
+  if(totalMin > 0){
+    addActiveTime(start,stop,totalMin);
+  }  
 }
 
 //Update
@@ -349,11 +355,11 @@ async function measureSystem() {
 
   if(userIdleTime > ALLOWED_DOWNTIME_DURATION_SECONDS && !globals['currentlyPausing']){
     setGlobal('currentlyPausing', true);
-    //
-    // Spara till DB - starttid (Timestamp) och stopptid (Timestamp)
+    
     // Dessa bildar ett tidsspann för en aktiv tid.
-    //
-    //saveActivityToDB(globals["userActiveStartTime"], Date.now());
+    console.log("ABOUT TO ADD")
+    
+    saveActivityToDatabase(globals["userActiveStartTime"], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
   }
@@ -370,7 +376,7 @@ async function measureSystem() {
     setGlobal('userName', os.userInfo().username);
   }
 
-  //Speedtest
+  //Database logging here
   if(updateCounter % 600 === 0){
     performSpeedtest('main')
         .then(logReading)
@@ -384,7 +390,7 @@ async function measureSystem() {
   }
 
   updateCounter++;
-  console.log(updateCounter);
+  //console.log(updateCounter);
 }
 
 async function runFullUpdate() {
@@ -437,7 +443,7 @@ app.whenReady().then(() => {
   createWindow();
 
   powerMonitor.on('suspend', () => {
-    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   });
 
   powerMonitor.on('resume', () => {
@@ -453,11 +459,13 @@ app.whenReady().then(() => {
   });
 
   powerMonitor.on('shutdown', (e) => {
-    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   });
 });
 
 app.on('window-all-closed', () => {
-  if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+  if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   app.quit();
 });
+
+//SLUT

@@ -1,17 +1,89 @@
+
 const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
+let currentGraphMetric = 'upSpeed';
+let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
+let currentGraphRange = 'day';
+let currentGraphYear = 2025; //Because why not.
+let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
+
+
+async function initDrop(){
+  const dayDrop = document.getElementById("dayDropdown");
+  const weekDrop = document.getElementById("weekDropdown");
+  const monthDrop = document.getElementById("monthDropdown");  
+
+  const days = dbManager.getUniqueDateStamps();
+  const months = await dbManager.fetchAvailableMonths();
+ 
+  days.forEach(day => {
+    const button = document.createElement("button");
+    button.textContent = day;
+    button.addEventListener("click", () => {
+      currentGraphDatestamp = day;
+      currentGraphRange = 'day';
+      createDayGraph(currentGraphDatestamp, currentGraphMetric);
+    });
+    dayDrop.appendChild(button);
+  });
+
+  const weekButton = document.createElement("button");
+  weekButton.textContent = "Last 7 days";
+  weekButton.addEventListener("click", () => {
+    currentGraphRange = 'week';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
+  })
+  weekDrop.appendChild(weekButton);
+
+  months.forEach(month => {
+    const button = document.createElement("button");    
+    button.textContent = month.month;
+    button.addEventListener("click", () => {
+      currentGraphRange = 'month';
+      currentGraphMonth = parseInt(month.month);
+      currentGraphYear = month.year;   
+      createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear,currentGraphMonth);
+    });
+    monthDrop.append(button);
+  });  
+}
+
 async function initGraph(){
-  //dbManager.syncLocalDatabase();  
-  createDayGraph();  
-  dbManager.cleanLocalDatabase();
-  document.getElementById('graphPingButton').addEventListener('click', () => createDayGraph('ping'));
-  document.getElementById('graphUpspeedButton').addEventListener('click', () => createDayGraph('upSpeed'));
-  document.getElementById('graphDownspeedButton').addEventListener('click', () => createDayGraph('downSpeed'));
-  document.getElementById('graphWifiButton').addEventListener('click', () => createDayGraph('wifiStr'));
-  document.getElementById('graphInterruptButton').addEventListener('click', () => createDayGraph('interrupts'));
-  document.getElementById('weekButton').addEventListener('click', () => createDayGraph('ping', 'week'));
-  document.getElementById('monthButton').addEventListener('click', () => createDayGraph('ping', 'month'));  
+  //Databasestuff! Move somewhere else?
+  dbManager.syncLocalDatabase();    
+  dbManager.cleanLocalDatabase(); 
+  
+  document.getElementById('graphPingButton').addEventListener('click', () =>{
+    currentGraphMetric = 'ping';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  });
+
+  document.getElementById('graphUpspeedButton').addEventListener('click', () =>{
+    currentGraphMetric = 'upSpeed';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphDownspeedButton').addEventListener('click', () =>{
+    currentGraphMetric = 'downSpeed';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphWifiButton').addEventListener('click', () =>{
+    currentGraphMetric = 'wifiStr';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  } );
+
+  document.getElementById('graphInterruptButton').addEventListener('click', () =>{
+    currentGraphMetric = 'interrupts';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  });
+
+  document.getElementById('graphWorktimeButton').addEventListener('click', () =>{
+    currentGraphMetric = 'workingTime';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+  });
+    
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -31,7 +103,7 @@ function dateStampToDate(dateStamp) {
 }
 
 //Set your mainmetric and choose between day or week for readings.
-async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, month=10){ 
+async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, month=10){ 
   if(graph){graph.destroy()}; //There can only be ONE graph in a canvas.
   
   let readings;
@@ -45,11 +117,17 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
     })            
   }
   else if(range === "month"){    
-    readings = await dbManager.fetchMonthlyHistory(year,month);    
+    readings = await dbManager.fetchMonthlyHistory(year,month);
+    const currentMonth = (new Date().getMonth()+1);
+     
+    if(month === currentMonth){ //If we want to plot the current month, the last week is not in Supabase!
+      const datestamps = dbManager.getUniqueDateStamps();      
+      datestamps.forEach( stamp => {
+        readings.push(dbManager.summarizeDay(stamp));
+      })     
+    }    
   }
-  else{
-    const unixStamp = new Date().getTime();
-    const dateStamp = dbManager.convertToDateStamp(unixStamp); //YYYYMMDD 
+  else{    
     readings = await dbManager.getDayReadings(dateStamp); 
   }
 
@@ -63,15 +141,24 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
   const downSpeeds = extractValue(readings, 'downSpeed');
   const pings = extractValue(readings, 'ping');
   const wifiStrs = extractValue(readings, 'wifiStr');
-  let interrupts = createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs);
-  
-    
+  let interrupts;
+  let workingTime;
+  if(mainMetric === 'interrupts'){interrupts = createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs);} 
+  if(mainMetric === 'workingTime'){
+    const workSessions = dbManager.getActiveSessions(dateStamp);
+    //console.log(workSessions) 
+    workingTime = createWorktimeData(workSessions);
+  }
+  console.log(workingTime);
   const start = times[0];
   const end = times[times.length-1]
   
-  const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds, ping: pings, wifiStr: wifiStrs, interrupts: interrupts};
-  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)', wifiStr: 'WiFi Strength (%)', interrupt: 'Interrupts: 1=Interrupt, 0 = OK'};
-  const borderColors = { upSpeed: 'blue', downSpeed: 'yellow', ping: 'green', wifiStr: 'orange', interrupts:'red'};
+  const metrics = { upSpeed: upSpeeds, downSpeed: downSpeeds,
+                    ping: pings, wifiStr: wifiStrs, interrupts: interrupts, workingTime: workingTime};
+  const labels = { upSpeed: 'Upload Speed (Mbps)', downSpeed: 'Downloadspeed (Mbps)', ping: 'Ping (ms)',
+                   wifiStr: 'WiFi Strength (%)', interrupts: 'Interrupts', workingTime:'Work or Not'};
+  const borderColors = { upSpeed: 'blue', downSpeed: 'yellow', ping: 'green', wifiStr: 'orange', interrupts:'red', workingTime: 'purple'};
+  const titleText = {upSpeed:"Uppladdningshastighet" , downSpeed:"Nedladdningshastighet", ping:"Ping", wifiStr:"Wifi", interrupts:"Interrupts", workingTime:"Arbetstid",}
 
   const mainData = metrics[mainMetric];
 
@@ -86,7 +173,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
         borderWidth: 1,
         tension: 0,
         pointRadius: 1,
-        stepped: mainMetric === 'interrupts'  //Binary look on graph..?
+        stepped: mainMetric === 'interrupts' || mainMetric === 'workingTime'  //Binary look on graph..?
       }]
     },
     options: {
@@ -108,31 +195,35 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
             text: range != 'day'            
               ? `${labels[mainMetric]} (Daily average)`
               : labels[mainMetric] },
-          min:mainMetric === 'interrupts' ? -0.1: undefined,
-          max:mainMetric === 'interrupts' ? 1.1: undefined,
-          ticks: mainMetric === 'interrupts'
+          min:mainMetric === 'interrupts' || mainMetric === 'workingTime' ? -0.1: undefined,
+          max:mainMetric === 'interrupts' || mainMetric === 'workingTime' ? 1.1: undefined,
+          ticks: mainMetric === 'interrupts' || mainMetric === 'workingTime'
           ? {
             stepSize: 1,
             callback: value => {
-              if (value === 0) return 'OK';
-              if (value === 1) return 'Interrupt';
+              if (value === 0) return mainMetric === 'workingTime' ? 'Idle': 'OK';
+              if (value === 1) return mainMetric === 'workingTime' ? 'Working':'Interrupt';
               return ''; // ← hide any other tick labels
             }
           }
-          : {}
+          :{}
         },
               
       },
       plugins: {
         legend: { display: false },
-        title: { display: true, text: "Readings", font: { size: 14 } },
+        title: { display: true,
+                 text: titleText[mainMetric],
+                 font: { size: 14 } },
         tooltip: {
+
           displayColors: false,
           callbacks: {
           label: function(context) {
-          const i = context.dataIndex;         
+          const i = context.dataIndex;
+
          // Build all the tooltip lines
-          const tooltipLines = {
+          const tooltipLines = {          
           upSpeed: `Upspeed: ${upSpeeds[i]} Mbps`,
           downSpeed: `Downspeed: ${downSpeeds[i]} Mbps`,
           ping: `Ping: ${pings[i]} ms`,
@@ -140,8 +231,8 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
         };
 
         // Put the main metric first
-        const order = ['upSpeed', 'ping','downSpeed', 'wifiStr'].filter(k => k !== mainMetric);
-        return [tooltipLines[mainMetric], ...order.map(k => tooltipLines[k])];
+        const order = ['wifiStr', 'downSpeed','upSpeed', 'ping'].filter(k => k !== mainMetric);
+        return [tooltipLines[mainMetric], ...order.map(k => tooltipLines[k])].filter(Boolean); //Filter Boolean removes undefined number on interrupt and workingtime.
           }
           }
         }
@@ -151,7 +242,7 @@ async function createDayGraph(mainMetric = "upSpeed", range = "day", year=2025, 
 }
 
 function createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs){
-  interrupts = [];
+  let interrupts = [];
   const iterations = upSpeeds.length;
   const upDownSpeedLimit = 10;
   const wifiLimit = 60;
@@ -171,4 +262,14 @@ function createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs){
     }    
   }    
   return interrupts;
+}
+
+function createWorktimeData(sessions) {  
+  let data = [];
+  sessions.forEach(session => {
+    data.push({ x: session.startTime, y: 1 });
+    data.push({ x: session.stopTime, y: 1 });
+    data.push({ x: session.stopTime + 1, y: 0 });
+  });
+  return data;
 }
