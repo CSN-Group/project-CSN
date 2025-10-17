@@ -118,3 +118,6 @@ release/
 playwright-report/
 test-results/
 jest-html-reporters-*.html
+
+# DB
+src/database/database.db
