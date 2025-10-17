@@ -120,4 +120,4 @@ test-results/
 jest-html-reporters-*.html
 
 #
-src/database/database.db
+src/database/*.db
