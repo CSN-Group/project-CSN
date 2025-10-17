@@ -20,14 +20,12 @@ const dgram = require('dgram');
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
 const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
-const ALLOWED_DOWNTIME_DURATION = 50 * 1000;
+const ALLOWED_DOWNTIME_DURATION_SECONDS = 300;
+const ALLOWED_DOWNTIME_DURATION_MILLIS = ALLOWED_DOWNTIME_DURATION_SECONDS * 1000;
 
 //Local variables
 let updateCounter = 0;
 let currentlyUpdating = false;
-
-const dbLogIntervalMs = 600000 //10 mins
-let lastDbLog = 0; //ms
 
 let globalsUpdated = false;
 let initialUpdateCheck = false;
@@ -224,23 +222,18 @@ async function performSpeedtest(triggeredBy = 'main') {
 }
 
 async function logReading() {
-  const now = Date.now();
-  // Skip if not enough time has passed since last DB log
-  if (now - lastDbLog < dbLogIntervalMs) return;
-  lastDbLog = now;
 
-  try {
-    // Run a new speedtest using the existing function
-    await performSpeedtest('main');   
-    // Store in database
-    await addReading(
+   try {
+    return addReading(
       getGlobal('lastUpspeed'),
       getGlobal('lastDownspeed'),
       getGlobal('currentWifiStrength'),
       getGlobal('lastPing'),
-      getGlobal('currentConnectionType'));
-    
-  } catch (err) {
+      getGlobal('currentConnectionType')
+      );
+    }
+
+  catch (err) {
     console.error('[AutoLogger] Failed to log reading:', err);
   }
 }
@@ -320,10 +313,12 @@ function saveActivityToDatabase(start, stop){
   //Massa data vill man ha, mycket troligt!
   //För då kan man plotta
   //En graf eller åtta!
-  //Databas! Wioooo!
+  //Databaser! Wioooo!
   //(Ducktales)
-  const totalMin = (stop - start) / 60; //Do we want this?
-  addActiveTime(start,stop,totalMin);
+  const totalMin = (stop - start) / 60000;
+  if(totalMin > 0){
+    addActiveTime(start,stop,totalMin);
+  }  
 }
 
 //Update
@@ -356,15 +351,15 @@ async function measureSystem() {
 
   //User activity
   const userIdleTime = powerMonitor.getSystemIdleTime();
-
-  if(userIdleTime > ALLOWED_DOWNTIME_DURATION && !globals['currentlyPausing']){
+  console.log("UIT =" + userIdleTime);
+  if(userIdleTime > ALLOWED_DOWNTIME_DURATION_SECONDS && !globals['currentlyPausing']){
     setGlobal('currentlyPausing', true);
-    //
-    // Spara till DB - starttid (Timestamp) och stopptid (Timestamp)
+    
     // Dessa bildar ett tidsspann för en aktiv tid.
-    //
-    saveActivityToDB(globals["userActiveStartTime"], Date.now());
-  } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION && globals["currentlyPausing"]){
+    console.log("ABOUT TO ADD")
+    
+    saveActivityToDatabase(globals["userActiveStartTime"], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
+  } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
   }
 
@@ -381,8 +376,13 @@ async function measureSystem() {
   }
 
   //Database logging here
-  await logReading();
-      
+  if(updateCounter % 600 === 0){
+    performSpeedtest('main')
+        .then(logReading)
+        .catch(() => setGlobal('updatesAvailable', false));
+  }
+  
+  
 
   if(updateCounter % 3600 === 0){
     isUpdatesAvailable()
@@ -391,7 +391,7 @@ async function measureSystem() {
   }
 
   updateCounter++;
-  console.log(updateCounter);
+  //console.log(updateCounter);
 }
 
 async function runFullUpdate() {
@@ -444,7 +444,7 @@ app.whenReady().then(() => {
   createWindow();
 
   powerMonitor.on('suspend', () => {
-    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   });
 
   powerMonitor.on('resume', () => {
@@ -461,10 +461,13 @@ app.whenReady().then(() => {
   });
 
   powerMonitor.on('shutdown', (e) => {
-    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime']);
+    if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   });
 });
 
 app.on('window-all-closed', () => {
+  if(!globals['currentlyPausing']) saveActivityToDatabase(globals['userActiveStartTime'], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   app.quit();
 });
+
+//SLUT

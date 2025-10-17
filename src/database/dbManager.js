@@ -58,6 +58,13 @@ function getUniqueDateStamps() {
     return res.map(row => row.dateStamp);
 }
 
+function getActiveSessions(datestamp){
+    const sql = 'SELECT startTime, stopTime FROM activeTime WHERE dateStamp = ?';
+    const stmt = db.prepare(sql);
+    let res = stmt.all(datestamp);
+    return res;
+}
+
 
 async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Add a new reading to the database.
     const unixStamp = new Date().getTime();
@@ -69,10 +76,12 @@ async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Ad
 }
 
 async function addActiveTime(start, stop, totMin){
-    const sql = `INSERT INTO activeTime (startTime,stopTime,minutesWorked)
-    VALUES (?, ?, ?)`;
+    const sql = `INSERT INTO activeTime (startTime,stopTime,minutesWorked, dateStamp)
+    VALUES (?, ?, ?, ?)`;
+    const dateStamp = convertToDateStamp(start);
+    console.log(dateStamp);
     const stmt = db.prepare(sql);
-    stmt.run(start,stop,totMin);
+    stmt.run(start,stop,totMin,dateStamp);
 }
 
 
@@ -155,4 +164,4 @@ function addAdminInfo(docText, suppNr, suppLink, timeStamp){
 }
 
 
-module.exports = { getAdminInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
+module.exports = { getActiveSessions, getAdminInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };

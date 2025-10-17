@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld('dbManager', {
 	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),	
 	syncLocalDatabase: () => supaDbManager.syncLocalDatabase(),
 	fetchAvailableMonths: () => supaDbManager.fetchAvailableMonths(),
+	getActiveSessions: (datestamp) =>dbManager.getActiveSessions(datestamp),
 });
 
 contextBridge.exposeInMainWorld('updates', {
