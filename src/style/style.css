@@ -40,6 +40,7 @@ html, body {
     height: 100%;
     width: 100%;
     background-color: #E5E5E5;
+    align-content: start;
 }
 
 h2 {
@@ -328,8 +329,8 @@ footer{
     width: 106px;
     height: 38px;
 }
-#simpleViewButton,
-#advancedViewButton .currentPage{
+#simpleViewButton.currentPage,
+#advancedViewButton.currentPage{
     background: #E5E5E5;
 }
 
