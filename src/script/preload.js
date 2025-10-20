@@ -5,7 +5,7 @@ const { contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('systemInfo', {
 	getGlobal: (key) => ipcRenderer.invoke('getGlobal', key),
-	//setGlobals: () => setGlobals(),
+	setGlobal: (key, value) => ipcRenderer.invoke('setGlobal', key, value),
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),

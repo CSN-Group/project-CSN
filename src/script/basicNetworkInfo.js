@@ -29,8 +29,9 @@ async function updateNetwork(){
     const ethImage = document.getElementById("ethernetIcon");
 
     if(connType === "WiFi"){
-
         await updateWifiDisplay();
+
+        wifiText.innerText = await window.systemInfo.getGlobal("currentWifiStrength");
 
         ethText.innerText = "EJ ANSLUTEN";
         ethImage.src = "img/ethernet_trans.png"

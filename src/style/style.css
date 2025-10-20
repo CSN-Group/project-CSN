@@ -214,10 +214,9 @@ footer{
     border-radius: 6px;
 }
 
-/* Icon + text */
 .actionIcon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     margin-right: 0.5rem;
 }
 
@@ -330,7 +329,6 @@ footer{
 #advancedViewButton.currentPage{
     background: #E5E5E5;
 }
-
 
 .secondaryNavButton{
     background: none;
@@ -478,3 +476,72 @@ footer{
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
+
+#settingsGrid {
+    display: grid;
+    grid-template-areas:
+        "settingsLeft settingsRight";
+
+    grid-gap: 1rem;
+    height: 100%;
+    width: 100%;
+    background-color: #E5E5E5;
+    align-content: start;
+}
+
+#settingsLeft, #settingsRight {
+    max-width: 360px;
+    min-width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-family: sans-serif;
+    background: #F3F3F3;
+}
+
+#settingsLeft{
+    grid-area: settingsLeft;
+}
+
+#settingsRight{
+    grid-area: settingsRight;
+}
+
+.settingsOption, .status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.settingsOption label, .status label {
+    flex: 1;
+}
+
+.settingsOption input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+.status span {
+    font-weight: bold;
+    color: #2a7;
+}
+
+#clearDataButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#clearDataButton:hover {
+    background-color: #0056b3;
+}
+

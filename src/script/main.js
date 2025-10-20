@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const network = require('../mainincludes/network.js');
 const si = require('systeminformation');
+const fs = require('fs');
 
 const {execFile, exec} = require('child_process');
 const {addReading,addActiveTime} = require('../database/dbManager.js')
@@ -66,6 +67,12 @@ const globals = {
   lastUpspeed: 0.0,
   lastPing: 0,
 
+  //Settings
+  shouldSaveData: true,
+  shouldMeasure: true,
+  remindErgonomi: true,
+  remindSocial: true,
+  
   //Thresholds
   upDownHighTresh: 30,
   upDownLowTresh: 10,
@@ -260,7 +267,7 @@ async function runSpeedtest(){
 async function performSpeedtest(triggeredBy = 'main') {
   const currentlyTesting = getGlobal('currentlySpeedtesting');
 
-  if(!currentlyTesting) {
+  if(!currentlyTesting && globals["shouldMeasure"]){
     setGlobal('currentlySpeedtesting', true);
     setGlobal('speedtestText', "Testar...");
 
@@ -290,10 +297,6 @@ async function performSpeedtest(triggeredBy = 'main') {
     setGlobal('currentlySpeedtesting', false)
   }
 }
-
-isUpdatesAvailable()
-    .then(updatesAvailable => setGlobal('updatesAvailable', updatesAvailable))
-    .catch(() => setGlobal('updatesAvailable', false));
 
 async function logReading() {
   try {
@@ -343,6 +346,16 @@ async function isUpdatesAvailable(){
 
 }
 
+//Data used
+async function getDataUsed() {
+  try {
+    const stats = await fs.promises.stat("src/database/database.db");
+    return stats.size;
+  } catch (err) {
+    console.error(`Error getting file size for database.db:`, err);
+    throw err;
+  }
+}
 //IPC
 ipcMain.handle('run-speedtest', async () => performSpeedtest('renderer'));
 ipcMain.handle('getGlobal', (event, key) => getGlobal(key));
@@ -462,7 +475,6 @@ async function measureSystem() {
   }
 
   updateCounter++;
-  //console.log(updateCounter);
 }
 
 async function runFullUpdate() {
