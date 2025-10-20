@@ -9,7 +9,8 @@ function initActionList(){
 
 function getImage(imageString){
     switch (imageString){
-        default: return "img/testIcon.png";
+        case "error": return "img/redGuard.png"
+        default: return "img/teleIcon.png";
     }
 }
 
