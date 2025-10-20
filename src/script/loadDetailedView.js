@@ -1,8 +1,10 @@
 window.addEventListener('DOMContentLoaded', async () => {
-    //inits
+    //initSomething();
+    //initSomethingElse();
 
     window.updates.onUpdateDone(async () => {
-        //updates
+        //updateSomething();
+        //updateSomethingElse();
     });
 
     const simpleButton = document.getElementById("simpleViewButton");

@@ -46,7 +46,6 @@ contextBridge.exposeInMainWorld('updates', {
 	dismissAction: (id, sleepDuration) => {
 		ipcRenderer.send("dismiss-action", {id, sleepDuration });
 	}
-
 });
 
 contextBridge.exposeInMainWorld('nav', {

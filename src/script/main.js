@@ -45,6 +45,7 @@ const globals = {
   currentConnectionType: "Checking...",
   currentlySpeedtesting: false,
   currentWifiStrength: 0,
+  speedtestText: "INGEN MÄTNING",
 
   //System information
   compOnTimeHours: 0,
@@ -261,12 +262,11 @@ async function performSpeedtest(triggeredBy = 'main') {
 
   if(!currentlyTesting) {
     setGlobal('currentlySpeedtesting', true);
+    setGlobal('speedtestText', "Testar...");
 
     setGlobal("lastDownspeed", "testing..");
     setGlobal("lastUpspeed", "testing..");
     setGlobal("lastPing", "testing..");
-
-    updateDoneEvent();
 
     const result = await runSpeedtest();
 
@@ -284,7 +284,8 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastDownspeed", downSpeed);
       setGlobal("lastUpspeed", upSpeed);
       setGlobal("lastPing", ping);
-    }
+      setGlobal('speedtestText', Date.now());
+    } else setGlobal('speedtestText', "ERROR");
 
     setGlobal('currentlySpeedtesting', false)
   }
