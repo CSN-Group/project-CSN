@@ -17,23 +17,30 @@ async function cleanLocalDatabase(){
 
 function getReadings() { //Get all readings from the database, as an array of objects.
     const sql = 'SELECT * FROM readings';
-    let stmt = db.prepare(sql);
-    let res = stmt.all();
-    return res;
+    let statement = db.prepare(sql);
+    let result = statement.all();
+    return result;
 }
 
 function getAdminInfoTime(){
     const sql = 'SELECT timeStamp FROM admin ORDER BY id DESC LIMIT 1';
-    const stmt = db.prepare(sql);
-    const res = stmt.get(); //Returns one single object!
-    return res;
+    const statement= db.prepare(sql);
+    const result = statement.get(); //Returns one single object!
+    return result;
 }
 
-function getAdminInfo(){
-    const sql = 'SELECT * FROM admin ORDER BY id DESC LIMIT 1';
-    const stmt = db.prepare(sql);
-    const res = stmt.get(); //Returns one single object!
-    return res;
+function getAdminDocument(){
+    const sql = 'SELECT docText FROM admin ORDER BY id DESC LIMIT 1';
+    const statement = db.prepare(sql);
+    const result = statement.get(); //Returns one single object!
+    return result;
+}
+
+function getAdminSupportInfo(){
+    const sql = 'SELECT suppNr,suppLink FROM admin ORDER BY id DESC LIMIT 1';
+    const statement = db.prepare(sql);
+    const result = statement.get(); //Returns one single object!
+    return result;
 }
 
 //get today's readings? Might be needed.
@@ -164,4 +171,4 @@ function addAdminInfo(docText, suppNr, suppLink, timeStamp){
 }
 
 
-module.exports = { getActiveSessions, getAdminInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
+module.exports = { getActiveSessions, getAdminDocument, getAdminSupportInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
