@@ -1,5 +1,4 @@
 
-const graphContainer = document.getElementById('historyGraph');
 let graph = null;
 
 let currentGraphMetric = 'upSpeed';
@@ -53,6 +52,7 @@ async function initGraph(){
   //Databasestuff! Move somewhere else?
   dbManager.syncLocalDatabase();    
   dbManager.cleanLocalDatabase(); 
+  createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   
   document.getElementById('graphPingButton').addEventListener('click', () =>{
     currentGraphMetric = 'ping';
@@ -103,7 +103,8 @@ function dateStampToDate(dateStamp) {
 }
 
 //Set your mainmetric and choose between day or week for readings.
-async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, month=10){ 
+async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, month=10){
+  const graphContainer = document.getElementById('historyGraph');
   if(graph){graph.destroy()}; //There can only be ONE graph in a canvas.
   
   let readings;
@@ -149,7 +150,7 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
     //console.log(workSessions) 
     workingTime = createWorktimeData(workSessions);
   }
-  console.log(workingTime);
+  //console.log(workingTime);
   const start = times[0];
   const end = times[times.length-1]
   
@@ -273,3 +274,5 @@ function createWorktimeData(sessions) {
   });
   return data;
 }
+
+//module.exports = {initDrop, initGraph };

@@ -63,10 +63,6 @@ footer{
     margin-right: 20px;
 }
 
-#graphDiv {
-    grid-area: graph;
-    background-color: #89BD9E; /* light */
-}
 #buttonDiv{
     grid-area: buttons;
     background-color: #b1b1b1;
@@ -378,14 +374,71 @@ footer{
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
-/*Dropdowns */ 
+/*GRAPH PAGE STYLE*/
 
-.dropButton {
-  background-color: #4CAF50;
-  color: black;
-  padding: 1%;  
-  border: none;
+#graphGrid {
+    display: grid;
+    grid-template-areas: 
+        "range range range"
+        "metric graph graph"
+        "metric graph graph"
+        "metric graph graph";        
+    grid-gap: 1rem;
+    height: 100%;
+    width: 100%;
+    background-color: #d3d3d3;
+    align-items: stretch;
+    border-radius: 6px;
+}
+
+#timeRangeButtons {
+    grid-area: range;
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+    gap: 5%;
+    padding-right: 5%;
+}
+
+#metricButtons {
+    grid-area: metric;
+    display: block;   
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1%;
+    padding-left: 10%;
+    gap: 2%;    
+}
+
+#metricButtons button {     
+  width: 100%;
+}
+
+.dropButton,
+.graphButton  {
+  background-color: #F3F3F3F3;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  border-radius: 9999px;
+  border: 1px solid black;
   cursor: pointer;
+  font-weight: bold; 
+  font-size: 1.1rem;
+  padding: 12px 28px;  
+}
+
+.dropButton{
+    display: flex;
+}
+
+#historyGraph{
+    grid-area: graph;
+    background-color: #F3F3F3F3;
+    border: 1px solid black;
+}
+
+.dropdown{
+    position: relative;
 }
 
 .dropdownContent {
@@ -396,6 +449,25 @@ footer{
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
 
+.dropdownContent button{ 
+ width: 100%; 
+ padding: 5px 0px 5px 0px; 
+}
+
 .dropdown:hover .dropdownContent {
   display: block;
+}
+
+/*DOCUMENTATION STYLE*/
+
+#docDiv{
+    max-width: 100%;
+    height: 100%;
+    overflow: scroll;    
+}
+
+#docDiv p {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
