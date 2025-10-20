@@ -9,7 +9,14 @@ function initActionList(){
 
 function getImage(imageString){
     switch (imageString){
-        default: return "img/testIcon.png";
+        case "notice":
+            return "img/blueGuard.png";
+        case "light-error":
+            return "img/yellowGuard.png";
+        case "error":
+            return "img/redGuard.png";
+        default:
+             return "img/testIcon.png";
     }
 }
 

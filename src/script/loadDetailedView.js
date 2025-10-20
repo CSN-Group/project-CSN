@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <button id="graphInterruptButton" class="graphButton">AVBROTT</button>
                 <button id="graphWorktimeButton" class="graphButton">PAUSER</button>
             </div>                   
-            <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
+            <canvas id="historyGraph"></canvas>
         </div>
         `
         initDrop();

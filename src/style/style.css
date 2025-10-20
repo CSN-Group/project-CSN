@@ -411,6 +411,11 @@ footer{
     gap: 2%;    
 }
 
+#historyGraph {
+    width: 100%;
+    max-width: 500px;
+}
+
 #metricButtons button {     
   width: 100%;
 }
@@ -424,7 +429,7 @@ footer{
   cursor: pointer;
   font-weight: bold; 
   font-size: 1.1rem;
-  padding: 12px 28px;  
+  padding: 12px 28px; 
 }
 
 .dropButton{

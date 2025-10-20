@@ -50,7 +50,7 @@ async function initDrop(){
 
 async function initGraph(){
   //Databasestuff! Move somewhere else?
-  dbManager.syncLocalDatabase();    
+  dbManager.syncLocalDatabase();   
   dbManager.cleanLocalDatabase(); 
   createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   

@@ -20,12 +20,20 @@ async function isUsingBattery() {
 
 const os = require('os');
 const dgram = require('dgram');
+const { glob } = require('fs');
 
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
 const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
 const ALLOWED_DOWNTIME_DURATION_SECONDS = 300;
 const ALLOWED_DOWNTIME_DURATION_MILLIS = ALLOWED_DOWNTIME_DURATION_SECONDS * 1000;
+//Thresholds
+const TRESH_UP_DOWN_SPEED_HIGH = 30;
+const TRESH_UP_DOWN_SPEED_LOW = 10;
+const TRESH_WIFI_STR_HIGH = 80;
+const TRESH_WIFI_STR_LOW = 60;
+const TRESH_PING_HIGH = 30
+const TRESH_PING_LOW = 15
 
 //Local variables
 let updateCounter = 0;
@@ -51,7 +59,7 @@ const globals = {
   osVersion: "Loading..",
   pcModel: "Loading..",
   userName: "Loading..",
-  updatesAvailable: "Loading..",
+  updatesAvailable: null,
   mac: null,
   usingBattery: false,
 
@@ -105,23 +113,80 @@ function ifCodeToType(ifCode) {
 function generateActionList() {
   updateDismissedList();
   const list = [];
-
+  let allValuesGood = true;
 
   // TEST //
-
-  if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
-    list.push(createAction("valid-ip", "check", "You have a valid IP!", true, 5000))
-  }
-
+  //if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
+  //  list.push(createAction("valid-ip", "notice", "Din har en godkänd IP address.", true, 5000))
+  //}
   // END TEST //
 
+  //Tech Actions
+  if(globals['currentWifiStrength'] < TRESH_WIFI_STR_HIGH && globals['currentWifiStrength'] > TRESH_WIFI_STR_LOW ){
+    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['currentWifiStrength'] < TRESH_WIFI_STR_LOW){
+    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
+    allValuesGood = false;
+  }  
+  
+  if(globals['lastUpspeed'] > TRESH_UP_DOWN_SPEED_LOW && globals['lastUpspeed'] < TRESH_UP_DOWN_SPEED_HIGH){
+    list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastUpspeed'] < TRESH_UP_DOWN_SPEED_LOW){
+    list.push(createAction("up-low", "error", "Din uppladdningshastighet är väldigt låg!"));
+    allValuesGood = false;
+  }
+  
+  if(globals['lastDownspeed'] > TRESH_UP_DOWN_SPEED_LOW && globals['lastDownspeed'] < TRESH_UP_DOWN_SPEED_HIGH){
+    list.push(createAction("down-high", "light-error", "Din nedladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastDownspeed'] < TRESH_UP_DOWN_SPEED_LOW){
+    list.push(createAction("down-low", "error", "Din nedladdnignshastighet är väldigt låg!"));
+    allValuesGood = false;
+  }
+  
+  if(globals['lastPing'] < TRESH_PING_HIGH && globals['lastPing'] > TRESH_PING_LOW){
+    list.push(createAction("ping-medium", "light-error", "Din nedladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastPing'] > TRESH_PING_HIGH){
+    list.push(createAction("ping-high", "error", "Din svarstid är väldigt hög!"));
+    allValuesGood = false;
+  }
+
+  if(allValuesGood){
+    list.push(createAction("all-good", "notice", "Fina värden! Skutan bör segla utan problem!"));
+  }
+
   if(globals['currentIP'] === "No valid IP"){
-    list.push(createAction("invalid-ip", "error", "No valid IP"));
+    list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
   }
 
   if(globals['usingBattery']){
-    list.push(createAction("using-battery", "error", "Anslut laddaren"));
+    list.push(createAction("using-battery", "notice", "Anslut laddaren"));
   }
+
+  console.log(globals['compOnTimeHours'])
+  if(globals['compOnTimeHours'] > 4){
+    list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
+  }
+
+  if(globals['currentConnectionType'] != "Ethernet"){
+    list.push(createAction("conn-type", "notice", "Koppla in internetkabel för stabilare internet."));
+  }
+  
+  if(globals['updatesAvailable']){    
+    list.push(createAction("update-available", "light-error", "Windowsuppdatering tillgänglig!"));
+  }
+
+  //Soft Actions
+
+
+
 
   return list;
 }
@@ -367,7 +432,9 @@ async function measureSystem() {
   //OS Uptime
   if(updateCounter % 60 === 0){
     //Uptime
-    setGlobal('compOnTimeHours', os.uptime());
+    setGlobal('compOnTimeHours',
+       Math.floor(os.uptime() / 3600)); //Converting from seconds to hours      
+  
 
     //Systeminfo
     setGlobal('pcName', os.hostname());
