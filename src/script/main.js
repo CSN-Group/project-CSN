@@ -27,13 +27,6 @@ const UPDATE_INTERVAL = 1000; //ms
 const STANDARD_SLEEP_INTERVAL = 30 * 60 * 1000;
 const ALLOWED_DOWNTIME_DURATION_SECONDS = 300;
 const ALLOWED_DOWNTIME_DURATION_MILLIS = ALLOWED_DOWNTIME_DURATION_SECONDS * 1000;
-//Thresholds
-const TRESH_UP_DOWN_SPEED_HIGH = 30;
-const TRESH_UP_DOWN_SPEED_LOW = 10;
-const TRESH_WIFI_STR_HIGH = 80;
-const TRESH_WIFI_STR_LOW = 60;
-const TRESH_PING_HIGH = 30
-const TRESH_PING_LOW = 15
 
 //Local variables
 let updateCounter = 0;
@@ -70,7 +63,15 @@ const globals = {
   //Last speedtest
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
-  lastPing: 0
+  lastPing: 0,
+
+  //Thresholds
+  upDownHighTresh: 30,
+  upDownLowTresh: 10,
+  wifiHighTresh: 80,
+  wifiLowTresh: 60,
+  pingHighTresh: 30,
+  pingLowTresh: 15,
 }
 
 //Globals functions
@@ -122,38 +123,38 @@ function generateActionList() {
   // END TEST //
 
   //Tech Actions
-  if(globals['currentWifiStrength'] < TRESH_WIFI_STR_HIGH && globals['currentWifiStrength'] > TRESH_WIFI_STR_LOW ){
+  if(globals['currentWifiStrength'] < globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
     list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['currentWifiStrength'] < TRESH_WIFI_STR_LOW){
+  else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
     list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
     allValuesGood = false;
   }  
   
-  if(globals['lastUpspeed'] > TRESH_UP_DOWN_SPEED_LOW && globals['lastUpspeed'] < TRESH_UP_DOWN_SPEED_HIGH){
+  if(globals['lastUpspeed'] > globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
     list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['lastUpspeed'] < TRESH_UP_DOWN_SPEED_LOW){
+  else if(globals['lastUpspeed'] < globals['upDownLowTresh']){
     list.push(createAction("up-low", "error", "Din uppladdningshastighet är väldigt låg!"));
     allValuesGood = false;
   }
   
-  if(globals['lastDownspeed'] > TRESH_UP_DOWN_SPEED_LOW && globals['lastDownspeed'] < TRESH_UP_DOWN_SPEED_HIGH){
+  if(globals['lastDownspeed'] > globals['upDownLowTresh'] && globals['lastDownspeed'] < globals['upDownHighTresh']){
     list.push(createAction("down-high", "light-error", "Din nedladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['lastDownspeed'] < TRESH_UP_DOWN_SPEED_LOW){
+  else if(globals['lastDownspeed'] < globals['upDownLowTresh']){
     list.push(createAction("down-low", "error", "Din nedladdnignshastighet är väldigt låg!"));
     allValuesGood = false;
   }
   
-  if(globals['lastPing'] < TRESH_PING_HIGH && globals['lastPing'] > TRESH_PING_LOW){
+  if(globals['lastPing'] < globals['pingHighTresh'] && globals['lastPing'] > globals['pingLowTresh']){
     list.push(createAction("ping-medium", "light-error", "Din nedladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['lastPing'] > TRESH_PING_HIGH){
+  else if(globals['lastPing'] > globals['pingHighTresh']){
     list.push(createAction("ping-high", "error", "Din svarstid är väldigt hög!"));
     allValuesGood = false;
   }
@@ -170,7 +171,7 @@ function generateActionList() {
     list.push(createAction("using-battery", "notice", "Anslut laddaren"));
   }
 
-  console.log(globals['compOnTimeHours'])
+
   if(globals['compOnTimeHours'] > 4){
     list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
   }
@@ -184,7 +185,10 @@ function generateActionList() {
   }
 
   //Soft Actions
-
+  if( (Date.now() - globals['userActiveStartTime']) > 1800000){
+    list.push(createAction("ergonomy", "notice", "Byt sittposition",true,30, false));
+  }
+  
 
 
 
