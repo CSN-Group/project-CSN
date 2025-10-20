@@ -42,13 +42,31 @@ function initGauges() {
 
 
 async function updateGauges(){
-
     const downspeed = await window.systemInfo.getGlobal('lastDownspeed');
     const upspeed = await window.systemInfo.getGlobal('lastUpspeed');
 
-    downSpeedometer.set(downspeed);
-    upSpeedometer.set(upspeed);
+    downSpeedometer.set(mapSpeedToGauge(downspeed, 8, 20));
+    upSpeedometer.set(mapSpeedToGauge(upspeed, 4, 10));
+}
 
+function mapSpeedToGauge(speed, lowTier, midTier) {
+    if (speed <= 0) return 0;
+
+    let gaugeValue;
+
+    if (speed <= lowTier) {
+        gaugeValue = (speed / lowTier) * 33;
+    } else if (speed <= midTier) {
+        const ratio = (speed - lowTier) / (midTier - lowTier);
+        gaugeValue = 33 + ratio * (67 - 33);
+    } else {
+        const capped = Math.min(speed, 100);
+        const ratio = (capped - midTier) / (100 - midTier);
+        gaugeValue = 67 + ratio * (100 - 67);
+    }
+
+    // ✅ Never let the gauge go above 98 (for visual breathing room)
+    return Math.min(gaugeValue, 98);
 }
 
 let paths;
@@ -64,26 +82,35 @@ function setWifiBars(level) {
 }
 
 function setWifiColor(level) {
-    const colors = ['#d32f2f', '#f57c00', '#388e3c', '#707070'];
+    const colors = ['#d32f2f', '#ffd11b', '#388e3c', '#515151'];
     const color = colors[level] || '#ccc';
     paths.forEach(p => (p.style.stroke = color));
 }
 
-let currentLevel = 0;
-let currentColor = 0;
+async function updateWifiDisplay() {
+    const wifiStr = await window.systemInfo.getGlobal('currentWifiStrength');
 
-async function updateWifiDisplay(level, color) {
-    setWifiBars(currentLevel);
-    setWifiColor(currentColor);
+    let level, color;
 
-    if (currentLevel === 4) {
-        currentLevel = 0;
-        if (currentColor === 3) {
-            currentColor = 0;
-        } else currentColor++;
-    } else currentLevel++;
+    if(wifiStr > 90){
+        level = 4;
+        color = 2;
+    } else if(wifiStr > 70){
+        level = 3;
+        color = 1;
+    } else if(wifiStr > 50){
+        level = 2
+        color = 1
+    } else if(wifiStr > 30){
+        level = 1;
+        color = 1;
+    } else{
+        level = 1;
+        color = 4;
+    }
+    setWifiBars(level);
+    setWifiColor(color);
 
     const tooltip = document.getElementById("wifiTooltip");
-    const wifiStr = await window.systemInfo.getGlobal("currentWifiStrength");
     tooltip.innerText = "Wifi strength: " + wifiStr + "% är jättebra/jättedåligt";
 }

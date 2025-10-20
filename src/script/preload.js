@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld('dbManager', {
 	summarizeDay: (dateStamp) => dbManager.summarizeDay(dateStamp),	
 	addReading: dbManager.addReading,
 	addAdminInfo: dbManager.addAdminInfo,
-	getAdminInfo: dbManager.getAdminInfo,		
+	getAdminInfo: dbManager.getAdminInfo,
 	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
 	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
 	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
@@ -45,7 +45,6 @@ contextBridge.exposeInMainWorld('updates', {
 	dismissAction: (id, sleepDuration) => {
 		ipcRenderer.send("dismiss-action", {id, sleepDuration });
 	}
-
 });
 
 contextBridge.exposeInMainWorld('nav', {

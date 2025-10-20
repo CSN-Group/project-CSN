@@ -28,7 +28,7 @@
         </div>
         <span id="wifiText">LOADING</span><label>%</label>
 
-        <img src="img/ethernet.png" alt="Ethernet" class="ethernet-icon">
+        <img src="img/ethernet.png" alt="Ethernet" id="ethernetIcon">
         <span id="ethernetText">LOADING</span>
       </div>
     </div>
@@ -46,13 +46,13 @@
 
       <div id="speedtestDetails">
         <div class="gaugeWrapper">
-          <span class="speedValue" id="downloadValue">-- Mbps</span>
-          <canvas id="downSpeedometer" width="200" height="100"></canvas>
+          <span class="speedValue" id="downloadValue">--</span>
+          <canvas id="downSpeedometer" class="speedometer"></canvas>
         </div>
 
         <div class="gaugeWrapper">
-          <span class="speedValue" id="uploadValue">-- Mbps</span>
-          <canvas id="upSpeedometer" width="200" height="100"></canvas>
+          <span class="speedValue" id="uploadValue">--</span>
+          <canvas id="upSpeedometer" class="speedometer"></canvas>
         </div>
       </div>
 
@@ -67,7 +67,7 @@
     </div>
 
     <div id="softActionsDiv" class="innerContainer">
-      <h2>Soft Actions</h2>
+      <h2>Arbetsmiljö</h2>
       <ul id="softActionsList">
         <li>
           <img src="icon1.png" alt="Action Icon" class="actionIcon">
@@ -82,7 +82,7 @@
     </div>
 
     <div id="techActionsDiv" class="innerContainer">
-      <h2>Tech Actions</h2>
+      <h2>Tekniska problem</h2>
       <ul id="techActionsList">
         <li>
           <img src="icon3.png" alt="Action Icon" class="actionIcon">
@@ -141,15 +141,13 @@
       <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
     </div>
     -->
-  </div>      
-
-
-  <script src="script/basicNetworkInfo.js"></script>
-  <script src="script/actions.js"></script>
+  </div>
 
   <script src="../node_modules/gaugeJS/dist/gauge.min.js"></script>
   <script src="script/gauge.js"></script>
 
+  <script src="script/basicNetworkInfo.js"></script>
+  <script src="script/actions.js"></script>
   <script src="script/loadSimpleView.js"></script>
 </body>
 </html>
