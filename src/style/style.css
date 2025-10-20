@@ -40,6 +40,7 @@ html, body {
     height: 100%;
     width: 100%;
     background-color: #E5E5E5;
+    align-content: start;
 }
 
 h2 {
@@ -164,7 +165,7 @@ footer{
 #pingRow {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 0.5rem;
 }
 
@@ -231,7 +232,7 @@ footer{
 }
 
 .actionCheckbox {
-    transform: scale(1.1);
+    transform: scale(1.5);
 }
 
 #restartInfo {
@@ -253,8 +254,9 @@ footer{
     background-color: #89BD9E;
 }
 
-#speedometer{
-    border: 1px solid black;
+.speedometer{
+    width: 150px;
+    height: 100px;
 }
 
 #wifiIconDiv{
@@ -328,8 +330,8 @@ footer{
     width: 106px;
     height: 38px;
 }
-#simpleViewButton,
-#advancedViewButton .currentPage{
+#simpleViewButton.currentPage,
+#advancedViewButton.currentPage{
     background: #E5E5E5;
 }
 
