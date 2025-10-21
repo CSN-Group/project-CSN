@@ -33,39 +33,45 @@
       </div>
     </div>
 
+    <div id="softActionsDiv" class="innerContainer">
+      <h2 class="overviewHeader">ARBETSMILJÖ</h2>
+      <ul id="softActionsList">        
+      </ul>
+    </div> 
+  
     <div id="techDiv">
-    <div id="speedtestDiv">
-      <h2 id="speedtestHeader">MÄTNINGAR</h2>
-      <label id="speedtestToggle">
-        I MÖTE
+      <div id="speedtestDiv">
+        <h2 id="speedtestHeader">MÄTNINGAR</h2>
+        <label id="speedtestToggle">
+          I MÖTE
         <label class="slidetoggle">
           <input type="checkbox" id="speedtestToggleCheckbox">
           <span class="slider"></span>
         </label>
-      </label>
+        </label>
 
         <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
         <span id="lastUpdatedText">INGEN MÄTNING</span>
 
-      <div id="speedtestDetails">
-        <div class="gaugeWrapper" id="downGaugeWrapper">
-          <span class="speedValue" id="downloadValue">--</span>
-          <canvas id="downSpeedometer" class="speedometer"></canvas>
-          <span class="tooltip" id='downTooltip'>Downspeed tooltip</span>
-        </div>
+        <div id="speedtestDetails">
+          <div class="gaugeWrapper" id="downGaugeWrapper">
+            <span class="speedValue" id="downloadValue">--</span>
+            <canvas id="downSpeedometer" class="speedometer"></canvas>
+            <span class="tooltip" id='downTooltip'>Downspeed tooltip</span>
+          </div>
 
-        <div class="gaugeWrapper" id="upGaugeWrapper">
-          <span class="speedValue" id="uploadValue">--</span>
-          <canvas id="upSpeedometer" class="speedometer"></canvas>
-          <span class="tooltip" id='upTooltip'>Upspeed tooltip</span>
-        </div>
+          <div class="gaugeWrapper" id="upGaugeWrapper">
+            <span class="speedValue" id="uploadValue">--</span>
+            <canvas id="upSpeedometer" class="speedometer"></canvas>
+            <span class="tooltip" id='upTooltip'>Upspeed tooltip</span>
+          </div>
 
-        <div id="pingRow">
-          <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
-          <label id="pingLabel">Svarstid: </label>
-          <span id="pingValue">-</span>
-          <label id="pingUnit"> ms</label>
-        </div>
+          <div id="pingRow">
+            <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
+            <label id="pingLabel">Svarstid: </label>
+            <span id="pingValue">-</span>
+            <label id="pingUnit"> ms</label>
+          </div>
 
         <button id="runSpeedtestButton">UPPDATERA</button>
       </div>
@@ -75,15 +81,7 @@
         <ul id="techActionsList">        
        </ul>
       </div>
-
-    </div>
-       
-
-    <div id="softActionsDiv" class="innerContainer">
-      <h2 class="overviewHeader">ARBETSMILJÖ</h2>
-      <ul id="softActionsList">        
-      </ul>
-    </div>    
+    </div>      
 
     <footer></footer>
   </div>
