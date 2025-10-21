@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const docButton = document.getElementById("documentationButton");
     const settingsButton = document.getElementById("settingsButton");
     const graphButton = document.getElementById("graphsButton");
+    const powerPauseButton = document.getElementById("powerPauseButton");
 
     const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
     innerNavButtons.forEach(button => {
@@ -136,5 +137,15 @@ window.addEventListener('DOMContentLoaded', async () => {
         initGraph();
     
     });
+
+    powerPauseButton.addEventListener('click', () => {
+        const contentDiv = document.getElementById("contentDiv");
+        contentDiv.innerHTML = `
+        <div id="powerDiv">
+            <<img src="img/exercise.png" alt="Workout" id="exercisePic">
+        </div>
+        `
+
+    })
     console.log('All done, Captain!');
 });

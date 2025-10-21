@@ -14,8 +14,8 @@
       </nav>
     </div>
 
-    <div id="connectionInfoDiv" class="innerContainer">
-     <h2>NÄTVERKSANSLUTNING</h2>
+    <div id="connectionInfoDiv">
+     <h2 class="overviewHeader">NÄTVERKSANSLUTNING</h2>
       <div id="connectionInfo">
         <div id="wifiIconDiv" class="wifi">
           <svg viewBox="0 0 24 24" width="64" height="64">
@@ -33,68 +33,54 @@
       </div>
     </div>
 
-    <div id="speedtestDiv" class="innerContainer">
-      <h2 id="speedtestHeader">MÄTNINGAR</h2>
-      <label id="speedtestToggle">
-        I MÖTE
-        <input type="checkbox" id="speedtestToggleCheckbox">
-      </label>
+    <div id="techDiv">
 
-      <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
+      <div id="speedtestDiv">
+        <h2 class="overviewHeader">MÄTNINGAR</h2>
+        <label id="speedtestToggle">
+          I MÖTE
+          <input type="checkbox" id="speedtestToggleCheckbox">
+        </label>
 
-      <span id="lastUpdatedText">INGEN MÄTNING</span>
+        <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
+        <span id="lastUpdatedText">INGEN MÄTNING</span>
 
-      <div id="speedtestDetails">
-        <div class="gaugeWrapper">
-          <span class="speedValue" id="downloadValue">--</span>
-          <canvas id="downSpeedometer" class="speedometer"></canvas>
+        <div id="speedtestDetails">
+          <div class="gaugeWrapper">
+            <span class="speedValue" id="downloadValue">--</span>
+            <canvas id="downSpeedometer" class="speedometer"></canvas>
+          </div>
+
+          <div class="gaugeWrapper">
+            <span class="speedValue" id="uploadValue">--</span>
+            <canvas id="upSpeedometer" class="speedometer"></canvas>
+          </div>
         </div>
 
-        <div class="gaugeWrapper">
-          <span class="speedValue" id="uploadValue">--</span>
-          <canvas id="upSpeedometer" class="speedometer"></canvas>
+        <div id="pingRow">
+          <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
+          <label id="pingLabel">Svarstid: </label>
+          <span id="pingValue">-</span>
+          <label id="pingUnit"> ms</label>
         </div>
+
+        <button id="runSpeedtestButton">UPPDATERA</button>
       </div>
 
-      <div id="pingRow">
-        <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
-        <label id="pingLabel">Svarstid: </label>
-        <span id="pingValue">-</span>
-        <label id="pingUnit"> ms</label>
+      <div id="techActionsDiv">
+        <h2 class="overviewHeader">TEKNISKA PROBLEM</h2>
+        <ul id="techActionsList">        
+       </ul>
       </div>
 
-      <button id="runSpeedtestButton">UPPDATERA</button>
     </div>
+       
 
     <div id="softActionsDiv" class="innerContainer">
-      <h2>Arbetsmiljö</h2>
-      <ul id="softActionsList">
-        <li>
-          <img src="icon1.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Restart Service</span>
-          <input type="checkbox" class="actionCheckbox">
-        </li>
-        <li>
-          <img src="icon2.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Clear Cache</span>
-        </li>
+      <h2 class="overviewHeader">ARBETSMILJÖ</h2>
+      <ul id="softActionsList">        
       </ul>
-    </div>
-
-    <div id="techActionsDiv" class="innerContainer">
-      <h2>Tekniska problem</h2>
-      <ul id="techActionsList">
-        <li>
-          <img src="icon3.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Reboot Router</span>
-          <input type="checkbox" class="actionCheckbox">
-        </li>
-        <li>
-          <img src="icon4.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Update Firmware</span>
-        </li>
-      </ul>
-    </div>
+    </div>    
 
     <footer></footer>
   </div>

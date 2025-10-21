@@ -175,7 +175,12 @@ function generateActionList() {
     list.push(createAction("all-good", "check", "Fina värden! Skutan bör segla utan problem!"));
   }
 
+  const ipStart = globals['currentIP'].slice(0,3);
+  const validIpStarts = ["192","172","10.","100","127"];
   if(globals['currentIP'] === "No valid IP"){
+    ist.push(createAction("no-ip", "light-error", "Du har för närvarande ingen IP address."));
+  }
+  else if(!validIpStarts.includes(ipStart)){
     list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
   }
 
