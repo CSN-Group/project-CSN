@@ -399,3 +399,45 @@ footer{
 .dropdown:hover .dropdownContent {
   display: block;
 }
+
+/* systemInfo style */
+#systemaInfoCont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    background-color: lightgray;
+    min-height: 100%;
+}
+
+#pcInfoDisplay {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+#supportSite {
+    background-color: darkgrey;
+    padding: 20px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#teleLink {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    height: 90;
+}
+
+#aiSupportDisplay {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    height: 90;
+}

@@ -1,20 +1,24 @@
 async function initSystemInfo() {
-    const restartContainer = document.getElementById("restartInfo");
-    restartContainer.innerText = `Computer been running for - hours`;
+    
+   // Calls a function to display pc information to front end.
+    getPcValues();
+
 }
 
 async function updateSystemInfo(){
-    let futureText = "";
-    const sysInfoDiv = document.getElementById("compInfo");
+    //let futureText = "";
+   // const sysInfoDiv = document.getElementById("pcInfoDisplay");
+    //
 
-
-    futureText = "PC Name: " + await window.systemInfo.getGlobal('pcName');
+   /* futureText = "PC Name: " + await window.systemInfo.getGlobal('pcName');
     futureText += "\nIP: " + await window.systemInfo.getGlobal('currentIP');
     futureText += "\nOS: " + await window.systemInfo.getGlobal('osVersion');
     futureText += "\nModel: " + await window.systemInfo.getGlobal('pcModel');
     futureText += "\nUser: " + await window.systemInfo.getGlobal('userName');
 
-    const updatesAvailable = await window.systemInfo.getGlobal('updatesAvailable');
+   */
+
+   /* const updatesAvailable = await window.systemInfo.getGlobal('updatesAvailable');
 
     if(updatesAvailable === null){
         futureText += "\nUpdates: Initializing...";
@@ -22,8 +26,34 @@ async function updateSystemInfo(){
         futureText += "\nUpdates: Available";
     } else if(!updatesAvailable){
         futureText += "\nUpdates: None";
-    } else futureText += "\nUpdates: Unknown";
+    } else futureText += "\nUpdates: Unknown";*/
+    getPcValues();
 
 
-    sysInfoDiv.innerText = futureText;
+    //sysInfoDiv.innerText = futureText;
+}
+//
+async function getPcValues() {
+    document.getElementById("ipAddressLabel").textContent = "IP-Address: " + await window.systemInfo.getGlobal("currentIP");
+    document.getElementById("UserNameLabel").textContent = "Användarenamn: " + await window.systemInfo.getGlobal("userName");
+    document.getElementById("pcNameLabel").textContent = "Dator Namn: " + await window.systemInfo.getGlobal("pcName");
+    document.getElementById("pcModelLabel").textContent = "Dator Modell: " + await window.systemInfo.getGlobal("pcModel");
+    document.getElementById("osVersionLabel").textContent = "OS Version: " + await window.systemInfo.getGlobal("osVersion"); 
+    document.getElementById("lastRebootLabel").textContent= "Senaste Omstart: " + await window.systemInfo.getGlobal("compOnTimeHours");
+    //document.getElementById("phoneSpan").innerHTML = await window.systemInfo.getGlobal();
+    //document.getElementById("linkSpan").innerHTML = await window.systemInfo.getGlobal();
+
+    //updates check 
+    const updatesAvailable = await window.systemInfo.getGlobal('updatesAvailable');
+    const isUpdateAvl = document.getElementById("updateAvLabel")
+
+    if(updatesAvailable === null){
+        isUpdateAvl.textContent = "Upddatering: Initierar...";
+    } else if(updatesAvailable){
+        isUpdateAvl.textContent = "Upddatering: Tillgänligt";
+    } else if(!updatesAvailable){
+        isUpdateAvl.textContent = "Upddatering: Inget";
+    } else isUpdateAvl.textContent = "Upddatering: Okänt";
+
+
 }
