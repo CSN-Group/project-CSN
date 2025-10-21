@@ -277,14 +277,12 @@ footer{
     fill: none;
     stroke: #ccc;
     stroke-width: 1.2;
-    opacity: 0.2;
+    opacity: 1;
     transition: opacity 0.3s, stroke 0.3s;
 }
 
 .tooltip {
     position: absolute;
-    bottom: 120%;
-    left: 50%;
     transform: translateX(-50%);
     visibility: hidden;
     opacity: 0;
@@ -293,7 +291,7 @@ footer{
     color: #fff;
     padding: 4px 8px;
     border-radius: 4px;
-    white-space: nowrap;     /* prevent wrapping */
+    white-space: nowrap;
     z-index: 10;
     pointer-events: none;
     transition: opacity 0.2s ease-in-out;
@@ -302,6 +300,22 @@ footer{
 #wifiIconDiv:hover .tooltip {
     visibility: visible;
     opacity: 1;
+    bottom: 150%;
+    left: 225%;
+}
+
+#downGaugeWrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100%;
+    left: 105%;
+}
+
+#upGaugeWrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100%;
+    left: -5%;
 }
 
 #contentDiv{
@@ -380,6 +394,7 @@ footer{
 }
 
 .gaugeWrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -489,6 +504,59 @@ footer{
   display: block;
 }
 
+/* systemInfo style */
+#systemaInfoCont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    background-color: lightgray;
+    min-height: 100%;
+    border-radius: 12px;
+}
+
+#pcInfoDisplay {
+    background-color: whitesmoke;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#SupportSite { /* Changed to match HTML */
+    background-color: lightgrey;
+    padding: 20px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 30px; /* Use 'gap' instead of 'grid-gap' (modern standard) */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#teleLink {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    height: 90px; /* Added 'px' unit */
+    justify-content: space-around;
+}
+#aiSupportDisplay {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    height: 90px;
+    display: flex;
+    justify-content: space-around;
+}
+#aiSupportDisplay img {
+    align-items: right;
+    width: 100px;
+    height: 100px;
+}
+#aiSupportDisplay h2 {
+    align-items: left;
+}
 /*DOCUMENTATION STYLE*/
 
 #docDiv{
@@ -544,9 +612,11 @@ footer{
     text-align: left;
 }
 
-.settingsOption label, .status label {
+.settingsOption label:not(.slidetoggle),
+.status label:not(.slidetoggle) {
     flex: 1;
 }
+
 
 .settingsOption input[type="checkbox"] {
     transform: scale(1.5);
@@ -554,7 +624,7 @@ footer{
 
 .status span {
     font-weight: bold;
-    color: #2a7;
+    color: #000000;
 }
 
 #clearDataButton {
@@ -583,3 +653,57 @@ footer{
 #exercisePic{
     max-width: 100%;
 }
+/* Slidetoggle */
+
+.slidetoggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    vertical-align: middle;
+    flex: 0 0 auto;
+}
+
+.slidetoggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider::before {
+    transform: translateX(22px);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #4caf50;
+}
+
+

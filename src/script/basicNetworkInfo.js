@@ -31,23 +31,29 @@ async function updateNetwork(){
     if(connType === "WiFi"){
         await updateWifiDisplay();
 
-        wifiText.innerText = await window.systemInfo.getGlobal("currentWifiStrength");
+        wifiText.innerText = await window.systemInfo.getGlobal("currentWifiStrength") + "%";
 
         ethText.innerText = "EJ ANSLUTEN";
         ethImage.src = "img/ethernet_trans.png"
+        ethImage.style.opacity = "0.3";
     } else if(connType === "Ethernet"){
         ethText.innerText = "ANSLUTEN";
         ethText.innerHTML = "<b>ANSLUTEN</b>"
-        ethImage.src = "img/greenEthernet_trans.png"
 
-        wifiText.innerText = "-";
+        ethImage.src = "img/greenEthernet_trans.png"
+        ethImage.style.opacity = "1";
+
+        wifiText.innerText = "EJ WIFI";
 
         await updateWifiDisplay();
     } else{
         await updateWifiDisplay();
 
+        wifiText.innerText = "EJ WIFI";
+
         ethText.innerText = "EJ ANSLUTEN";
         ethImage.src = "img/ethernet_trans.png"
+        ethImage.style.opacity = "0.3";
     }
 
     const speedtestTextDOM = document.getElementById('lastUpdatedText');

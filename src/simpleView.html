@@ -26,7 +26,7 @@
           </svg>
           <span class="tooltip" id='wifiTooltip'>Wifi information</span>
         </div>
-        <span id="wifiText">LADDAR</span><label>%</label>
+        <span id="wifiText">LADDAR</span>
 
         <img src="img/ethernet.png" alt="Ethernet" id="ethernetIcon">
         <span id="ethernetText">LADDAR</span>
@@ -34,27 +34,30 @@
     </div>
 
     <div id="techDiv">
-
-      <div id="speedtestDiv">
-        <h2 class="overviewHeader">MÄTNINGAR</h2>
-        <label id="speedtestToggle">
-          I MÖTE
+    <div id="speedtestDiv">
+      <h2 id="speedtestHeader">MÄTNINGAR</h2>
+      <label id="speedtestToggle">
+        I MÖTE
+        <label class="slidetoggle">
           <input type="checkbox" id="speedtestToggleCheckbox">
+          <span class="slider"></span>
         </label>
+      </label>
 
         <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
         <span id="lastUpdatedText">INGEN MÄTNING</span>
 
-        <div id="speedtestDetails">
-          <div class="gaugeWrapper">
-            <span class="speedValue" id="downloadValue">--</span>
-            <canvas id="downSpeedometer" class="speedometer"></canvas>
-          </div>
+      <div id="speedtestDetails">
+        <div class="gaugeWrapper" id="downGaugeWrapper">
+          <span class="speedValue" id="downloadValue">--</span>
+          <canvas id="downSpeedometer" class="speedometer"></canvas>
+          <span class="tooltip" id='downTooltip'>Downspeed tooltip</span>
+        </div>
 
-          <div class="gaugeWrapper">
-            <span class="speedValue" id="uploadValue">--</span>
-            <canvas id="upSpeedometer" class="speedometer"></canvas>
-          </div>
+        <div class="gaugeWrapper" id="upGaugeWrapper">
+          <span class="speedValue" id="uploadValue">--</span>
+          <canvas id="upSpeedometer" class="speedometer"></canvas>
+          <span class="tooltip" id='upTooltip'>Upspeed tooltip</span>
         </div>
 
         <div id="pingRow">

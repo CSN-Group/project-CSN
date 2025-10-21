@@ -2,13 +2,53 @@ window.addEventListener('DOMContentLoaded', async () => {
     //initSomething();
     //initSomethingElse();
 
+    /*
     window.updates.onUpdateDone(async () => {
         //updateSomething();
         //updateSomethingElse();
     });
+    */
 
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
+    const systemInfoDisp = document.getElementById("systemInfoButton");
+    
+    systemInfoDisp.addEventListener('click', () => {
+        const displayPcInfo = document.getElementById("contentDiv");
+        displayPcInfo.innerHTML = `
+        <div id ="systemaInfoCont" class ="systemContent"> 
+                <div id="pcInfoDisplay" class="pcInfoContent">
+                    <h2>Information till Support?</h2>
+                    <p>Dator Information</p>
+                    <label id ="ipAddressLabel">Ip Adress: Loading... </label><br>
+                    <label id="UserNameLabel">User Name: Loading... </label><br>
+                    <label id="pcNameLabel">Pc Name: Loading... </label><br>
+                    <label id="pcModelLabel">PC Model: Loading... </label><br>
+                    <label id="osVersionLabel">OS Version: Loading... </label><br>
+                    <label id="updateAvLabel">Update: Loading... </label><br>
+                    <h2>Senaste Omstart</h2>
+                    <label id="lastRebootLabel">Senaste Omstart: Loading... </label><br>
+                </div>
+                <div id="SupportSite" class="supportContent">
+                    <div id="teleLink" class="teleLinkContent">
+                       <span id="phoneSpan" class= "phoneContent">Telefon Nummer: +467270001230 </span><br>
+                       <span id="linkSpan" class= "linkContent">Support Länk: www.hermans.support.se </span><br>
+                    </div>
+                    <div id="aiSupportDisplay" class="aiSupportContent">
+                        <h2> AI support!</h2>
+                        
+                        <img src="../src/img/aiChatIcon.png" alt="Chat med AI här! " width="60" height="60">
+                    </div>
+                </div>
+        </div>`;
+        initSystemInfo()
+
+          window.updates.onUpdateDone(async () => {
+            updateSystemInfo();
+         });   
+            
+    });
+  
     const settingsButton = document.getElementById("settingsButton");
     const graphButton = document.getElementById("graphsButton");
     const powerPauseButton = document.getElementById("powerPauseButton");
@@ -24,7 +64,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     simpleButton.addEventListener('click', () => {
         window.nav.simplePage();
     });
-    
+  
     docButton.addEventListener('click', () => {
         const contentDiv = document.getElementById("contentDiv");
         const adminDoc = window.dbManager.getAdminDocument();
@@ -45,12 +85,18 @@ window.addEventListener('DOMContentLoaded', async () => {
                <h2>VERKTYG</h2>
                <div class="settingsOption">
                    <label for="saveDataCheckbox">Spara inte min data</label>
-                   <input type="checkbox" id="saveDataCheckbox">
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="saveDataCheckbox">
+                       <span class="slider"></span>
+                   </label>
               </div>
             
               <div class="settingsOption">
                 <label for="shouldMeasureCheckbox">Mät inte kontinuerligt</label>
-                <input type="checkbox" id="shouldMeasureCheckbox">
+                <label class="slidetoggle">
+                       <input type="checkbox" id="shouldMeasureCheckbox">
+                       <span class="slider"></span>
+                </label>
               </div>
             
               <div class="status">
@@ -64,16 +110,27 @@ window.addEventListener('DOMContentLoaded', async () => {
                <h2>ARBETSMILJÖ</h2>
                <div class="settingsOption">
                    <label for="remindErgonomiCheckbox">Påminn om ergonomi</label>
-                   <input type="checkbox" id="remindErgonomiCheckbox">
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindErgonomiCheckbox">
+                       <span class="slider"></span>
+                   </label>
                </div>
             
               <div class="settingsOption">
-                <label for="remindSocialCheckbox">Påminn om social kontakt</label>
-                <input type="checkbox" id="remindSocialCheckbox">
+                   <label for="remindSocialCheckbox">Påminn om social kontakt</label>
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindSocialCheckbox">
+                       <span class="slider"></span>
+                   </label>
               </div>
            </div>
        </div> 
        `
+        const dataSpan = document.getElementById("dataUsedSpan");
+        const dataUsed = await window.systemInfo.getGlobal('dataSavedAmount');
+
+        dataSpan.innerText = (dataUsed / 1024).toFixed(0) + " KB";
+
         const saveDataCheckbox = document.getElementById("saveDataCheckbox");
         saveDataCheckbox.checked = !await window.systemInfo.getGlobal("shouldSaveData");
 
@@ -86,19 +143,19 @@ window.addEventListener('DOMContentLoaded', async () => {
         const shouldRemindSocialCheckbox = document.getElementById("remindSocialCheckbox");
         shouldRemindSocialCheckbox.checked = await window.systemInfo.getGlobal("remindSocial");
 
-        document.getElementById("saveDataCheckbox").addEventListener('change', async () => {
+        saveDataCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("shouldSaveData", !saveDataCheckbox.checked);
         });
 
-        document.getElementById("shouldMeasureCheckbox").addEventListener('change', async () => {
+        shouldMeasureCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("shouldMeasure", !shouldMeasureCheckbox.checked);
         });
 
-        document.getElementById("remindErgonomiCheckbox").addEventListener('change', async () => {
+        shouldRemindErgonomiCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("remindErgonomi", shouldRemindErgonomiCheckbox.checked);
         });
 
-        document.getElementById("remindSocialCheckbox").addEventListener('change', async () => {
+        shouldRemindSocialCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("remindSocial", shouldRemindSocialCheckbox.checked);
         });
     });
@@ -147,5 +204,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         `
 
     })
+    initSystemInfo();
     console.log('All done, Captain!');
 });

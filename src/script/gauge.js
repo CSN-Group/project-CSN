@@ -23,8 +23,21 @@ let upSpeedometer;
 let downSpeedometerDOM;
 let downSpeedometer;
 
+let downHighTresh, downLowTresh;
+let upHighTresh, upLowTresh;
 
-function initGauges() {
+let wifiHighTresh, wifiLowTresh;
+
+async function initGauges() {
+    downHighTresh = await window.systemInfo.getGlobal('downHighTresh');
+    downLowTresh = await window.systemInfo.getGlobal('downHighTresh');
+
+    upHighTresh = await window.systemInfo.getGlobal('upHighTresh');
+    upLowTresh = await window.systemInfo.getGlobal('upLowTresh');
+
+    wifiHighTresh = await window.systemInfo.getGlobal('wifiHighTresh');
+    wifiLowTresh = await window.systemInfo.getGlobal('wifiLowTresh');
+
     upSpeedometerDOM = document.getElementById('upSpeedometer');
     upSpeedometer = new Gauge(upSpeedometerDOM).setOptions(gaugeOptions);
 
@@ -45,8 +58,44 @@ async function updateGauges(){
     const downspeed = await window.systemInfo.getGlobal('lastDownspeed');
     const upspeed = await window.systemInfo.getGlobal('lastUpspeed');
 
-    downSpeedometer.set(mapSpeedToGauge(downspeed, 8, 20));
-    upSpeedometer.set(mapSpeedToGauge(upspeed, 4, 10));
+    downSpeedometer.set(mapSpeedToGauge(downspeed, downLowTresh, downHighTresh));
+    upSpeedometer.set(mapSpeedToGauge(upspeed, upLowTresh, upHighTresh));
+
+    const dTooltip = document.getElementById("downTooltip");
+    if(downspeed > downHighTresh){
+        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
+        dTooltip.style.border = "5px solid green";
+    } else if(downspeed > downLowTresh){
+        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
+        dTooltip.style.border = "5px solid yellow";
+    } else if(downspeed > 0){
+        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
+        dTooltip.style.border = "5px solid red";
+    } else if(downspeed.includes("test") || downspeed.includes("Test")){
+        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";
+        dTooltip.style.border = "5px solid grey";
+    } else{
+        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Ingen nedladdningshastighet finns.";
+        dTooltip.style.border = "5px solid grey";
+    }
+
+    const uTooltip = document.getElementById("upTooltip");
+    if(downspeed > downHighTresh){
+        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
+        uTooltip.style.border = "5px solid green";
+    } else if(downspeed > downLowTresh){
+        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
+        uTooltip.style.border = "5px solid yellow";
+    } else if(downspeed > 0){
+        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
+        uTooltip.style.border = "5px solid red";
+    } else if(upspeed.includes("test") || upspeed.includes("Test")){
+        uTooltip.innerHTML = "Uppladdningsshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";
+        uTooltip.style.border = "5px solid grey";
+    } else{
+        uTooltip.innerHTML = "Uppladdningsshastighet: " + "-" + " Mbps<br> Ingen uppladdningshastighet finns.";
+        uTooltip.style.border = "5px solid grey";
+    }
 }
 
 function mapSpeedToGauge(speed, lowTier, midTier) {
@@ -65,7 +114,7 @@ function mapSpeedToGauge(speed, lowTier, midTier) {
         gaugeValue = 67 + ratio * (100 - 67);
     }
 
-    // ✅ Never let the gauge go above 98 (for visual breathing room)
+    //Högst 98%, så det inte ser ut som att nålen går "över"
     return Math.min(gaugeValue, 98);
 }
 
@@ -105,12 +154,31 @@ async function updateWifiDisplay() {
         level = 1;
         color = 1;
     } else{
-        level = 1;
+        level = 4;
         color = 4;
     }
     setWifiBars(level);
     setWifiColor(color);
 
+    const currConnType = await window.systemInfo.getGlobal('currentConnectionType');
+
     const tooltip = document.getElementById("wifiTooltip");
-    tooltip.innerText = "Wifi strength: " + wifiStr + "% är jättebra/jättedåligt";
+    if(currConnType === "WiFi") {
+        if (wifiStr > wifiHighTresh) {
+            tooltip.innerText = wifiStr + " % WiFi-styrka är bra!";
+            tooltip.style.border = "5px solid green";
+        } else if (wifiStr > wifiLowTresh) {
+            tooltip.innerText = wifiStr + " % WiFi-styrka kan bidra till mindre störningar.";
+            tooltip.style.border = "5px solid yellow";
+        } else if (wifiStr > 0) {
+            tooltip.innerText = wifiStr + " % WiFi-styrka kan bidra till stora störningar.";
+            tooltip.style.border = "5px solid red";
+        } else{
+            tooltip.innerText = wifiStr + " % WiFi-styrka - det saknas anslutning.";
+            tooltip.style.border = "5px solid grey";
+        }
+    } else {
+        tooltip.innerText = "WiFi används inte för tillfället.";
+        tooltip.style.border = "5px solid grey";
+    }
 }
