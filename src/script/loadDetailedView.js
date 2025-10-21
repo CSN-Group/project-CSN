@@ -2,10 +2,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     //initSomething();
     //initSomethingElse();
 
+    /*
     window.updates.onUpdateDone(async () => {
         //updateSomething();
         //updateSomethingElse();
     });
+    */
 
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
@@ -74,12 +76,18 @@ window.addEventListener('DOMContentLoaded', async () => {
                <h2>VERKTYG</h2>
                <div class="settingsOption">
                    <label for="saveDataCheckbox">Spara inte min data</label>
-                   <input type="checkbox" id="saveDataCheckbox">
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="saveDataCheckbox">
+                       <span class="slider"></span>
+                   </label>
               </div>
             
               <div class="settingsOption">
                 <label for="shouldMeasureCheckbox">Mät inte kontinuerligt</label>
-                <input type="checkbox" id="shouldMeasureCheckbox">
+                <label class="slidetoggle">
+                       <input type="checkbox" id="shouldMeasureCheckbox">
+                       <span class="slider"></span>
+                </label>
               </div>
             
               <div class="status">
@@ -93,16 +101,27 @@ window.addEventListener('DOMContentLoaded', async () => {
                <h2>ARBETSMILJÖ</h2>
                <div class="settingsOption">
                    <label for="remindErgonomiCheckbox">Påminn om ergonomi</label>
-                   <input type="checkbox" id="remindErgonomiCheckbox">
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindErgonomiCheckbox">
+                       <span class="slider"></span>
+                   </label>
                </div>
             
               <div class="settingsOption">
-                <label for="remindSocialCheckbox">Påminn om social kontakt</label>
-                <input type="checkbox" id="remindSocialCheckbox">
+                   <label for="remindSocialCheckbox">Påminn om social kontakt</label>
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindSocialCheckbox">
+                       <span class="slider"></span>
+                   </label>
               </div>
            </div>
        </div> 
        `
+        const dataSpan = document.getElementById("dataUsedSpan");
+        const dataUsed = await window.systemInfo.getGlobal('dataSavedAmount');
+
+        dataSpan.innerText = (dataUsed / 1024).toFixed(0) + " KB";
+
         const saveDataCheckbox = document.getElementById("saveDataCheckbox");
         saveDataCheckbox.checked = !await window.systemInfo.getGlobal("shouldSaveData");
 
@@ -115,19 +134,19 @@ window.addEventListener('DOMContentLoaded', async () => {
         const shouldRemindSocialCheckbox = document.getElementById("remindSocialCheckbox");
         shouldRemindSocialCheckbox.checked = await window.systemInfo.getGlobal("remindSocial");
 
-        document.getElementById("saveDataCheckbox").addEventListener('change', async () => {
+        saveDataCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("shouldSaveData", !saveDataCheckbox.checked);
         });
 
-        document.getElementById("shouldMeasureCheckbox").addEventListener('change', async () => {
+        shouldMeasureCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("shouldMeasure", !shouldMeasureCheckbox.checked);
         });
 
-        document.getElementById("remindErgonomiCheckbox").addEventListener('change', async () => {
+        shouldRemindErgonomiCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("remindErgonomi", shouldRemindErgonomiCheckbox.checked);
         });
 
-        document.getElementById("remindSocialCheckbox").addEventListener('change', async () => {
+        shouldRemindSocialCheckbox.addEventListener('change', async () => {
             await window.systemInfo.setGlobal("remindSocial", shouldRemindSocialCheckbox.checked);
         });
     });

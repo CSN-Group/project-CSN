@@ -22,6 +22,7 @@ async function isUsingBattery() {
 const os = require('os');
 const dgram = require('dgram');
 const { glob } = require('fs');
+const {isInterfaceActive} = require("../mainincludes/network");
 
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
@@ -36,6 +37,7 @@ let currentlyUpdating = false;
 let globalsUpdated = false;
 let initialUpdateCheck = false;
 let updateLoopRunning = false;
+let isStarted = false;
 
 let dismissedActions = [];
 
@@ -74,12 +76,17 @@ const globals = {
   remindSocial: true,
   
   //Thresholds
-  upDownHighTresh: 30,
-  upDownLowTresh: 10,
-  wifiHighTresh: 80,
-  wifiLowTresh: 60,
+  downHighTresh: 30,
+  downLowTresh: 10,
+  upHighTresh: 15,
+  upLowTresh: 5,
+  wifiHighTresh: 90,
+  wifiLowTresh: 70,
   pingHighTresh: 30,
   pingLowTresh: 15,
+
+  //Local data
+  dataSavedAmount: 0,
 }
 
 //Globals functions
@@ -178,7 +185,6 @@ function generateActionList() {
   if(globals['usingBattery']){
     list.push(createAction("using-battery", "notice", "Anslut laddaren"));
   }
-
 
   if(globals['compOnTimeHours'] > 4){
     list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
@@ -385,6 +391,12 @@ function updateDoneEvent() {
   );
 }
 
+function updateActionEvent(){
+  BrowserWindow.getAllWindows().forEach(win =>
+      win.webContents.send("updateActions", generateActionList())
+  );
+}
+
 //Activity
 function startActivePeriod(){
   globals["currentlyPausing"] = false;
@@ -406,14 +418,15 @@ function saveActivityToDatabase(start, stop){
 
 //Update
 async function measureSystem() {
-
   //Battery
   if(updateCounter % 60 === 0) setGlobal('usingBattery', await isUsingBattery());
 
   //Find used IP and interface
   const ifaceInfo = await network.updateCurrentInterface();
 
-  if(ifaceInfo.address !== null && ifaceInfo.address !== "0.0.0.0") setGlobal('currentIP', ifaceInfo.address);
+  if(ifaceInfo.address !== null &&
+     ifaceInfo.address !== "0.0.0.0" &&
+     isInterfaceActive(ifaceInfo.address)) setGlobal('currentIP', ifaceInfo.address);
   else setGlobal('currentIP', "No valid IP");
 
   //Find connection type
@@ -431,7 +444,7 @@ async function measureSystem() {
 
     if (wifiInfo !== null) setGlobal('currentWifiStrength', wifiInfo.strength);
     else setGlobal('currentWifiStrength', 0);
-  }
+  } else setGlobal('currentWifiStrength', 0);
 
   //User activity
   const userIdleTime = powerMonitor.getSystemIdleTime();
@@ -445,6 +458,11 @@ async function measureSystem() {
     saveActivityToDatabase(globals["userActiveStartTime"], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
+  }
+
+  //Data usage
+  if(updateCounter % 60 === 0){
+    globals['dataSavedAmount'] = await getDataUsed();
   }
 
   //OS Uptime
@@ -520,6 +538,9 @@ function createWindow() {
       updateLoopRunning = true;
       setInterval(runFullUpdate, UPDATE_INTERVAL);
     }
+
+    if(!isStarted) isStarted = true;
+    else if(isStarted) updateActionEvent();
   });
 }
 
