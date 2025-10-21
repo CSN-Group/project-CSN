@@ -12,6 +12,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     const settingsButton = document.getElementById("settingsButton");
     const graphButton = document.getElementById("graphsButton");
 
+    const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
+    innerNavButtons.forEach(button => {
+        button.addEventListener('click', () =>{
+            document.querySelector('.activeNavButton').classList.remove('activeNavButton');
+            button.classList.add('activeNavButton');
+        })
+    })
+
     simpleButton.addEventListener('click', () => {
         window.nav.simplePage();
     });

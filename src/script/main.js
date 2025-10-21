@@ -80,6 +80,10 @@ const globals = {
   wifiLowTresh: 60,
   pingHighTresh: 30,
   pingLowTresh: 15,
+
+  //Soft Timers
+  ergonomiCheckInterval: STANDARD_SLEEP_INTERVAL, //30 minutes
+  workCheckInterval: STANDARD_SLEEP_INTERVAL * 2, //60 minutes
 }
 
 //Globals functions
@@ -168,7 +172,7 @@ function generateActionList() {
   }
 
   if(allValuesGood){
-    list.push(createAction("all-good", "notice", "Fina värden! Skutan bör segla utan problem!"));
+    list.push(createAction("all-good", "check", "Fina värden! Skutan bör segla utan problem!"));
   }
 
   if(globals['currentIP'] === "No valid IP"){
@@ -178,7 +182,6 @@ function generateActionList() {
   if(globals['usingBattery']){
     list.push(createAction("using-battery", "notice", "Anslut laddaren"));
   }
-
 
   if(globals['compOnTimeHours'] > 4){
     list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
@@ -193,15 +196,24 @@ function generateActionList() {
   }
 
   //Soft Actions
-  if( (Date.now() - globals['userActiveStartTime']) > 1800000){
-    list.push(createAction("ergonomy", "notice", "Byt sittposition",true,30, false));
+  if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
+    list.push(createAction("ergonomy", "notice", "Byt sittposition",true, globals['ergonomiCheckInterval'] , false));
   }
-  
 
+  if((Date.now() - globals['userActiveStartTime']) > globals['pauseCheckInterval']){
+    list.push(createAction("pause", "notice", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
+  }
 
+  list.sort((a,b) =>{
+    if(a.severity === b.severity){return 0;}
+    else if((a.severity === "notice" && b.severity === "light-error") ||
+        a.severity === "light-error" && b.severity === "error"){return 1;}
+    else{return -1;}
+  })
 
   return list;
 }
+
 
 function createAction(id, severity, text,
                       dismissable = false,

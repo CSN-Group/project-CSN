@@ -76,7 +76,7 @@ footer{
 #buttonDiv nav{
     margin-top: auto;
     display: flex;
-    gap: 0.5rem;
+    /*gap: 0.5rem; */
 }
 
 #connectionInfoDiv {
@@ -314,9 +314,16 @@ footer{
     transform: translateX(20px);
 }
 
-#simpleViewButton,
+#simpleViewButton{
+    margin-left: 9.5%;
+}
+
 #advancedViewButton{
-    margin-left: 20px;
+    margin-left: 2px;
+}
+
+#simpleViewButton,
+#advancedViewButton{    
     background: #cdcdcd;
     border: 1px solid #cdcdcd;
     border-bottom: none;
@@ -332,10 +339,13 @@ footer{
 
 .secondaryNavButton{
     background: none;
-    border: none;
-    border-bottom: 2px dashed black;
+    border: none;   
     margin-left: 10px;
     padding: 0;
+}
+
+.activeNavButton{
+     border-bottom: 2px solid black;
 }
 
 .secondaryNavButton:hover{
@@ -418,6 +428,7 @@ footer{
 
 #metricButtons button {     
   width: 100%;
+  padding: 12px 28px;
 }
 
 .dropButton,
@@ -428,12 +439,13 @@ footer{
   border: 1px solid black;
   cursor: pointer;
   font-weight: bold; 
-  font-size: 1.1rem;
-  padding: 12px 28px; 
+  font-size: 1.1rem;   
 }
 
 .dropButton{
     display: flex;
+    padding: 5px 20px 0px 28px;
+    margin-top: 10%;
 }
 
 #historyGraph{
@@ -468,13 +480,16 @@ footer{
 #docDiv{
     max-width: 100%;
     height: 100%;
-    overflow: scroll;    
+    overflow: scroll;
+    overflow-x: hidden;    
 }
 
 #docDiv p {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 #settingsGrid {

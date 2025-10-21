@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="sv">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
 <head>
     <link rel="stylesheet" href="style/style.css">
     <title>My Electron App</title>
@@ -11,17 +10,17 @@
 <div id=detailedGrid>
     <div id="buttonDiv">
         <nav>
-            <button id="simpleViewButton">BASIC</button>
-            <button id="advancedViewButton" class="currentPage">ADVANCED</button>
+            <button id="simpleViewButton">Översikt</button>
+            <button id="advancedViewButton" class="currentPage">Detaljer</button>
         </nav>
     </div>
 
     <nav id="innerNav">
-        <button id="settingsButton" class="secondaryNavButton">SETTINGS</button>
-        <button id="systemInfoButton" class="secondaryNavButton">SYSTEM INFORMATION</button>
-        <button id="graphsButton" class="secondaryNavButton">GRAPHS</button>
-        <button id="documentationButton" class="secondaryNavButton">DOCUMENTATION</button>
-        <button class="secondaryNavButton">SOMETHING</button>
+        <button id="systemInfoButton" class="secondaryNavButton activeNavButton">Systeminformation</button>                
+        <button id="graphsButton" class="secondaryNavButton">Historik</button>
+        <button id="documentationButton" class="secondaryNavButton">Dokumentation</button>
+        <button class="secondaryNavButton">PowerPaus</button>
+        <button id="settingsButton" class="secondaryNavButton">Inställningar</button>
     </nav>
 
     <div id="contentDiv">
@@ -29,6 +28,8 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script> 
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <script src ="script/graph.js"></script>
 <script src="script/loadDetailedView.js"></script>
 </body>

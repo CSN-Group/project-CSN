@@ -60,7 +60,7 @@ async function fetchAvailableMonths(){
   let myMac = await getGlobal('mac');
   while(!myMac || myMac=== null){ //Waiting for the mac to be found
     sleep(5);
-    myMac = await getGlobal('mac');    
+    myMac = await getGlobal('mac');   
   } 
   const { data, error } = await supabase
       .from('readings')

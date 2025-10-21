@@ -15,6 +15,8 @@ function getImage(imageString){
             return "img/yellowGuard.png";
         case "error":
             return "img/redGuard.png";
+        case "check":
+            return "img/check.png"
         default:
              return "img/testIcon.png";
     }
