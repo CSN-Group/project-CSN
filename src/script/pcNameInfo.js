@@ -34,7 +34,7 @@ async function updateSystemInfo(){
 }
 //
 async function getPcValues() {
-    document.getElementById("ipAddressLabel").textContent = "IP-Address: " + await window.systemInfo.getGlobal("currentIP");
+    document.getElementById("ipAddressLabel").textContent = "IP-Adress: " + await window.systemInfo.getGlobal("currentIP");
     document.getElementById("UserNameLabel").textContent = "Användarenamn: " + await window.systemInfo.getGlobal("userName");
     document.getElementById("pcNameLabel").textContent = "Dator Namn: " + await window.systemInfo.getGlobal("pcName");
     document.getElementById("pcModelLabel").textContent = "Dator Modell: " + await window.systemInfo.getGlobal("pcModel");
@@ -48,12 +48,11 @@ async function getPcValues() {
     const isUpdateAvl = document.getElementById("updateAvLabel")
 
     if(updatesAvailable === null){
-        isUpdateAvl.textContent = "Upddatering: Initierar...";
+        isUpdateAvl.textContent = "Windows-uppdatering tillgänglig: Initierar...";
     } else if(updatesAvailable){
-        isUpdateAvl.textContent = "Upddatering: Tillgänligt";
+        isUpdateAvl.textContent = "Windows-uppdatering tillgänglig: Ja";
     } else if(!updatesAvailable){
-        isUpdateAvl.textContent = "Upddatering: Inget";
-    } else isUpdateAvl.textContent = "Upddatering: Okänt";
-
+        isUpdateAvl.textContent = "Windows-uppdatering tillgänglig: Nej";
+    } else isUpdateAvl.textContent = "Upddatering: Ett fel uppstod";
 
 }

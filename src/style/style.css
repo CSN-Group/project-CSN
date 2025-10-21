@@ -471,21 +471,23 @@ footer{
     padding: 20px;
     background-color: lightgray;
     min-height: 100%;
+    border-radius: 12px;
 }
 
 #pcInfoDisplay {
-    background-color: white;
+    background-color: whitesmoke;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-#supportSite {
-    background-color: darkgrey;
+
+#SupportSite { /* Changed to match HTML */
+    background-color: lightgrey;
     padding: 20px;
     border-radius: 8px;
     display: grid;
     grid-template-rows: 1fr 1fr;
-    grid-gap: 30px;
+    gap: 30px; /* Use 'gap' instead of 'grid-gap' (modern standard) */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -494,15 +496,25 @@ footer{
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #dee2e6;
-    height: 90;
+    height: 90px; /* Added 'px' unit */
+    justify-content: space-around;
 }
-
 #aiSupportDisplay {
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #dee2e6;
-    height: 90;
+    height: 90px;
+    display: flex;
+    justify-content: space-around;
+}
+#aiSupportDisplay img {
+    align-items: right;
+    width: 100px;
+    height: 100px;
+}
+#aiSupportDisplay h2 {
+    align-items: left;
 }
 /*DOCUMENTATION STYLE*/
 

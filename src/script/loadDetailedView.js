@@ -16,24 +16,26 @@ window.addEventListener('DOMContentLoaded', async () => {
         displayPcInfo.innerHTML = `
         <div id ="systemaInfoCont" class ="systemContent"> 
                 <div id="pcInfoDisplay" class="pcInfoContent">
-                    <h2>Information to Support?</h2>
+                    <h2>Information till Support?</h2>
                     <p>Dator Information</p>
-                    <label id ="ipAddressLabel">Ip Address: Loading... </label><br>
+                    <label id ="ipAddressLabel">Ip Adress: Loading... </label><br>
                     <label id="UserNameLabel">User Name: Loading... </label><br>
                     <label id="pcNameLabel">Pc Name: Loading... </label><br>
                     <label id="pcModelLabel">PC Model: Loading... </label><br>
                     <label id="osVersionLabel">OS Version: Loading... </label><br>
                     <label id="updateAvLabel">Update: Loading... </label><br>
-                    <h2>Last Reboot</h2>
+                    <h2>Senaste Omstart</h2>
                     <label id="lastRebootLabel">Senaste Omstart: Loading... </label><br>
                 </div>
                 <div id="SupportSite" class="supportContent">
                     <div id="teleLink" class="teleLinkContent">
                        <span id="phoneSpan" class= "phoneContent">Telefon Nummer: +467270001230 </span><br>
-                       <span id="linkSpan" class= "linkContent">Supportlink: www.hermans.support.se </span><br>
+                       <span id="linkSpan" class= "linkContent">Support Länk: www.hermans.support.se </span><br>
                     </div>
                     <div id="aiSupportDisplay" class="aiSupportContent">
-                        <p>This is AI support side an IMG!</p>
+                        <h2> AI support!</h2>
+                        
+                        <img src="../src/img/aiChatIcon.png" alt="Chat med AI här! " width="60" height="60">
                     </div>
                 </div>
         </div>`;
@@ -164,5 +166,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         initGraph();
     
     });
+
+    initSystemInfo();
     console.log('All done, Captain!');
 });
