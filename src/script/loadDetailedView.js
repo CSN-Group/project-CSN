@@ -44,7 +44,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         initSystemInfo()
 
           window.updates.onUpdateDone(async () => {
-            updateSystemInfo();
+            await updateSystemInfo();
          });   
             
     });
@@ -203,7 +203,38 @@ window.addEventListener('DOMContentLoaded', async () => {
         </div>
         `
 
-    })
-    initSystemInfo();
+    });
+    initDefault();
+    await initSystemInfo();
     console.log('All done, Captain!');
 });
+
+function initDefault(){
+    const displayPcInfo = document.getElementById("contentDiv");
+    displayPcInfo.innerHTML = `
+        <div id ="systemaInfoCont" class ="systemContent"> 
+                <div id="pcInfoDisplay" class="pcInfoContent">
+                    <h2>Information till Support?</h2>
+                    <p>Dator Information</p>
+                    <label id ="ipAddressLabel">Ip Adress: Loading... </label><br>
+                    <label id="UserNameLabel">User Name: Loading... </label><br>
+                    <label id="pcNameLabel">Pc Name: Loading... </label><br>
+                    <label id="pcModelLabel">PC Model: Loading... </label><br>
+                    <label id="osVersionLabel">OS Version: Loading... </label><br>
+                    <label id="updateAvLabel">Update: Loading... </label><br>
+                    <h2>Senaste Omstart</h2>
+                    <label id="lastRebootLabel">Senaste Omstart: Loading... </label><br>
+                </div>
+                <div id="SupportSite" class="supportContent">
+                    <div id="teleLink" class="teleLinkContent">
+                       <span id="phoneSpan" class= "phoneContent">Telefon Nummer: +467270001230 </span><br>
+                       <span id="linkSpan" class= "linkContent">Support Länk: www.hermans.support.se </span><br>
+                    </div>
+                    <div id="aiSupportDisplay" class="aiSupportContent">
+                        <h2> AI support!</h2>
+                        
+                        <img src="../src/img/aiChatIcon.png" alt="Chat med AI här! " width="60" height="60">
+                    </div>
+                </div>
+        </div>`;
+}
