@@ -51,6 +51,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   
     const settingsButton = document.getElementById("settingsButton");
     const graphButton = document.getElementById("graphsButton");
+    const powerPauseButton = document.getElementById("powerPauseButton");
+
+    const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
+    innerNavButtons.forEach(button => {
+        button.addEventListener('click', () =>{
+            document.querySelector('.activeNavButton').classList.remove('activeNavButton');
+            button.classList.add('activeNavButton');
+        })
+    })
 
     simpleButton.addEventListener('click', () => {
         window.nav.simplePage();
@@ -186,6 +195,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     });
 
+    powerPauseButton.addEventListener('click', () => {
+        const contentDiv = document.getElementById("contentDiv");
+        contentDiv.innerHTML = `
+        <div id="powerDiv">
+            <<img src="img/exercise.png" alt="Workout" id="exercisePic">
+        </div>
+        `
+
+    })
     initSystemInfo();
     console.log('All done, Captain!');
 });

@@ -9,13 +9,13 @@
 
     <div id="buttonDiv">
       <nav>
-        <button id="simpleViewButton" class="currentPage">BASIC</button>
-        <button id="advancedViewButton">ADVANCED</button>
+        <button id="simpleViewButton" class="currentPage">Översikt</button>
+        <button id="advancedViewButton">Detaljer</button>
       </nav>
     </div>
 
-    <div id="connectionInfoDiv" class="innerContainer">
-     <h2>NÄTVERKSANSLUTNING</h2>
+    <div id="connectionInfoDiv">
+     <h2 class="overviewHeader">NÄTVERKSANSLUTNING</h2>
       <div id="connectionInfo">
         <div id="wifiIconDiv" class="wifi">
           <svg viewBox="0 0 24 24" width="64" height="64">
@@ -24,16 +24,17 @@
             <path class="bar3" d="M6.3 13.5a1 1 0 0 1-1.4-1.4 10 10 0 0 1 14.2 0 1 1 0 1 1-1.4 1.4 8 8 0 0 0-11.4 0z" />
             <path class="bar4" d="M3.1 10.3a1 1 0 0 1-1.4-1.4 14 14 0 0 1 20.6 0 1 1 0 1 1-1.4 1.4 12 12 0 0 0-17.8 0z" />
           </svg>
-          <span class="tooltip" id='wifiTooltip'>Wifi info yay</span>
+          <span class="tooltip" id='wifiTooltip'>Wifi information</span>
         </div>
-        <span id="wifiText">LOADING</span>
+        <span id="wifiText">LADDAR</span>
 
         <img src="img/ethernet.png" alt="Ethernet" id="ethernetIcon">
-        <span id="ethernetText">LOADING</span>
+        <span id="ethernetText">LADDAR</span>
       </div>
     </div>
 
-    <div id="speedtestDiv" class="innerContainer">
+    <div id="techDiv">
+    <div id="speedtestDiv">
       <h2 id="speedtestHeader">MÄTNINGAR</h2>
       <label id="speedtestToggle">
         I MÖTE
@@ -43,9 +44,8 @@
         </label>
       </label>
 
-      <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
-
-      <span id="lastUpdatedText">INGEN MÄTNING</span>
+        <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
+        <span id="lastUpdatedText">INGEN MÄTNING</span>
 
       <div id="speedtestDetails">
         <div class="gaugeWrapper" id="downGaugeWrapper">
@@ -59,93 +59,33 @@
           <canvas id="upSpeedometer" class="speedometer"></canvas>
           <span class="tooltip" id='upTooltip'>Upspeed tooltip</span>
         </div>
+
+        <div id="pingRow">
+          <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
+          <label id="pingLabel">Svarstid: </label>
+          <span id="pingValue">-</span>
+          <label id="pingUnit"> ms</label>
+        </div>
+
+        <button id="runSpeedtestButton">UPPDATERA</button>
       </div>
 
-      <div id="pingRow">
-        <img id="pingIcon" src="ping-icon.png" alt="Ping Icon">
-        <label id="pingLabel">Svarstid: </label>
-        <span id="pingValue">-</span>
-        <label id="pingUnit"> ms</label>
+      <div id="techActionsDiv">
+        <h2 class="overviewHeader">TEKNISKA PROBLEM</h2>
+        <ul id="techActionsList">        
+       </ul>
       </div>
 
-      <button id="runSpeedtestButton">UPPDATERA</button>
     </div>
+       
 
     <div id="softActionsDiv" class="innerContainer">
-      <h2>Arbetsmiljö</h2>
-      <ul id="softActionsList">
-        <li>
-          <img src="icon1.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Restart Service</span>
-          <input type="checkbox" class="actionCheckbox">
-        </li>
-        <li>
-          <img src="icon2.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Clear Cache</span>
-        </li>
+      <h2 class="overviewHeader">ARBETSMILJÖ</h2>
+      <ul id="softActionsList">        
       </ul>
-    </div>
-
-    <div id="techActionsDiv" class="innerContainer">
-      <h2>Tekniska problem</h2>
-      <ul id="techActionsList">
-        <li>
-          <img src="icon3.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Reboot Router</span>
-          <input type="checkbox" class="actionCheckbox">
-        </li>
-        <li>
-          <img src="icon4.png" alt="Action Icon" class="actionIcon">
-          <span class="actionText">Update Firmware</span>
-        </li>
-      </ul>
-    </div>
+    </div>    
 
     <footer></footer>
-
-
-    <!--
-    <div id="gaugeDiv">
-      <canvas id="speedometer" width="200" height="100"></canvas>
-      <div id="wifiIconDiv" class="wifi">
-        <svg viewBox="0 0 24 24" width="64" height="64">
-          <path class="bar1" d="M12 20a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-          <path class="bar2" d="M9.4 16.6a1 1 0 0 1-1.4-1.4 6 6 0 0 1 8.5 0 1 1 0 1 1-1.4 1.4 4 4 0 0 0-5.7 0z" />
-          <path class="bar3" d="M6.3 13.5a1 1 0 0 1-1.4-1.4 10 10 0 0 1 14.2 0 1 1 0 1 1-1.4 1.4 8 8 0 0 0-11.4 0z" />
-          <path class="bar4" d="M3.1 10.3a1 1 0 0 1-1.4-1.4 14 14 0 0 1 20.6 0 1 1 0 1 1-1.4 1.4 12 12 0 0 0-17.8 0z" />
-        </svg>
-        <span class="tooltip" id='wifiTooltip'>Wifi info yay</span>
-      </div>
-    </div>-->
-
-    <!--
-    <div id="actionDiv">
-      <h1><u>Åtgärder</u></h1>
-      <ul id="actionList"></ul>
-    </div>
-
-    <div id="graphDiv">
-      <button id="graphPingButton">Ping</button>
-      <button id="graphUpspeedButton">Upspeed</button>
-      <button id="graphDownspeedButton">Downspeed</button>
-      <button id="graphWifiButton">Wifi</button>
-      <button id="graphInterruptButton">Interrupt</button>
-      <button id="graphWorktimeButton">Activetime</button>
-      <div class="dropdown">
-        <button class="dropButton">Day</button>
-        <div id="dayDropdown" class="dropdownContent"></div>       
-      </div>
-      <div class="dropdown">
-        <button class="dropButton">Week</button>
-        <div id="weekDropdown" class="dropdownContent"></div>       
-      </div>     
-      <div class="dropdown">
-        <button class="dropButton">Month</button>
-        <div id="monthDropdown" class="dropdownContent"></div>       
-      </div>           
-      <canvas id="historyGraph" style="width:100%;max-width:500px"></canvas>
-    </div>
-    -->
   </div>
 
   <script src="../node_modules/gaugeJS/dist/gauge.min.js"></script>

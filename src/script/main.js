@@ -85,6 +85,9 @@ const globals = {
   pingHighTresh: 30,
   pingLowTresh: 15,
 
+  //Soft Timers
+  ergonomiCheckInterval: STANDARD_SLEEP_INTERVAL, //30 minutes
+  workCheckInterval: STANDARD_SLEEP_INTERVAL * 2, //60 minutes
   //Local data
   dataSavedAmount: 0,
 }
@@ -175,10 +178,15 @@ function generateActionList() {
   }
 
   if(allValuesGood){
-    list.push(createAction("all-good", "notice", "Fina värden! Skutan bör segla utan problem!"));
+    list.push(createAction("all-good", "check", "Fina värden! Skutan bör segla utan problem!"));
   }
 
+  const ipStart = globals['currentIP'].slice(0,3);
+  const validIpStarts = ["192","172","10.","100","127"];
   if(globals['currentIP'] === "No valid IP"){
+    ist.push(createAction("no-ip", "light-error", "Du har för närvarande ingen IP address."));
+  }
+  else if(!validIpStarts.includes(ipStart)){
     list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
   }
 
@@ -199,15 +207,24 @@ function generateActionList() {
   }
 
   //Soft Actions
-  if( (Date.now() - globals['userActiveStartTime']) > 1800000){
-    list.push(createAction("ergonomy", "notice", "Byt sittposition",true,30, false));
+  if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
+    list.push(createAction("ergonomy", "notice", "Byt sittposition",true, globals['ergonomiCheckInterval'] , false));
   }
-  
 
+  if((Date.now() - globals['userActiveStartTime']) > globals['pauseCheckInterval']){
+    list.push(createAction("pause", "notice", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
+  }
 
+  list.sort((a,b) =>{
+    if(a.severity === b.severity){return 0;}
+    else if((a.severity === "notice" && b.severity === "light-error") ||
+        a.severity === "light-error" && b.severity === "error"){return 1;}
+    else{return -1;}
+  })
 
   return list;
 }
+
 
 function createAction(id, severity, text,
                       dismissable = false,
