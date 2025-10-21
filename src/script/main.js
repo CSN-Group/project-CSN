@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const network = require('../mainincludes/network.js');
 const si = require('systeminformation');
+const fs = require('fs');
 
 const {execFile, exec} = require('child_process');
 const {addReading,addActiveTime} = require('../database/dbManager.js')
@@ -20,6 +21,7 @@ async function isUsingBattery() {
 
 const os = require('os');
 const dgram = require('dgram');
+const { glob } = require('fs');
 
 //Constants
 const UPDATE_INTERVAL = 1000; //ms
@@ -44,6 +46,7 @@ const globals = {
   currentConnectionType: "Checking...",
   currentlySpeedtesting: false,
   currentWifiStrength: 0,
+  speedtestText: "INGEN MÄTNING",
 
   //System information
   compOnTimeHours: 0,
@@ -51,7 +54,7 @@ const globals = {
   osVersion: "Loading..",
   pcModel: "Loading..",
   userName: "Loading..",
-  updatesAvailable: "Loading..",
+  updatesAvailable: null,
   mac: null,
   usingBattery: false,
 
@@ -62,7 +65,21 @@ const globals = {
   //Last speedtest
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
-  lastPing: 0
+  lastPing: 0,
+
+  //Settings
+  shouldSaveData: true,
+  shouldMeasure: true,
+  remindErgonomi: true,
+  remindSocial: true,
+  
+  //Thresholds
+  upDownHighTresh: 30,
+  upDownLowTresh: 10,
+  wifiHighTresh: 80,
+  wifiLowTresh: 60,
+  pingHighTresh: 30,
+  pingLowTresh: 15,
 }
 
 //Globals functions
@@ -105,23 +122,83 @@ function ifCodeToType(ifCode) {
 function generateActionList() {
   updateDismissedList();
   const list = [];
-
+  let allValuesGood = true;
 
   // TEST //
-
-  if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
-    list.push(createAction("valid-ip", "check", "You have a valid IP!", true, 5000))
-  }
-
+  //if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
+  //  list.push(createAction("valid-ip", "notice", "Din har en godkänd IP address.", true, 5000))
+  //}
   // END TEST //
 
+  //Tech Actions
+  if(globals['currentWifiStrength'] < globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
+    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
+    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
+    allValuesGood = false;
+  }  
+  
+  if(globals['lastUpspeed'] > globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
+    list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastUpspeed'] < globals['upDownLowTresh']){
+    list.push(createAction("up-low", "error", "Din uppladdningshastighet är väldigt låg!"));
+    allValuesGood = false;
+  }
+  
+  if(globals['lastDownspeed'] > globals['upDownLowTresh'] && globals['lastDownspeed'] < globals['upDownHighTresh']){
+    list.push(createAction("down-high", "light-error", "Din nedladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastDownspeed'] < globals['upDownLowTresh']){
+    list.push(createAction("down-low", "error", "Din nedladdnignshastighet är väldigt låg!"));
+    allValuesGood = false;
+  }
+  
+  if(globals['lastPing'] < globals['pingHighTresh'] && globals['lastPing'] > globals['pingLowTresh']){
+    list.push(createAction("ping-medium", "light-error", "Din nedladdningshastighet är ganska låg."));
+    allValuesGood = false;
+  }
+  else if(globals['lastPing'] > globals['pingHighTresh']){
+    list.push(createAction("ping-high", "error", "Din svarstid är väldigt hög!"));
+    allValuesGood = false;
+  }
+
+  if(allValuesGood){
+    list.push(createAction("all-good", "notice", "Fina värden! Skutan bör segla utan problem!"));
+  }
+
   if(globals['currentIP'] === "No valid IP"){
-    list.push(createAction("invalid-ip", "error", "No valid IP"));
+    list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
   }
 
   if(globals['usingBattery']){
-    list.push(createAction("using-battery", "error", "Anslut laddaren"));
+    list.push(createAction("using-battery", "notice", "Anslut laddaren"));
   }
+
+
+  if(globals['compOnTimeHours'] > 4){
+    list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
+  }
+
+  if(globals['currentConnectionType'] != "Ethernet"){
+    list.push(createAction("conn-type", "notice", "Koppla in internetkabel för stabilare internet."));
+  }
+  
+  if(globals['updatesAvailable']){    
+    list.push(createAction("update-available", "light-error", "Windowsuppdatering tillgänglig!"));
+  }
+
+  //Soft Actions
+  if( (Date.now() - globals['userActiveStartTime']) > 1800000){
+    list.push(createAction("ergonomy", "notice", "Byt sittposition",true,30, false));
+  }
+  
+
+
 
   return list;
 }
@@ -190,14 +267,13 @@ async function runSpeedtest(){
 async function performSpeedtest(triggeredBy = 'main') {
   const currentlyTesting = getGlobal('currentlySpeedtesting');
 
-  if(!currentlyTesting) {
+  if(!currentlyTesting && globals["shouldMeasure"]){
     setGlobal('currentlySpeedtesting', true);
+    setGlobal('speedtestText', "Testar...");
 
     setGlobal("lastDownspeed", "testing..");
     setGlobal("lastUpspeed", "testing..");
     setGlobal("lastPing", "testing..");
-
-    updateDoneEvent();
 
     const result = await runSpeedtest();
 
@@ -215,15 +291,12 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastDownspeed", downSpeed);
       setGlobal("lastUpspeed", upSpeed);
       setGlobal("lastPing", ping);
-    }
+      setGlobal('speedtestText', Date.now());
+    } else setGlobal('speedtestText', "ERROR");
 
     setGlobal('currentlySpeedtesting', false)
   }
 }
-
-isUpdatesAvailable()
-    .then(updatesAvailable => setGlobal('updatesAvailable', updatesAvailable))
-    .catch(() => setGlobal('updatesAvailable', false));
 
 async function logReading() {
   try {
@@ -273,6 +346,16 @@ async function isUpdatesAvailable(){
 
 }
 
+//Data used
+async function getDataUsed() {
+  try {
+    const stats = await fs.promises.stat("src/database/database.db");
+    return stats.size;
+  } catch (err) {
+    console.error(`Error getting file size for database.db:`, err);
+    throw err;
+  }
+}
 //IPC
 ipcMain.handle('run-speedtest', async () => performSpeedtest('renderer'));
 ipcMain.handle('getGlobal', (event, key) => getGlobal(key));
@@ -367,7 +450,9 @@ async function measureSystem() {
   //OS Uptime
   if(updateCounter % 60 === 0){
     //Uptime
-    setGlobal('compOnTimeHours', os.uptime());
+    setGlobal('compOnTimeHours',
+       Math.floor(os.uptime() / 3600)); //Converting from seconds to hours      
+  
 
     //Systeminfo
     setGlobal('pcName', os.hostname());
@@ -390,7 +475,6 @@ async function measureSystem() {
   }
 
   updateCounter++;
-  //console.log(updateCounter);
 }
 
 async function runFullUpdate() {
