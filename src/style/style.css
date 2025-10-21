@@ -263,14 +263,12 @@ footer{
     fill: none;
     stroke: #ccc;
     stroke-width: 1.2;
-    opacity: 0.2;
+    opacity: 1;
     transition: opacity 0.3s, stroke 0.3s;
 }
 
 .tooltip {
     position: absolute;
-    bottom: 120%;
-    left: 50%;
     transform: translateX(-50%);
     visibility: hidden;
     opacity: 0;
@@ -279,7 +277,7 @@ footer{
     color: #fff;
     padding: 4px 8px;
     border-radius: 4px;
-    white-space: nowrap;     /* prevent wrapping */
+    white-space: nowrap;
     z-index: 10;
     pointer-events: none;
     transition: opacity 0.2s ease-in-out;
@@ -288,6 +286,22 @@ footer{
 #wifiIconDiv:hover .tooltip {
     visibility: visible;
     opacity: 1;
+    bottom: 150%;
+    left: 225%;
+}
+
+#downGaugeWrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100%;
+    left: 105%;
+}
+
+#upGaugeWrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100%;
+    left: -5%;
 }
 
 #contentDiv{
@@ -356,6 +370,7 @@ footer{
 }
 
 .gaugeWrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -516,9 +531,11 @@ footer{
     text-align: left;
 }
 
-.settingsOption label, .status label {
+.settingsOption label:not(.slidetoggle),
+.status label:not(.slidetoggle) {
     flex: 1;
 }
+
 
 .settingsOption input[type="checkbox"] {
     transform: scale(1.5);
@@ -544,4 +561,58 @@ footer{
 #clearDataButton:hover {
     background-color: #0056b3;
 }
+
+/* Slidetoggle */
+
+.slidetoggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    vertical-align: middle;
+    flex: 0 0 auto;
+}
+
+.slidetoggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider::before {
+    transform: translateX(22px);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #4caf50;
+}
+
 
