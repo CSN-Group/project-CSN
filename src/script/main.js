@@ -84,6 +84,9 @@ const globals = {
   wifiLowTresh: 70,
   pingHighTresh: 30,
   pingLowTresh: 15,
+
+  //Local data
+  dataSavedAmount: 0,
 }
 
 //Globals functions
@@ -455,6 +458,11 @@ async function measureSystem() {
     saveActivityToDatabase(globals["userActiveStartTime"], Date.now()-ALLOWED_DOWNTIME_DURATION_MILLIS);
   } else if(userIdleTime < ALLOWED_DOWNTIME_DURATION_SECONDS && globals["currentlyPausing"]){
     startActivePeriod();
+  }
+
+  //Data usage
+  if(updateCounter % 60 === 0){
+    globals['dataSavedAmount'] = await getDataUsed();
   }
 
   //OS Uptime

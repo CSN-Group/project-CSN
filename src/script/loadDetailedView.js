@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         //updateSomethingElse();
     });
     */
-    
+
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
     const settingsButton = document.getElementById("settingsButton");
@@ -79,6 +79,11 @@ window.addEventListener('DOMContentLoaded', async () => {
            </div>
        </div> 
        `
+        const dataSpan = document.getElementById("dataUsedSpan");
+        const dataUsed = await window.systemInfo.getGlobal('dataSavedAmount');
+
+        dataSpan.innerText = (dataUsed / 1024) + " KB";
+
         const saveDataCheckbox = document.getElementById("saveDataCheckbox");
         saveDataCheckbox.checked = !await window.systemInfo.getGlobal("shouldSaveData");
 
