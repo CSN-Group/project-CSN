@@ -2,11 +2,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     //initSomething();
     //initSomethingElse();
 
+    /*
     window.updates.onUpdateDone(async () => {
         //updateSomething();
         //updateSomethingElse();
     });
-
+    */
+    
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
     const settingsButton = document.getElementById("settingsButton");
