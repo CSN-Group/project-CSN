@@ -1,14 +1,10 @@
 async function initSystemInfo() {
-    
-   // Calls a function to display pc information to front end.
-    getPcValues();
-
+    await getPcValues();
 }
 
 async function updateSystemInfo(){
-    
-    getPcValues();
 
+    await getPcValues();
 }
 // Sets all values in to respectiv place when it is called by other functions.
 async function getPcValues() {
@@ -32,11 +28,4 @@ async function getPcValues() {
     } else if(!updatesAvailable){
         isUpdateAvl.textContent = "Windows-uppdatering tillgänglig: Nej";
     } else isUpdateAvl.textContent = "Upddatering: Ett fel uppstod";
-    //
-    const contentDiv = document.getElementById("teleLink");
-    const adminDoc = window.dbManager.getAdminDocument();
-
-    if (contentDiv && adminDoc) {
-        contentDiv.textContent = "Kontakt oss: " + adminDoc.suppNr;
-    }
 }
