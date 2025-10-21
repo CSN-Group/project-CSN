@@ -82,7 +82,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const dataSpan = document.getElementById("dataUsedSpan");
         const dataUsed = await window.systemInfo.getGlobal('dataSavedAmount');
 
-        dataSpan.innerText = (dataUsed / 1024) + " KB";
+        dataSpan.innerText = (dataUsed / 1024).toFixed(0) + " KB";
 
         const saveDataCheckbox = document.getElementById("saveDataCheckbox");
         saveDataCheckbox.checked = !await window.systemInfo.getGlobal("shouldSaveData");
