@@ -1,6 +1,6 @@
 const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
-const { contextBridge, ipcRenderer} = require('electron');
+const { contextBridge, ipcRenderer, shell} = require('electron');
 
 
 contextBridge.exposeInMainWorld('systemInfo', {
@@ -50,5 +50,6 @@ contextBridge.exposeInMainWorld('updates', {
 
 contextBridge.exposeInMainWorld('nav', {
 	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
-	simplePage: (channel) => ipcRenderer.send('navigateSimple')
+	simplePage: (channel) => ipcRenderer.send('navigateSimple'),
+	openExternalLink: (url) => shell.openExternal(url)
 });

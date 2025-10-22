@@ -164,10 +164,10 @@ async function updateWifiDisplay() {
 
     const tooltip = document.getElementById("wifiTooltip");
     if(currConnType === "WiFi") {
-        if (wifiStr > wifiHighTresh) {
+        if (wifiStr >= wifiHighTresh) {
             tooltip.innerText = wifiStr + " % WiFi-styrka är bra!";
             tooltip.style.border = "5px solid green";
-        } else if (wifiStr > wifiLowTresh) {
+        } else if (wifiStr >= wifiLowTresh) {
             tooltip.innerText = wifiStr + " % WiFi-styrka kan bidra till mindre störningar.";
             tooltip.style.border = "5px solid yellow";
         } else if (wifiStr > 0) {
