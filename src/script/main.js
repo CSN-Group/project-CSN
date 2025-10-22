@@ -68,6 +68,7 @@ const globals = {
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
   lastPing: 0,
+  hasSpeedtestedOnce: false,
 
   //Settings
   shouldSaveData: true,
@@ -134,6 +135,8 @@ function generateActionList() {
   updateDismissedList();
   const list = [];
   let allValuesGood = true;
+
+  if(globals["hasSpeedtestedOnce"] === false) allValuesGood = false;
 
   // TEST //
   //if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
@@ -306,9 +309,9 @@ async function performSpeedtest(triggeredBy = 'main') {
     setGlobal('currentlySpeedtesting', true);
     setGlobal('speedtestText', "Testar...");
 
-    setGlobal("lastDownspeed", "testing..");
-    setGlobal("lastUpspeed", "testing..");
-    setGlobal("lastPing", "testing..");
+    setGlobal("lastDownspeed", "testar..");
+    setGlobal("lastUpspeed", "testar..");
+    setGlobal("lastPing", "testar..");
 
     const result = await runSpeedtest();
 
@@ -327,6 +330,7 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastUpspeed", upSpeed);
       setGlobal("lastPing", ping);
       setGlobal('speedtestText', Date.now());
+      setGlobal('hasSpeedtestedOnce', true);
     } else setGlobal('speedtestText', "ERROR");
 
     setGlobal('currentlySpeedtesting', false)
