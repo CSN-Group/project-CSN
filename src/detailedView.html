@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<html lang="sv">
 
 <head>
     <link rel="stylesheet" href="style/style.css">
     <title>My Electron App</title>
+    <meta charset="UTF-8">
 </head>
 <body>
 <div id=detailedGrid>
     <div id="buttonDiv">
         <nav>
-            <button id="simpleViewButton">BASIC</button>
-            <button id="advancedViewButton">ADVANCED</button>
+            <button id="simpleViewButton">ÖVERSIKT</button>
+            <button id="advancedViewButton" class="currentPage">DETALJER</button>
         </nav>
     </div>
 
-    <nav id="innernav">
-        <button id="settingsButton">SETTINGS</button>
-        <button id="systemInfoButton">SYSTEM INFORMATION</button>
-        <button id="graphsButton">GRAPHS</button>
-        <button id="documentationButton">DOCUMENTATION</button>
-        <button>MORE STUFF</button>
+    <nav id="innerNav">
+        <button id="systemInfoButton" class="secondaryNavButton activeNavButton">INFORMATION</button>
+        <button id="graphsButton" class="secondaryNavButton">HISTORIK</button>
+        <button id="documentationButton" class="secondaryNavButton">DOKUMENTATION</button>
+        <button id="powerPauseButton" class="secondaryNavButton">RÖRELSEPAUS</button>
+        <button id="settingsButton" class="secondaryNavButton">INSTÄLLNINGAR</button>
     </nav>
 
-    <div id="contentDiv" style="text-align: center">
-        <img src="https://media1.tenor.com/m/P-X7geFnV-sAAAAC/slay-funny.gif">
+    <div id="contentDiv">
     </div>
-
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script> 
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="script/pcNameInfo.js"></script>
+<script src ="script/graph.js"></script>
 <script src="script/loadDetailedView.js"></script>
 </body>
 </html>

@@ -1,12 +1,26 @@
-const DOMList = document.getElementById("actionList");
+let DOMTechList;
+let DOMSoftList;
 
 let actionList = [];
 function initActionList(){
+    DOMTechList = document.getElementById("techActionsList");
+    DOMSoftList = document.getElementById("softActionsList");
 }
 
 function getImage(imageString){
     switch (imageString){
-        default: return "img/testIcon.png";
+        case "notice":
+            return "img/blueGuard.png";
+        case "light-error":
+            return "img/yellowGuard.png";
+        case "error":
+            return "img/redGuard.png";
+        case "check":
+            return "img/check.png"
+        case "break":
+            return "img/fikaIcon.png"
+        default:
+             return "img/testIcon.png";
     }
 }
 
@@ -38,10 +52,13 @@ function getActionItem(itemObject){
         checkbox.addEventListener("change", () => {
             if (checkbox.checked) {
                 newItem.classList.add("fadeOut");
+                if(itemObject.id === "social"){
+                    changeSocialStatus();
+                }
 
                 setTimeout(() => {
                     newItem.remove();
-                    window.updates.dismissAction(itemObject.id, itemObject.sleepDuration); // Dismiss action for dismissTime through IPC
+                    window.updates.dismissAction(itemObject.id, itemObject.sleepDuration);
                 }, 300);
             }
         });
@@ -51,7 +68,8 @@ function getActionItem(itemObject){
 }
 
 function clearList(){
-    DOMList.innerHTML = '';
+    DOMTechList.innerHTML = '';
+    DOMSoftList.innerHTML = '';
 }
 
 function updateActionList(list){
@@ -60,9 +78,18 @@ function updateActionList(list){
     list.forEach(itemObject => {
         const DOMItem = getActionItem(itemObject);
 
-        if(itemObject.isTechnical) DOMList.appendChild(DOMItem);
-        else DOMList.appendChild(DOMItem); //Change to soft issues list later!!!
+        if(itemObject.isTechnical) DOMTechList.appendChild(DOMItem);
+        else DOMSoftList.appendChild(DOMItem);
     });
+}
+
+async function changeSocialStatus(){
+    if(await window.systemInfo.getGlobal('socialCheck')){
+        window.systemInfo.setGlobal('socialCheck', false);
+    }
+    else{
+        window.systemInfo.setGlobal('socialCheck', true);
+    }
 }
 
 

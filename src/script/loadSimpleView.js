@@ -1,16 +1,11 @@
 window.addEventListener('DOMContentLoaded', async () => {
     await initNetworkInfo();
-    await initCompRestart();
-    await initSystemInfo();
-    await initGraph();
     initActionList();
     initGauges();
     initWifiDisplay();    
 
     window.updates.onUpdateDone(async () => {
         await updateNetwork();
-        await updateRestart();
-        await updateSystemInfo();
         await updateGauges();
         await updateWifiDisplay();
     });
@@ -18,6 +13,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.updates.onActionsUpdated(async (list) => {
         actionList = list;
         updateActionList(list);
+    });
+
+    const inMeetingCheckbox = document.getElementById("speedtestToggleCheckbox");
+
+    inMeetingCheckbox.addEventListener('change', async () => {
+        await window.systemInfo.setGlobal("shouldMeasure", !inMeetingCheckbox.checked);
     });
 
     const advancedButton = document.getElementById("advancedViewButton");

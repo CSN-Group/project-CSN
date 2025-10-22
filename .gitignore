@@ -118,3 +118,8 @@ release/
 playwright-report/
 test-results/
 jest-html-reporters-*.html
+
+# Ignore Database
+src/database/*.db
+
+

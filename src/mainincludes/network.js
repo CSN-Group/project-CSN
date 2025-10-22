@@ -4,6 +4,16 @@ const util = require("util");
 const {exec} = require("child_process");
 const execProm = util.promisify(exec);
 
+function isInterfaceActive(ip) {
+    const nets = os.networkInterfaces();
+    for (const [name, addrs] of Object.entries(nets)) {
+        if (addrs.some(net => net.address === ip && net.family === 'IPv4' && !net.internal)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 async function updateCurrentInterface() {
     return new Promise((resolve) => {
         try {
@@ -106,4 +116,4 @@ async function getWifiInfo() {
     }
 }
 
-module.exports = {updateCurrentInterface, getInterfaceByIP, getWifiInfo};
+module.exports = {updateCurrentInterface, getInterfaceByIP, getWifiInfo, isInterfaceActive};

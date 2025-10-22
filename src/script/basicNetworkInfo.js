@@ -1,41 +1,88 @@
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+
+    const options = {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+
+    return date.toLocaleString(undefined, options);
+}
+
+function isNumericTimestamp(value) {
+    return (
+        (typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && !isNaN(value))) &&
+        !isNaN(new Date(Number(value)).getTime())
+    );
+}
+
 async function updateNetwork(){
-    const infoDiv = document.getElementById("basicNetworkInfo");
+    const connType = await window.systemInfo.getGlobal('currentConnectionType');
 
-    let futureText = "";
+    const wifiText = document.getElementById("wifiText");
+    const ethText = document.getElementById("ethernetText");
 
-    futureText = "Connection: " + await window.systemInfo.getGlobal('currentConnectionType');
-    futureText += "\nWiFi Strength: " + await window.systemInfo.getGlobal('currentWifiStrength') + "%";
+    const ethImage = document.getElementById("ethernetIcon");
 
-    infoDiv.innerText = futureText;
+    if(connType === "WiFi"){
+        await updateWifiDisplay();
 
-    const speedtestDiv = document.getElementById("speedTestInfo");
+        wifiText.innerText = await window.systemInfo.getGlobal("currentWifiStrength") + "%";
 
-    const downSpeed = await window.systemInfo.getGlobal('lastDownspeed');
-    const upSpeed = await window.systemInfo.getGlobal('lastUpspeed');
-    const ping = await window.systemInfo.getGlobal('lastPing');
+        ethText.innerText = "EJ ANSLUTEN";
+        ethImage.src = "img/ethernet_trans.png"
+        ethImage.style.opacity = "0.3";
+    } else if(connType === "Ethernet"){
+        ethText.innerText = "ANSLUTEN";
+        ethText.innerHTML = "<b>ANSLUTEN</b>"
 
-    if(downSpeed) speedtestDiv.innerText = "Download: " + downSpeed + " Mbit/s";
-    else speedtestDiv.innerText = "Download: error"
+        ethImage.src = "img/greenEthernet_trans.png"
+        ethImage.style.opacity = "1";
 
-    if(upSpeed) speedtestDiv.innerText += "\nUpload: " + upSpeed + " Mbit/s";
-    else speedtestDiv.innerText += "\nUpload: error";
+        wifiText.innerText = "EJ WIFI";
 
-    if(ping) speedtestDiv.innerText += "\nPing: " + ping + " ms";
-    else speedtestDiv.innerText += "\nPing: error";
+        await updateWifiDisplay();
+    } else{
+        await updateWifiDisplay();
+
+        wifiText.innerText = "EJ WIFI";
+
+        ethText.innerText = "EJ ANSLUTEN";
+        ethImage.src = "img/ethernet_trans.png"
+        ethImage.style.opacity = "0.3";
+    }
+
+    const speedtestTextDOM = document.getElementById('lastUpdatedText');
+    const speedtestTextValue = await window.systemInfo.getGlobal('speedtestText');
+    let speedText;
+
+    if(isNumericTimestamp(speedtestTextValue)) speedText = formatTimestamp(speedtestTextValue);
+    else speedText = speedtestTextValue;
+
+    speedtestTextDOM.innerText = speedText;
+
+    const downSpeed = await window.systemInfo.getGlobal("lastDownspeed");
+    const upSpeed = await window.systemInfo.getGlobal("lastUpspeed");
+
+    if(downSpeed > 0 && upSpeed > 0){
+        const downDiv = document.getElementById('downloadValue');
+        const upDiv = document.getElementById('uploadValue');
+
+        downDiv.innerText = downSpeed + " Mb/s";
+        upDiv.innerText = upSpeed + " Mb/s"
+    }
+
+    const pingValue = document.getElementById('pingValue');
+    pingValue.innerText = await window.systemInfo.getGlobal('lastPing');
 }
 
 
 async function initNetworkInfo() {
-    const infoDiv = document.getElementById("basicNetworkInfo");
-    let futureInfoText = "";
-
-    document.getElementById('runSpeedTestButton').addEventListener(
+    document.getElementById('runSpeedtestButton').addEventListener(
         'click',
         await window.systemInfo.runSpeedtest);
-
-    const speedtestDiv = document.getElementById("speedTestInfo");
-
-    speedtestDiv.innerText = "Download: -";
-    speedtestDiv.innerText += "\nUpload: -";
-    speedtestDiv.innerText += "\nPing: -";
 }

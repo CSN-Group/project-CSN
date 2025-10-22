@@ -1,11 +1,11 @@
 const dbManager = require('../database/dbManager.js');
 const supaDbManager = require('../database/supabaseHandler.js');
-const { contextBridge, ipcRenderer} = require('electron');
+const { contextBridge, ipcRenderer, shell} = require('electron');
 
 
 contextBridge.exposeInMainWorld('systemInfo', {
 	getGlobal: (key) => ipcRenderer.invoke('getGlobal', key),
-	//setGlobals: () => setGlobals(),
+	setGlobal: (key, value) => ipcRenderer.invoke('setGlobal', key, value),
 
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
@@ -25,12 +25,15 @@ contextBridge.exposeInMainWorld('dbManager', {
 	summarizeDay: (dateStamp) => dbManager.summarizeDay(dateStamp),	
 	addReading: dbManager.addReading,
 	addAdminInfo: dbManager.addAdminInfo,
-	getAdminInfo: dbManager.getAdminInfo,		
+	getAdminDocument: dbManager.getAdminDocument,
+	getAdminSupportInfo: dbManager.getAdminSupportInfo,		
 	addReadingSupabase:(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) =>supaDbManager.addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp),
 	fetchHistory: (myMac) => supaDbManager.fetchHistory(myMac),
 	cleanLocalDatabase: () => dbManager.cleanLocalDatabase(),
 	fetchMonthlyHistory: (year,month) =>supaDbManager.fetchMonthlyHistory(year,month),	
-	syncLocalDatabase: () => supaDbManager.syncLocalDatabase()
+	syncLocalDatabase: () => supaDbManager.syncLocalDatabase(),
+	fetchAvailableMonths: () => supaDbManager.fetchAvailableMonths(),
+	getActiveSessions: (datestamp) =>dbManager.getActiveSessions(datestamp),
 });
 
 contextBridge.exposeInMainWorld('updates', {
@@ -43,10 +46,10 @@ contextBridge.exposeInMainWorld('updates', {
 	dismissAction: (id, sleepDuration) => {
 		ipcRenderer.send("dismiss-action", {id, sleepDuration });
 	}
-
 });
 
 contextBridge.exposeInMainWorld('nav', {
 	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
-	simplePage: (channel) => ipcRenderer.send('navigateSimple')
+	simplePage: (channel) => ipcRenderer.send('navigateSimple'),
+	openExternalLink: (url) => shell.openExternal(url)
 });
