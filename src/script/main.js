@@ -87,8 +87,9 @@ const globals = {
   pingLowTresh: 15,
 
   //Soft Timers
-  ergonomiCheckInterval: 30 * 60 * 1000, //30 minutes
-  workCheckInterval: 60 * 60 * 1000, //60 minutes
+  ergonomiCheckInterval: 120, //2 minutes, for testing.
+  pauseCheckInterval: 180, //3min for testing
+  socialCheck: false,
   //Local data
   dataSavedAmount: 0,
 }
@@ -151,7 +152,7 @@ function generateActionList() {
   else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
     list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
     allValuesGood = false;
-  }  
+  }
   
   if(globals['lastUpspeed'] > globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
     list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
@@ -172,7 +173,7 @@ function generateActionList() {
   }
   
   if(globals['lastPing'] < globals['pingHighTresh'] && globals['lastPing'] > globals['pingLowTresh']){
-    list.push(createAction("ping-medium", "light-error", "Din nedladdningshastighet är ganska låg."));
+    list.push(createAction("ping-medium", "light-error", "Din svarstid är ganska hög."));
     allValuesGood = false;
   }
   else if(globals['lastPing'] > globals['pingHighTresh']){
@@ -181,7 +182,7 @@ function generateActionList() {
   }
 
   if(allValuesGood){
-    list.push(createAction("all-good", "check", "Fina värden! Skutan bör segla utan problem!"));
+    list.push(createAction("all-good", "check", "Alla mätvärden är bra just nu!"));
   }
 
   const ipStart = globals['currentIP'].slice(0,3);
@@ -209,21 +210,32 @@ function generateActionList() {
     list.push(createAction("update-available", "light-error", "Windowsuppdatering tillgänglig!"));
   }
 
-  //Soft Actions
+  //Soft Actions  
   if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
     list.push(createAction("ergonomy", "notice", "Byt sittposition",true, globals['ergonomiCheckInterval'] , false));
   }
 
   if((Date.now() - globals['userActiveStartTime']) > globals['pauseCheckInterval']){
-    list.push(createAction("pause", "notice", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
+    list.push(createAction("pause", "break", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
   }
 
-  list.sort((a,b) =>{
-    if(a.severity === b.severity){return 0;}
-    else if((a.severity === "notice" && b.severity === "light-error") ||
-        a.severity === "light-error" && b.severity === "error"){return 1;}
-    else{return -1;}
-  })
+  if(!globals['socialCheck']){
+    list.push(createAction("social", "break", "Har du varit social idag?",true, 0, false));
+  }
+  else{
+    list.push(createAction("social", "check", "Du har varit social idag!",false, 0, false));
+  }
+  
+
+   //Putting the actions in order of severity
+  const severityRank = {
+    "error": 5,
+    "light-error":4,
+    "notice":3,
+    "break":2,
+    "check": 1 
+  } 
+  list.sort((a,b) => severityRank[b.severity] - severityRank[a.severity]);
 
   return list;
 }

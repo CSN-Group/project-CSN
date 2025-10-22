@@ -146,7 +146,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             </div>
             <div id = "metricButtons">
                 <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
-                <button id="graphUpspeedButton" class="graphButton">UPLADDNING</button>
+                <button id="graphUpspeedButton" class="graphButton">UPPLADDNING</button>
                 <button id="graphDownspeedButton" class="graphButton">NEDLADDNING</button>
                 <button id="graphPingButton" class="graphButton">SVARSTID</button>               
                 <button id="graphInterruptButton" class="graphButton">AVBROTT</button>
@@ -165,6 +165,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         contentDiv.innerHTML = `
         <div id="powerDiv">
             <img src="img/exercise.png" alt="Workout" id="exercisePic">
+            <p>Här kan man få tillgång till enklare träningspass och stretch övningar som
+            underlättar för kontorsarbetare</p>
         </div>
         `
 

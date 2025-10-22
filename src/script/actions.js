@@ -17,6 +17,8 @@ function getImage(imageString){
             return "img/redGuard.png";
         case "check":
             return "img/check.png"
+        case "break":
+            return "img/fikaIcon.png"
         default:
              return "img/testIcon.png";
     }
@@ -50,6 +52,9 @@ function getActionItem(itemObject){
         checkbox.addEventListener("change", () => {
             if (checkbox.checked) {
                 newItem.classList.add("fadeOut");
+                if(itemObject.id === "social"){
+                    changeSocialStatus();
+                }
 
                 setTimeout(() => {
                     newItem.remove();
@@ -76,6 +81,15 @@ function updateActionList(list){
         if(itemObject.isTechnical) DOMTechList.appendChild(DOMItem);
         else DOMSoftList.appendChild(DOMItem);
     });
+}
+
+async function changeSocialStatus(){
+    if(await window.systemInfo.getGlobal('socialCheck')){
+        window.systemInfo.setGlobal('socialCheck', false);
+    }
+    else{
+        window.systemInfo.setGlobal('socialCheck', true);
+    }
 }
 
 
