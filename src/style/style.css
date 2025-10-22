@@ -522,13 +522,13 @@ footer{
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-#SupportSite { /* Changed to match HTML */
+#SupportSite { 
     background-color: #E5E5E5;
     padding: 20px;
     border-radius: 8px;
     display: grid;
     grid-template-rows: 1fr 1fr;
-    gap: 30px; /* Use 'gap' instead of 'grid-gap' (modern standard) */
+    gap: 30px; 
 }
 
 #teleLink {
@@ -536,7 +536,7 @@ footer{
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #dee2e6;
-    height: 90px; /* Added 'px' unit */
+    height: 90px; 
     justify-content: space-around;
 }
 #aiSupportDisplay {
