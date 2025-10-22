@@ -68,6 +68,7 @@ const globals = {
   lastDownspeed: 0.0,
   lastUpspeed: 0.0,
   lastPing: 0,
+  hasSpeedtestedOnce: false,
 
   //Settings
   shouldSaveData: true,
@@ -86,8 +87,8 @@ const globals = {
   pingLowTresh: 15,
 
   //Soft Timers
-  ergonomiCheckInterval: STANDARD_SLEEP_INTERVAL, //30 minutes
-  workCheckInterval: STANDARD_SLEEP_INTERVAL * 2, //60 minutes
+  ergonomiCheckInterval: 30 * 60 * 1000, //30 minutes
+  workCheckInterval: 60 * 60 * 1000, //60 minutes
   //Local data
   dataSavedAmount: 0,
 }
@@ -133,6 +134,8 @@ function generateActionList() {
   updateDismissedList();
   const list = [];
   let allValuesGood = true;
+
+  if(globals["hasSpeedtestedOnce"] === false) allValuesGood = false;
 
   // TEST //
   //if(globals['currentIP'] !== "No valid IP" && !isDismissed("valid-ip")){
@@ -184,7 +187,7 @@ function generateActionList() {
   const ipStart = globals['currentIP'].slice(0,3);
   const validIpStarts = ["192","172","10.","100","127"];
   if(globals['currentIP'] === "No valid IP"){
-    ist.push(createAction("no-ip", "light-error", "Du har för närvarande ingen IP address."));
+    list.push(createAction("no-ip", "light-error", "Du har för närvarande ingen IP address."));
   }
   else if(!validIpStarts.includes(ipStart)){
     list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
@@ -294,9 +297,9 @@ async function performSpeedtest(triggeredBy = 'main') {
     setGlobal('currentlySpeedtesting', true);
     setGlobal('speedtestText', "Testar...");
 
-    setGlobal("lastDownspeed", "testing..");
-    setGlobal("lastUpspeed", "testing..");
-    setGlobal("lastPing", "testing..");
+    setGlobal("lastDownspeed", "testar..");
+    setGlobal("lastUpspeed", "testar..");
+    setGlobal("lastPing", "testar..");
 
     const result = await runSpeedtest();
 
@@ -315,6 +318,7 @@ async function performSpeedtest(triggeredBy = 'main') {
       setGlobal("lastUpspeed", upSpeed);
       setGlobal("lastPing", ping);
       setGlobal('speedtestText', Date.now());
+      setGlobal('hasSpeedtestedOnce', true);
     } else setGlobal('speedtestText', "ERROR");
 
     setGlobal('currentlySpeedtesting', false)
