@@ -6,6 +6,7 @@ const fs = require('fs');
 
 const {execFile, exec} = require('child_process');
 const {addReading,addActiveTime} = require('../database/dbManager.js')
+const ai = require('../mainincludes/aiAssistant.js');
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -385,6 +386,21 @@ async function isUpdatesAvailable(){
 
 }
 
+function compileSystemInfo(){
+    return {
+      currentIP: getGlobal('currentIP'),
+      currentConnectionType: getGlobal('currentConnectionType'),
+      currentWifiStrength: getGlobal('currentWifiStrength'),
+      hoursSinceComputerRestart: getGlobal('compOnTimeHours'),
+      lastMeasuredDownloadSpeed: getGlobal('lastDownspeed'),
+      lastMeasuredUploadSpeed: getGlobal('lastUpspeed'),
+      lastMeasuredPing: getGlobal('lastPing'),
+      pcModel: getGlobal('pcName'),
+      osVersion: getGlobal('osVersion'),
+      windowsUpdateAvailable: getGlobal('updatesAvailable'),
+    }
+}
+
 //Data used
 async function getDataUsed() {
   try {
@@ -401,6 +417,18 @@ ipcMain.handle('getGlobal', (event, key) => getGlobal(key));
 ipcMain.handle('setGlobal', (event, key, value) => setGlobal(key, value));
 ipcMain.handle("getList", () => {
   return generateList();
+});
+ipcMain.handle('ask-ai', async (event, userMessage) => {
+  return await ai.askAI(userMessage, compileSystemInfo());
+});
+
+ipcMain.handle("reset-chat", () => {
+  ai.resetChat();
+  return true;
+});
+
+ipcMain.handle('get-chat-history', () => {
+  return ai.chatHistory;
 });
 
 ipcMain.on("dismiss-action", (event, { id, sleepDuration }) => {

@@ -9,14 +9,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
     const systemInfoDisp = document.getElementById("systemInfoButton");
-    
-    systemInfoDisp.addEventListener('click', async () => {
-        await initSystemInfo();
-    });
-  
     const settingsButton = document.getElementById("settingsButton");
     const graphButton = document.getElementById("graphsButton");
     const powerPauseButton = document.getElementById("powerPauseButton");
+    const aiAssistantButton = document.getElementById("aiAssistantButton");
 
     const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
     innerNavButtons.forEach(button => {
@@ -28,6 +24,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     simpleButton.addEventListener('click', () => {
         window.nav.simplePage();
+    });
+
+    systemInfoDisp.addEventListener('click', async () => {
+        await initSystemInfo();
     });
   
     docButton.addEventListener('click', () => {
@@ -169,7 +169,28 @@ window.addEventListener('DOMContentLoaded', async () => {
             underlättar för kontorsarbetare</p>
         </div>
         `
-
     });
+
+    aiAssistantButton.addEventListener('click', () => {
+        initAIAssistant();
+        loadChatHistory();
+
+        const sendBtn = document.getElementById('send-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const messageInput = document.getElementById('message-input');
+
+        sendBtn.addEventListener('click', async () => {
+            await sendToAI();
+        });
+
+        resetBtn.addEventListener('click', async () => {
+            await resetChat();
+        });
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+    });
+
     console.log('All done, Captain!');
 });

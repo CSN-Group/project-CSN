@@ -10,7 +10,10 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
-	
+	//AI
+	askAI: (message) => ipcRenderer.invoke('ask-ai', message),
+	resetChat: () => ipcRenderer.invoke("reset-chat"),
+	getChatHistory: () => ipcRenderer.invoke('get-chat-history')
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
