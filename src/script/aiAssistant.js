@@ -1,5 +1,5 @@
 let waitingForResponse = false;
-const initialMessage = "Ställ dina frågor här. Jag känner till dina mätvärden och kan allt om dokumentationen!";
+const initialMessage = "Hej! Jag är Herman Hemhjälpare. Du kan ställa dina frågor till mig. Jag känner till dina mätvärden och kan allt om dokumentationen!";
 
 function addMessage(content, role) {
     if(role === 'system') return;

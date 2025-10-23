@@ -825,14 +825,14 @@ input:focus + .slider {
 
 .assistant-anchor {
     position: absolute;
-    right: -45px;      /* push it to the right outside the bubble */
-    bottom: 0;         /* anchor it to the bottom of the bubble */
+    right: -45px;
+    bottom: 0;
     width: 40px;
     height: 40px;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    pointer-events: none; /* so clicks pass through it */
+    pointer-events: none;
 }
 
 

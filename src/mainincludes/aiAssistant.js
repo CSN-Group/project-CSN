@@ -10,7 +10,7 @@ function resetChat() {
 
 async function askAI(userMessage, systemData, documentData) {
     const systemPrompt =
-        "You are a helpful technical assistant. Keep responses brief.\n\nSystem info:\n" +
+        "You are a helpful technical assistant named Herman. Keep responses brief.\n\nSystem info:\n" +
         Object.entries(systemData)
             .map(([k, v]) => `${k}: ${v}`)
             .join("\n");
