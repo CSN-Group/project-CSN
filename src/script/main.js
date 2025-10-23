@@ -435,11 +435,6 @@ ipcMain.on("dismiss-action", (event, { id, sleepDuration }) => {
   dismissAction(id, sleepDuration);
 });
 
-ipcMain.on('navigateDetailed', (event) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/detailedView.html");
-});
-
 ipcMain.on('navigate', (event, destination) => {
   const win = BrowserWindow.fromWebContents(event.sender);
 
@@ -462,11 +457,6 @@ ipcMain.on('navigate', (event, destination) => {
     default:
       break;
   }
-});
-
-ipcMain.on('navigateSimple', (event) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/simpleView.html");
 });
 
 //Events
