@@ -5,10 +5,10 @@ const API_KEY = "sk-proj-F4in4YCAxGoMVEHCg-gmloWMrWeo1NlS1I80P7MmPPXNS-CfSU_s51v
 const MESSAGE_LIMIT = 100;
 
 function resetChat() {
-    chatHistory = [];
+    chatHistory.splice(0, chatHistory.length);
 }
 
-async function askAI(userMessage, systemData) {
+async function askAI(userMessage, systemData, documentData) {
     const systemPrompt =
         "You are a helpful technical assistant. Keep responses brief.\n\nSystem info:\n" +
         Object.entries(systemData)
@@ -19,6 +19,7 @@ async function askAI(userMessage, systemData) {
 
     const fullMessage = [
         { role: "system", content: systemPrompt },
+        { role: "system", content: "Documentation specifically provided to the user:\n" + documentData },
         ...chatHistory
     ];
 
