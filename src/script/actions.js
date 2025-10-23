@@ -19,6 +19,8 @@ function getImage(imageString){
             return "img/check.png"
         case "break":
             return "img/fikaIcon.png"
+        case "social":
+            return "img/bubble.png"
         default:
              return "img/testIcon.png";
     }
