@@ -167,7 +167,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         contentDiv.innerHTML = `
         <div id="powerDiv">
             <img src="img/exercise.png" alt="Workout" id="exercisePic">
-            <p>Här kan man få tillgång till enklare träningspass och stretch övningar som
+            <p>Här kan man få tillgång till enklare träningspass och stretchövningar som
             underlättar för kontorsarbetare</p>
         </div>
         `
