@@ -52,6 +52,24 @@ h2{
     align-content: start;
 }
 
+#contentGrid{
+    display: grid;
+    grid-template-areas:
+        "buttons buttons"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "footer footer";
+    grid-gap: 1rem;
+    height: 100%;
+    width: 100%;
+    background-color: #E5E5E5;
+    align-content: start;
+}
+
 
 footer{
     grid-area: footer;
@@ -124,7 +142,7 @@ footer{
     border-radius: 8px;
     height: 100%;
     box-sizing: border-box;
-    gap: 0.75rem; /* spacing between rows */
+    gap: 10px;
 }
 
 #lastUpdatedHeader {
@@ -143,7 +161,7 @@ footer{
 #lastUpdatedText {
     font-size: 1rem;
     font-weight: 500;
-    padding: 0.3rem 0.5rem;
+    padding: 0.2rem 0.3rem;
     border-radius: 4px;
     text-align: center;
 }
@@ -358,21 +376,20 @@ footer{
     margin-left: 2px;
 }
 
-#simpleViewButton,
-#advancedViewButton{    
+.outerNavButton{
     background: #cdcdcd;
     border: 1px solid #cdcdcd;
     border-bottom: none;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    width: 171px;
+    width: 150px;
     height: 38px;
     letter-spacing: 2px;
     font-size: 14px;
     font-weight: 500;
+    margin-left: 5px;
 }
-#simpleViewButton.currentPage,
-#advancedViewButton.currentPage{
+.outerNavButton.currentPage{
     background: #E5E5E5;
 }
 

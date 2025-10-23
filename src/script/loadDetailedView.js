@@ -23,8 +23,21 @@ window.addEventListener('DOMContentLoaded', async () => {
         })
     })
 
-    simpleButton.addEventListener('click', () => {
+    // Navigation buttons
+    document.getElementById("simpleViewButton").addEventListener('click', () => {
         window.nav.simplePage();
+    });
+
+    document.getElementById("historyViewButton").addEventListener('click', () => {
+        window.nav.historyPage();
+    });
+
+    document.getElementById("arbetsmiljoViewButton").addEventListener('click', () => {
+        window.nav.arbetsmiljoPage();
+    });
+
+    document.getElementById("settingsViewButton").addEventListener('click', () => {
+        window.nav.settingsPage();
     });
 
     systemInfoDisp.addEventListener('click', async () => {

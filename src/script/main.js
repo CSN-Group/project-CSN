@@ -435,14 +435,28 @@ ipcMain.on("dismiss-action", (event, { id, sleepDuration }) => {
   dismissAction(id, sleepDuration);
 });
 
-ipcMain.on('navigateDetailed', (event) => {
+ipcMain.on('navigate', (event, destination) => {
   const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/detailedView.html");
-});
 
-ipcMain.on('navigateSimple', (event) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/simpleView.html");
+  switch (destination){
+    case 'simple':
+      win.loadFile("src/simpleView.html");
+      break;
+    case 'detailed':
+      win.loadFile("src/detailedView.html");
+      break;
+    case 'history':
+      win.loadFile("src/historyView.html");
+      break;
+    case 'arbetsmiljo':
+      win.loadFile("src/arbetsmiljoView.html");
+      break;
+    case 'settings':
+      win.loadFile("src/settingsView.html");
+      break;
+    default:
+      break;
+  }
 });
 
 //Events

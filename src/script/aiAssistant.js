@@ -1,6 +1,10 @@
 let waitingForResponse = false;
 let aiInitialized = false;
 
+const initialMessage = "<div class=\"message assistant-message\">" +
+    "Ställ dina frågor här. Jag känner till dina mätvärden och kan allt om dokumentationen!" +
+    "</div>";
+
 function addMessage(content, role) {
     if(role === 'system') return;
 
@@ -17,11 +21,9 @@ function addMessage(content, role) {
 async function resetChat() {
     const result = await window.systemInfo.resetChat();
 
-    console.log("Chat reset:", result);
-
     if(result) {
         const messagesDiv = document.getElementById('messagesDiv');
-        messagesDiv.innerHTML = '';
+        messagesDiv.innerHTML = initialMessage;
     }
 }
 
@@ -29,7 +31,7 @@ async function loadChatHistory() {
     const history = await window.systemInfo.getChatHistory();
     const messagesDiv = document.getElementById('messagesDiv');
 
-    messagesDiv.innerHTML = '';
+    messagesDiv.innerHTML = initialMessage;
 
     history.forEach(msg => {
         const msgDiv = document.createElement('div');
@@ -80,8 +82,9 @@ async function initAIAssistant() {
     contentDiv.innerHTML = `
         <h2>AI-assistans</h2>
         <div id="aiAssistantDiv">
-            <div id="messagesDiv">
-            </div>
+            <div id="messagesDiv">` +
+                initialMessage +
+            `</div>
             <div id="input-row">
                 <input type="text" id="message-input" placeholder="Ställ en fråga..." />
                 <button id="send-btn">Send</button>

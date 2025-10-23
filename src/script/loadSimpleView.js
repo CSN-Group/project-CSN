@@ -21,10 +21,22 @@ window.addEventListener('DOMContentLoaded', async () => {
         await window.systemInfo.setGlobal("shouldMeasure", !inMeetingCheckbox.checked);
     });
 
-    const advancedButton = document.getElementById("advancedViewButton");
 
-    advancedButton.addEventListener('click', () => {
+    // Navigation buttons
+    document.getElementById("advancedViewButton").addEventListener('click', () => {
         window.nav.detailedPage();
+    });
+
+    document.getElementById("historyViewButton").addEventListener('click', () => {
+        window.nav.historyPage();
+    });
+
+    document.getElementById("arbetsmiljoViewButton").addEventListener('click', () => {
+        window.nav.arbetsmiljoPage();
+    });
+
+    document.getElementById("settingsViewButton").addEventListener('click', () => {
+        window.nav.settingsPage();
     });
 
     console.log('All done, Captain!');
