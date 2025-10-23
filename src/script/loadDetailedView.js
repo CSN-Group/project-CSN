@@ -134,15 +134,15 @@ window.addEventListener('DOMContentLoaded', async () => {
         <div id="graphGrid">
             <div id = "timeRangeButtons">
                 <div class="dropdown">
-                    <button class="dropButton">Dag<img src="./img/dropdown.png"></img></button>
+                    <button class="dropButton">Dagar<img src="./img/dropdown.png"></img></button>
                     <div id="dayDropdown" class="dropdownContent"></div>       
                 </div>
                 <div class="dropdown">
-                    <button class="dropButton">Vecka<img src="./img/dropdown.png"></button>
+                    <button class="dropButton">Veckor<img src="./img/dropdown.png"></button>
                     <div id="weekDropdown" class="dropdownContent"></div>       
                 </div>
                 <div class="dropdown">
-                    <button class="dropButton">M&aring;nad<img src="./img/dropdown.png"></button>
+                    <button class="dropButton">Månader<img src="./img/dropdown.png"></button>
                     <div id="monthDropdown" class="dropdownContent"></div>       
                 </div> 
             </div>
@@ -155,6 +155,10 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <button id="graphWorktimeButton" class="graphButton">PAUSER</button>
             </div>                   
             <canvas id="historyGraph"></canvas>
+            <div id="metricInfoDiv">
+                <p id="metricInfo">Till vänster kan du välja vilket mätvärde du vill ska visas i grafen!<br>
+                Du kan även välja tidspann här ovan!
+            </div>
         </div>
         `
         initDrop();

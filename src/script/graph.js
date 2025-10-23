@@ -55,38 +55,74 @@ async function initGraph(){
   //Databasestuff! Move somewhere else?
   dbManager.syncLocalDatabase();   
   dbManager.cleanLocalDatabase(); 
-  createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  
-  document.getElementById('graphPingButton').addEventListener('click', () =>{
+  createDayGraph();
+  const textbox = document.getElementById('metricInfo');
+
+  const pingButton = document.getElementById('graphPingButton');
+  pingButton.addEventListener('click', () =>{
     currentGraphMetric = 'ping';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   });
-
-  document.getElementById('graphUpspeedButton').addEventListener('click', () =>{
+  pingButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
+   });
+  
+  const upSpeedButton = document.getElementById('graphUpspeedButton');
+  upSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'upSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  } );
+  });
+  upSpeedButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din enhet<br>till internet. T.ex. när du delar filer eller videor."
+  });
 
-  document.getElementById('graphDownspeedButton').addEventListener('click', () =>{
+  const downSpeedButton = document.getElementById('graphDownspeedButton');
+  downSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'downSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  } );
+  });
+  downSpeedButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming, surfning eller filhämtning."
+  });
 
-  document.getElementById('graphWifiButton').addEventListener('click', () =>{
+  const wifiButton=document.getElementById('graphWifiButton');
+  wifiButton.addEventListener('click', () =>{
     currentGraphMetric = 'wifiStr';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  } );
+  });
+  wifiButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Wifistyrka visar hur stark signalen mellan din enhet och routern är.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
+  });
 
-  document.getElementById('graphInterruptButton').addEventListener('click', () =>{
+  const interruptButton=document.getElementById('graphInterruptButton');
+  interruptButton.addEventListener('click', () =>{
     currentGraphMetric = 'interrupts';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   });
+  interruptButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Visar vid vilka tidpunkter som dina mätvärden inte har varit så bra.<br>MER!"
+  });
 
-  document.getElementById('graphWorktimeButton').addEventListener('click', () =>{
+  const workButton=document.getElementById('graphWorktimeButton')
+  workButton.addEventListener('click', () =>{
     currentGraphMetric = 'workingTime';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   });
-    
+  workButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Visar mellan vilka tidpunkter du har varit aktiv.<br>NÅGOT MER!"
+  });
+  
+  document.querySelectorAll('.graphButton').forEach(button => {
+  button.addEventListener('mouseleave', () => {
+    textbox.innerHTML = "Till vänster kan du välja vilket mätvärde du vill ska visas i grafen!<br>Du kan även välja tidspann här ovan!";
+  });
+  button.addEventListener('click', () =>{
+            document.querySelector('.activeMetricButton')?.classList.remove('activeMetricButton');
+            button.classList.add('activeMetricButton');
+        })
+  });
+
+
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
