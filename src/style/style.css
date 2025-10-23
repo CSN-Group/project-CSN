@@ -142,7 +142,7 @@ footer{
     border-radius: 8px;
     height: 100%;
     box-sizing: border-box;
-    gap: 0.75rem; /* spacing between rows */
+    gap: 10px;
 }
 
 #lastUpdatedHeader {
@@ -161,7 +161,7 @@ footer{
 #lastUpdatedText {
     font-size: 1rem;
     font-weight: 500;
-    padding: 0.3rem 0.5rem;
+    padding: 0.2rem 0.3rem;
     border-radius: 4px;
     text-align: center;
 }
