@@ -52,7 +52,13 @@ contextBridge.exposeInMainWorld('updates', {
 });
 
 contextBridge.exposeInMainWorld('nav', {
-	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
-	simplePage: (channel) => ipcRenderer.send('navigateSimple'),
+	simplePage: () => ipcRenderer.send('navigate', 'simple'),
+	detailedPage: () => ipcRenderer.send('navigate', 'detailed'),
+	historyPage: () => ipcRenderer.send('navigate', 'history'),
+	arbetsmiljoPage: () => ipcRenderer.send('navigate', 'arbetsmiljo'),
+	settingsPage: () => ipcRenderer.send('navigate', 'settings'),
+
+
+	//Open in external browser
 	openExternalLink: (url) => shell.openExternal(url)
 });

@@ -9,8 +9,11 @@
 
     <div id="buttonDiv">
       <nav>
-        <button id="simpleViewButton" class="currentPage">ÖVERSIKT</button>
-        <button id="advancedViewButton">DETALJER</button>
+        <button id="simpleViewButton" class="outerNavButton currentPage">ÖVERSIKT</button>
+        <button id="advancedViewButton" class="outerNavButton">HJÄLP</button>
+        <button id="historyViewButton" class="outerNavButton">HISTORIK</button>
+        <button id="arbetsmiljoViewButton" class="outerNavButton">ARBETSMILJÖ</button>
+        <button id="settingsViewButton" class="outerNavButton">INSTÄLLNINGAR</button>
       </nav>
     </div>
 
@@ -66,16 +69,15 @@
             <span class="tooltip" id='upTooltip'>Upspeed tooltip</span>
           </div>
 
-
       </div>
       <div id="pingRow">
         <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
-        <label id="pingLabel">Svarstid: </label>
+        <label id="pingLabel">Ping: </label>
         <span id="pingValue">-</span>
         <label id="pingUnit"> ms</label>
       </div>
 
-      <button id="runSpeedtestButton">UPPDATERA</button>
+      <button id="runSpeedtestButton">MÄT NU</button>
     </div>
 
       <div id="techActionsDiv">

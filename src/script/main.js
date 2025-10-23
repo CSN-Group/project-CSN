@@ -440,6 +440,30 @@ ipcMain.on('navigateDetailed', (event) => {
   win.loadFile("src/detailedView.html");
 });
 
+ipcMain.on('navigate', (event, destination) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+
+  switch (destination){
+    case 'simple':
+      win.loadFile("src/simpleView.html");
+      break;
+    case 'detailed':
+      win.loadFile("src/detailedView.html");
+      break;
+    case 'history':
+      win.loadFile("src/historyView.html");
+      break;
+    case 'arbetsmiljo':
+      win.loadFile("src/arbetsmiljoView.html");
+      break;
+    case 'settings':
+      win.loadFile("src/settingsView.html");
+      break;
+    default:
+      break;
+  }
+});
+
 ipcMain.on('navigateSimple', (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   win.loadFile("src/simpleView.html");

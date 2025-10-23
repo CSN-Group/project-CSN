@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <link rel="stylesheet" href="style/style.css">
+    <title>My Electron App</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div id="detailedGrid">
+    <div id="buttonDiv">
+        <nav>
+            <button id="simpleViewButton" class="outerNavButton">ÖVERSIKT</button>
+            <button id="advancedViewButton" class="outerNavButton">HJÄLP</button>
+            <button id="historyViewButton" class="outerNavButton">HISTORIK</button>
+            <button id="arbetsmiljoViewButton" class="outerNavButton currentPage">ARBETSMILJÖ</button>
+            <button id="settingsViewButton" class="outerNavButton">INSTÄLLNINGAR</button>
+        </nav>
+    </div>
+
+    <nav id="innerNav">
+        <button id="powerPauseButton" class="secondaryNavButton">RÖRELSEPAUS</button>
+        <button id="graphsButton" class="secondaryNavButton">HISTORIK</button>
+    </nav>
+
+    <div id="contentDiv">
+    </div>
+</div>
+
+<script src="script/loadArbetsmiljoView.js"></script>
+</body>
+</html>
