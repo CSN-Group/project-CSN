@@ -28,4 +28,5 @@ async function getPcValues() {
     } else if(!updatesAvailable){
         isUpdateAvl.textContent = "Windows-uppdatering tillgänglig: Nej";
     } else isUpdateAvl.textContent = "Upddatering: Ett fel uppstod";
+
 }
