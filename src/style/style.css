@@ -148,11 +148,11 @@ footer{
     text-align: center;
 }
 
-#speedtestButton {
+#runSpeedtestButton {
     background-color: #707070;
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 9999px;
     padding: 0.6rem;
     font-size: 1rem;
     font-weight: bold;
@@ -176,14 +176,22 @@ footer{
     height: 24px;
 }
 
+#pingLabel{
+    font-size: 20px;
+}
+
 #pingValue {
-    font-size: 1rem;
+    font-size: 20px;
     font-weight: 600;
     background: #F3F3F3;
     padding: 0.3rem 0.6rem;
     border-radius: 4px;
     min-width: 40px;
     text-align: right;
+}
+
+#pingUnit{
+    font-size: 20px;
 }
 
 #softActionsDiv{
@@ -359,6 +367,9 @@ footer{
     border-top-right-radius: 10px;
     width: 171px;
     height: 38px;
+    letter-spacing: 2px;
+    font-size: 14px;
+    font-weight: 500;
 }
 #simpleViewButton.currentPage,
 #advancedViewButton.currentPage{
@@ -369,6 +380,7 @@ footer{
     background: none;
     border: none;   
     margin-left: 10px;
+    font-size: 14px;
     padding: 0;
 }
 
@@ -424,8 +436,8 @@ footer{
         "metric graph graph";        
     grid-gap: 1rem;
     height: 100%;
-    width: 100%;
-    background-color: #d3d3d3;
+    width: 100%;    
+    background-color: #F3F3F3F3;
     align-items: stretch;
     border-radius: 6px;
 }
@@ -461,8 +473,8 @@ footer{
 }
 
 .dropButton,
-.graphButton  {
-  background-color: #F3F3F3F3;
+.graphButton  {  
+  background-color: #d3d3d3;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   border-radius: 9999px;
   border: 1px solid black;
@@ -507,46 +519,40 @@ footer{
 /* systemInfo style */
 #systemaInfoCont {
     display: grid;
+    grid-template-areas:
+        "teleLink aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport";
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    padding: 20px;
     background-color: #E5E5E5;
-    min-height: 100%;
-    border-radius: 12px;
+    height: 100%;
+    width: 100%;
 }
 
 #pcInfoDisplay {
-    background-color: whitesmoke;
+    background-color: #F3F3F3;
+    grid-area: pcInfo;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#SupportSite { 
-    background-color: #E5E5E5;
-    padding: 20px;
-    border-radius: 8px;
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    gap: 30px; 
 }
 
 #teleLink {
     background-color: #F3F3F3;
+    grid-area: teleLink;
     padding: 15px;
-    border-radius: 5px;
-    border: 1px solid #dee2e6;
-    height: 90px; 
-    justify-content: space-around;
+    border-radius: 8px;
 }
 #aiSupportDisplay {
     background-color: #F3F3F3;
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid #dee2e6;
-    height: 90px;
-    display: flex;
-    justify-content: space-around;
+    grid-area: aiSupport;
+    border-radius: 8px;
+    padding-top: 15px;
+    height: 550px;
 }
 #aiSupportDisplay img {
     align-items: right;
@@ -586,9 +592,7 @@ footer{
 }
 
 #settingsLeft, #settingsRight {
-    max-width: 360px;
     min-width: 300px;
-    margin: 20px auto;
     padding: 20px;
     border-radius: 12px;
     text-align: center;    
@@ -645,6 +649,7 @@ footer{
 #powerDiv{
     max-width: 100%;
     height: 100%;
+    padding: 20px;
     overflow: scroll;
     overflow-x: hidden;
 }
@@ -703,6 +708,94 @@ input:checked + .slider::before {
 
 input:focus + .slider {
     box-shadow: 0 0 1px #4caf50;
+}
+
+#powerDiv{
+    padding: 2%;
+    overflow: hidden;
+}
+
+#phoneDiv,
+#linkDiv{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px;
+}
+
+/* Chatbot Style */
+#aiAssistantDiv {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    border-top: 2px solid #a5a5a5;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #F3F3F3;
+    overflow: hidden;
+    margin-top: 15px
+}
+
+#messagesDiv {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #F3F3F3;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+
+.user-message {
+    align-self: flex-end;
+    background: #007bff;
+    color: #fff;
+    border-bottom-right-radius: 0;
+}
+
+.assistant-message {
+    align-self: flex-start;
+    background: #e5e5ea;
+    color: #000;
+    border-bottom-left-radius: 0;
+}
+
+#input-row {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+#send-btn, #reset-btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#send-btn {
+    background: #007bff;
+    color: #fff;
+}
+
+#reset-btn {
+    background: #dc3545;
+    color: #fff;
+    margin-left: 5px;
 }
 
 

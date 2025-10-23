@@ -36,15 +36,16 @@ async function initDrop(){
   })
   weekDrop.appendChild(weekButton);
 
-  months.forEach(month => {
-    const button = document.createElement("button");
-    monthNum =  parseInt(month.month);    
-    button.textContent = monthsArray[monthNum-1] + " "+ month.year;
+    months.forEach(month => {
+    const button = document.createElement("button");  
+        
+    button.textContent = monthsArray[parseInt(month.month)-1] + " "+ month.year;
     button.addEventListener("click", () => {
       currentGraphRange = 'month';
-      currentGraphMonth = monthNum;
-      currentGraphYear = month.year;   
-      createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear,currentGraphMonth);
+      currentGraphMonth = parseInt(month.month)
+      currentGraphYear = month.year;
+           
+      createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);
   });  
@@ -122,7 +123,7 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
   else if(range === "month"){    
     readings = await dbManager.fetchMonthlyHistory(year,month);
     const currentMonth = (new Date().getMonth()+1);
-     
+         
     if(month === currentMonth){ //If we want to plot the current month, the last week is not in Supabase!
       const datestamps = dbManager.getUniqueDateStamps();      
       datestamps.forEach( stamp => {
@@ -148,11 +149,10 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
   let workingTime;
   if(mainMetric === 'interrupts'){interrupts = createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs);} 
   if(mainMetric === 'workingTime'){
-    const workSessions = dbManager.getActiveSessions(dateStamp);
-    //console.log(workSessions) 
+    const workSessions = dbManager.getActiveSessions(dateStamp);     
     workingTime = createWorktimeData(workSessions);
   }
-  //console.log(workingTime);
+  
   const start = times[0];
   const end = times[times.length-1]
   
@@ -161,7 +161,7 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
   const labels = { upSpeed: 'Uppladdnignshastighet (Mbps)', downSpeed: 'Nedladdningshastighet (Mbps)', ping: 'Ping (ms)',
                    wifiStr: 'WiFi Styrka (%)', interrupts: 'Avbrott', workingTime:'Aktivt arbete'};
   const borderColors = { upSpeed: 'blue', downSpeed: 'black', ping: 'green', wifiStr: 'orange', interrupts:'red', workingTime: 'purple'};
-  const titleText = {upSpeed:"Uppladdningshastighet" , downSpeed:"Nedladdningshastighet", ping:"Svarstid", wifiStr:"Wifi", interrupts:"Avbrott", workingTime:"Arbetstid",}
+  const titleText = {upSpeed:"Uppladdningshastighet" , downSpeed:"Nedladdningshastighet", ping:"Svarstid", wifiStr:"Wifi", interrupts:"Avbrott", workingTime:"Arbetssessioner",}
 
   const mainData = metrics[mainMetric];
 
@@ -176,7 +176,8 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
         borderWidth: 1,
         tension: 0,
         pointRadius: 1,
-        stepped: mainMetric === 'interrupts' || mainMetric === 'workingTime'  //Binary look on graph..?
+        stepped: mainMetric === 'interrupts' || mainMetric === 'workingTime',  //Binary look on graph..?
+        spanGaps: false
       }]
     },
     options: {
@@ -204,9 +205,9 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
           ? {
             stepSize: 1,
             callback: value => {
-              if (value === 0) return mainMetric === 'workingTime' ? 'Inaktiv': 'OK';
-              if (value === 1) return mainMetric === 'workingTime' ? 'Arbetande':'Avbrott';
-              return ''; // ← hide any other tick labels
+              if (value === 0) return mainMetric === 'workingTime' ? '': 'OK';
+              if (value === 1) return mainMetric === 'workingTime' ? '':'Avbrott';
+              return ''; // hide any other tick labels
             }
           }
           :{}
@@ -225,6 +226,17 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
           label: function(context) {
           const i = context.dataIndex;
 
+          if (mainMetric === 'workingTime' && workingTime?.length > 0) {  
+            const sessionIndex = Math.floor(i / 2);
+            const start = new Date(workingTime[sessionIndex * 2].x);
+            const stop = new Date(workingTime[sessionIndex * 2 + 1].x);
+            const startStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            const stopStr = stop.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false  });
+
+            return `Start: ${startStr} – Slut: ${stopStr}`;
+          }
+
+          
          // Build all the tooltip lines
           const tooltipLines = {          
           upSpeed: `Uppladdning: ${upSpeeds[i]} Mbps`,
@@ -270,9 +282,9 @@ function createInterruptArray(upSpeeds,downSpeeds,pings,wifiStrs){
 function createWorktimeData(sessions) {  
   let data = [];
   sessions.forEach(session => {
-    data.push({ x: session.startTime, y: 1 });
-    data.push({ x: session.stopTime, y: 1 });
-    data.push({ x: session.stopTime + 1, y: 0 });
+    data.push({ x: session.startTime, y: 0.5 });
+    data.push({ x: session.stopTime, y:  0.5}); 
+    data.push({ x: session.stopTime, y: null});    
   });
   return data;
 }
