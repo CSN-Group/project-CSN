@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', async () => {
     await initSystemInfo();
+    await initAIAssistant();
 
     window.updates.onUpdateDone(async () => {
         const pc = document.getElementById("pcInfoDisplay");
@@ -28,6 +29,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     systemInfoDisp.addEventListener('click', async () => {
         await initSystemInfo();
+        await initAIAssistant();
     });
   
     docButton.addEventListener('click', () => {
@@ -171,6 +173,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         `
     });
 
+    /*
     aiAssistantButton.addEventListener('click', () => {
         initAIAssistant();
         loadChatHistory();
@@ -190,7 +193,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendBtn.click();
         });
-    });
+    });*/
 
     console.log('All done, Captain!');
 });

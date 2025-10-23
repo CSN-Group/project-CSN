@@ -1,4 +1,5 @@
 let waitingForResponse = false;
+let aiInitialized = false;
 
 function addMessage(content, role) {
     if(role === 'system') return;
@@ -15,6 +16,8 @@ function addMessage(content, role) {
 
 async function resetChat() {
     const result = await window.systemInfo.resetChat();
+
+    console.log("Chat reset:", result);
 
     if(result) {
         const messagesDiv = document.getElementById('messagesDiv');
@@ -54,22 +57,40 @@ async function sendToAI() {
     addMessage(reply, 'assistant');
 }
 
-function initAIAssistant() {
-    const contentDiv = document.getElementById("contentDiv");
+function attachAIListeners(){
+    const sendBtn = document.getElementById('send-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const messageInput = document.getElementById('message-input');
+
+    sendBtn.addEventListener('click', async () => {
+        await sendToAI();
+    });
+
+    resetBtn.addEventListener('click', async () => {
+        await resetChat();
+    });
+
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) sendBtn.click();
+    });
+}
+
+async function initAIAssistant() {
+    const contentDiv = document.getElementById("aiSupportDisplay");
     contentDiv.innerHTML = `
+        <h2>AI-assistans</h2>
         <div id="aiAssistantDiv">
             <div id="messagesDiv">
-                <div class="message user-message">Hi there!</div>
-                <div class="message assistant-message">Hello! How can I help you today? Also this is a very very very very very very very very very very very very very very very long message.</div>
-                <div class="message user-message">Can you tell me a short joke?  Also this is a very very very very very very very very very very very very very very very long message.</div>
-                <div class="message assistant-message">Why did the computer go to the doctor? Because it caught a virus!</div>
             </div>
             <div id="input-row">
-                <input type="text" id="message-input" placeholder="Type a message..." />
+                <input type="text" id="message-input" placeholder="Ställ en fråga..." />
                 <button id="send-btn">Send</button>
                 <button id="reset-btn">Reset</button>
             </div>
         </div>
-        `
+        `;
+
+    await loadChatHistory();
+    attachAIListeners();
 }
 

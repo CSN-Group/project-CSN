@@ -5,7 +5,7 @@ const si = require('systeminformation');
 const fs = require('fs');
 
 const {execFile, exec} = require('child_process');
-const {addReading,addActiveTime} = require('../database/dbManager.js')
+const {addReading,addActiveTime, getAdminDocument} = require('../database/dbManager.js')
 const ai = require('../mainincludes/aiAssistant.js');
 
 const util = require('util');
@@ -419,7 +419,7 @@ ipcMain.handle("getList", () => {
   return generateList();
 });
 ipcMain.handle('ask-ai', async (event, userMessage) => {
-  return await ai.askAI(userMessage, compileSystemInfo());
+  return await ai.askAI(userMessage, compileSystemInfo(), getAdminDocument().docText);
 });
 
 ipcMain.handle("reset-chat", () => {

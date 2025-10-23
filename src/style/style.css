@@ -520,8 +520,11 @@ footer{
 #systemaInfoCont {
     display: grid;
     grid-template-areas:
-        "pcInfo teleLink"
-        "pcInfo teleLink"
+        "teleLink aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
         "pcInfo aiSupport"
         "pcInfo aiSupport";
     grid-template-columns: 1fr 1fr;
@@ -529,7 +532,6 @@ footer{
     background-color: #E5E5E5;
     height: 100%;
     width: 100%;
-    border-radius: 8px;
 }
 
 #pcInfoDisplay {
@@ -544,19 +546,13 @@ footer{
     grid-area: teleLink;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    height: 90px; /* Added 'px' unit */
-    justify-content: space-around;
 }
 #aiSupportDisplay {
     background-color: #F3F3F3;
     grid-area: aiSupport;
-    padding: 15px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    height: 90px;
-    display: flex;
-    justify-content: space-around;
+    padding-top: 15px;
+    height: 550px;
 }
 #aiSupportDisplay img {
     align-items: right;
@@ -729,13 +725,15 @@ input:focus + .slider {
 
 /* Chatbot Style */
 #aiAssistantDiv {
-    height: 600px;
     display: flex;
+    height: 100%;
     flex-direction: column;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background: #fff;
+    border-top: 2px solid #a5a5a5;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #F3F3F3;
     overflow: hidden;
+    margin-top: 15px
 }
 
 #messagesDiv {
@@ -745,7 +743,7 @@ input:focus + .slider {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: #fafafa;
+    background: #F3F3F3;
 }
 
 .message {

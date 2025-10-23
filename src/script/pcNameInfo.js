@@ -36,8 +36,6 @@ async function initSystemInfo() {
                    </div>
                 </div>
                 <div id="aiSupportDisplay">
-                    <h2>AI-support</h2>
-                    <img src="../src/img/aiChatIcon.png" alt="Chat med AI här! " width="60" height="60">
                 </div>
         </div>`;
     await getPcValues();
