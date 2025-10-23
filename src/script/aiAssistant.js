@@ -1,9 +1,5 @@
 let waitingForResponse = false;
-let aiInitialized = false;
-
-const initialMessage = "<div class=\"message assistant-message\">" +
-    "Ställ dina frågor här. Jag känner till dina mätvärden och kan allt om dokumentationen!" +
-    "</div>";
+const initialMessage = "Ställ dina frågor här. Jag känner till dina mätvärden och kan allt om dokumentationen!";
 
 function addMessage(content, role) {
     if(role === 'system') return;
@@ -13,31 +9,38 @@ function addMessage(content, role) {
 
     msgDiv.textContent = content;
 
+    if (role === 'assistant') {
+        const avatar = document.createElement('img');
+        avatar.src = 'img/herman.webp';
+        avatar.alt = 'AI assistant avatar';
+        avatar.style.width = '40px';
+        avatar.style.height = '40px';
+        avatar.classList.add('assistant-anchor');
+        msgDiv.appendChild(avatar);
+    }
+
     const messagesDiv = document.getElementById('messagesDiv');
     messagesDiv.appendChild(msgDiv);
+
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 async function resetChat() {
     const result = await window.systemInfo.resetChat();
+    const messagesDiv = document.getElementById('messagesDiv');
+    messagesDiv.innerHTML = '';
 
-    if(result) {
-        const messagesDiv = document.getElementById('messagesDiv');
-        messagesDiv.innerHTML = initialMessage;
-    }
+    if(result) addMessage(initialMessage, "assistant");
 }
 
 async function loadChatHistory() {
     const history = await window.systemInfo.getChatHistory();
     const messagesDiv = document.getElementById('messagesDiv');
 
-    messagesDiv.innerHTML = initialMessage;
+    addMessage(initialMessage, "assistant");
 
     history.forEach(msg => {
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', msg.role === 'user' ? 'user-message' : 'assistant-message');
-        msgDiv.textContent = msg.content;
-        messagesDiv.appendChild(msgDiv);
+        addMessage(msg.content, msg.role);
     });
 
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -82,9 +85,7 @@ async function initAIAssistant() {
     contentDiv.innerHTML = `
         <h2>AI-assistans</h2>
         <div id="aiAssistantDiv">
-            <div id="messagesDiv">` +
-                initialMessage +
-            `</div>
+            <div id="messagesDiv"></div>
             <div id="input-row">
                 <input type="text" id="message-input" placeholder="Ställ en fråga..." />
                 <button id="send-btn">Send</button>
