@@ -146,11 +146,11 @@ function generateActionList() {
 
   //Tech Actions
   if(globals['currentWifiStrength'] < globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
-    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg."));
+    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg. Kan du flytta närmare routern?"));
     allValuesGood = false;
   }
   else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
-    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
+    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg! Flytta närmare routern."));
     allValuesGood = false;
   }
   
@@ -220,7 +220,7 @@ function generateActionList() {
   }
 
   if(!globals['socialCheck']){
-    list.push(createAction("social", "break", "Har du varit social idag?",true, 0, false));
+    list.push(createAction("social", "social", "Har du varit social idag?",true, 0, false));
   }
   else{
     list.push(createAction("social", "check", "Du har varit social idag!",false, 0, false));
