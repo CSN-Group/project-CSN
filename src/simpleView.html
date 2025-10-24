@@ -44,15 +44,13 @@
   
     <div id="techDiv">
       <div id="speedtestDiv">
-        <h2 id="speedtestHeader">MÄTNINGAR</h2>
-        <label id="speedtestToggle">
-          I MÖTE
-        <label class="slidetoggle">
-          <input type="checkbox" id="speedtestToggleCheckbox">
-          <span class="slider"></span>
-        </label>
-        <img id="meetingLamp" src="./img/redMeet.png">
-        </label>
+        <div id="speedtestHeaderRow">
+          <h2 id="speedtestHeader">MÄTNINGAR</h2>
+          <label id="speedtestToggle">
+            I MÖTE
+            <img id="meetingLamp" src="./img/redMeet.png" alt="Lamp">
+          </label>
+        </div>
 
         <h2 id="lastUpdatedHeader">SENAST UPPDATERAD:</h2>
         <span id="lastUpdatedText">INGEN MÄTNING</span>
@@ -73,12 +71,15 @@
           </div>
 
       </div>
-      <div id="pingRow">
-        <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
-        <label id="pingLabel">Ping: </label>
-        <span id="pingValue">-</span>
-        <label id="pingUnit"> ms</label>
-      </div>
+        <div id="pingRow">
+          <img id="pingIcon" src="./img/ping.png" alt="Ping Icon">
+          <label id="pingLabel">Ping: </label>
+          <span id="pingValue">-</span>
+          <label id="pingUnit"> ms</label>
+          <div id="ping-bar" class="ping-bar">
+            <div id="ping-level" class="ping-level"></div>
+          </div>
+        </div>
 
       <button id="runSpeedtestButton">MÄT NU</button>
     </div>

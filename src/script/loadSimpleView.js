@@ -15,11 +15,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         updateActionList(list);
     });
 
-    const inMeetingCheckbox = document.getElementById("speedtestToggleCheckbox");
-
-    inMeetingCheckbox.addEventListener('change', async () => {
-        await window.systemInfo.setGlobal("shouldMeasure", !inMeetingCheckbox.checked);
-    });
 
 
     // Navigation buttons

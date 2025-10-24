@@ -77,9 +77,22 @@ async function updateNetwork(){
     }
 
     const pingValue = document.getElementById('pingValue');
-    pingValue.innerText = await window.systemInfo.getGlobal('lastPing');
+    const currentPing = await window.systemInfo.getGlobal('lastPing');
+    pingValue.innerText = currentPing;
+
+    const level = document.getElementById('ping-level');
+    const percent = calculatePingWidth(currentPing);
+    level.style.width = `${percent}%`
 }
 
+function calculatePingWidth(ping) {
+    const lowPingThres = 15;
+    const highPingThres = 30;
+    if(ping < lowPingThres) return 85;
+    if(ping > lowPingThres && ping < highPingThres) return 45;
+    if(ping.includes("test") || ping.includes("Test") || ping === "-") return 0;
+    return 15;
+}
 
 async function initNetworkInfo() {
     document.getElementById('runSpeedtestButton').addEventListener(
