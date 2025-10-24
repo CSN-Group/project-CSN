@@ -1,17 +1,32 @@
-function formatTimestamp(timestamp) {
+// Get date 
+function formatDate(timestamp){
     const date = new Date(Number(timestamp));
-
-    const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    };
-
-    return date.toLocaleString('sv-SE', options);
+    return date.toLocaleDateString('sv-SE');
 }
+//Get time
+function formatTime(timestamp){
+    const updTime = new Date(Number(timestamp));
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit'
+    }
+    return updTime.toLocaleString('sv-SE', options);
+}
+function timeSince(timestamp) {
+    const now = new Date();
+    const past = new Date(Number(timestamp));
+    const diff = Math.floor((now - past) / 1000);
+    
+    const days = Math.floor(diff / 86400);
+    const hours = Math.floor((diff % 86400) / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    
+    if (days > 0) return `${days} dag ${hours} timme ${minutes} minuter sedan`;
+    if (hours > 0) return `${hours} timme ${minutes} minuter sedan`;
+    return `${minutes} minuter sedan`;
+}
+
+
 
 function isNumericTimestamp(value) {
     return (
@@ -60,10 +75,17 @@ async function updateNetwork(){
     const speedtestTextValue = await window.systemInfo.getGlobal('speedtestText');
     let speedText;
 
-    if(isNumericTimestamp(speedtestTextValue)) speedText = formatTimestamp(speedtestTextValue);
-    else speedText = speedtestTextValue;
+   
+    if(isNumericTimestamp(speedtestTextValue)) {
+        const updateDate = formatDate(speedtestTextValue);
+        const updateTime = formatTime(speedtestTextValue);
+        const updateSince = timeSince(speedtestTextValue);
+        speedText = ` ${updateDate} ${updateTime} \n ${updateSince}`;
+    } else {
+        speedText = speedtestTextValue;
+    }
 
-    speedtestTextDOM.innerText = speedText;
+    speedtestTextDOM.innerText = speedText; 
 
     const downSpeed = await window.systemInfo.getGlobal("lastDownspeed");
     const upSpeed = await window.systemInfo.getGlobal("lastUpspeed");
@@ -77,9 +99,22 @@ async function updateNetwork(){
     }
 
     const pingValue = document.getElementById('pingValue');
-    pingValue.innerText = await window.systemInfo.getGlobal('lastPing');
+    const currentPing = await window.systemInfo.getGlobal('lastPing');
+    pingValue.innerText = currentPing;
+
+    const level = document.getElementById('ping-level');
+    const percent = calculatePingWidth(currentPing);
+    level.style.width = `${percent}%`
 }
 
+function calculatePingWidth(ping) {
+    const lowPingThres = 15;
+    const highPingThres = 30;
+    if(ping < lowPingThres) return 85;
+    if(ping > lowPingThres && ping < highPingThres) return 45;
+    if(ping.includes("test") || ping.includes("Test") || ping === "-") return 0;
+    return 15;
+}
 
 async function initNetworkInfo() {
     document.getElementById('runSpeedtestButton').addEventListener(
