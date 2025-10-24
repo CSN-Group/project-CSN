@@ -5,7 +5,8 @@ const si = require('systeminformation');
 const fs = require('fs');
 
 const {execFile, exec} = require('child_process');
-const {addReading,addActiveTime} = require('../database/dbManager.js')
+const {addReading,addActiveTime, getAdminDocument} = require('../database/dbManager.js')
+const ai = require('../mainincludes/aiAssistant.js');
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -146,11 +147,11 @@ function generateActionList() {
 
   //Tech Actions
   if(globals['currentWifiStrength'] < globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
-    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg."));
+    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg. Kan du flytta närmare routern?"));
     allValuesGood = false;
   }
   else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
-    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg!"));
+    list.push(createAction("wifi-low", "error", "Din wifisingal är väldigt låg! Flytta närmare routern."));
     allValuesGood = false;
   }
   
@@ -212,15 +213,16 @@ function generateActionList() {
 
   //Soft Actions  
   if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
-    list.push(createAction("ergonomy", "notice", "Byt sittposition",true, globals['ergonomiCheckInterval'] , false));
+    list.push(createAction("ergonomy", "ergonomy", "Glöm inte att justera din arbetsställning regelbundet!",true, globals['ergonomiCheckInterval'] , false));
   }
 
+  const currentWorkTime = Math.floor((Date.now() - globals['userActiveStartTime'])/60000);  
   if((Date.now() - globals['userActiveStartTime']) > globals['pauseCheckInterval']){
-    list.push(createAction("pause", "break", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
+    list.push(createAction("pause", "break", "Du har jobbat " + currentWorkTime + " minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
   }
 
   if(!globals['socialCheck']){
-    list.push(createAction("social", "break", "Har du varit social idag?",true, 0, false));
+    list.push(createAction("social", "social", "Kom ihåg att vara social idag!",true, 0, false));
   }
   else{
     list.push(createAction("social", "check", "Du har varit social idag!",false, 0, false));
@@ -385,10 +387,25 @@ async function isUpdatesAvailable(){
 
 }
 
+function compileSystemInfo(){
+    return {
+      currentIP: getGlobal('currentIP'),
+      currentConnectionType: getGlobal('currentConnectionType'),
+      currentWifiStrength: getGlobal('currentWifiStrength'),
+      hoursSinceComputerRestart: getGlobal('compOnTimeHours'),
+      lastMeasuredDownloadSpeed: getGlobal('lastDownspeed'),
+      lastMeasuredUploadSpeed: getGlobal('lastUpspeed'),
+      lastMeasuredPing: getGlobal('lastPing'),
+      pcModel: getGlobal('pcName'),
+      osVersion: getGlobal('osVersion'),
+      windowsUpdateAvailable: getGlobal('updatesAvailable'),
+    }
+}
+
 //Data used
 async function getDataUsed() {
-  try {
-    const stats = await fs.promises.stat("src/database/database.db");
+  try {    
+    const stats = await fs.promises.stat("./src/database/database.db");
     return stats.size;
   } catch (err) {
     console.error(`Error getting file size for database.db:`, err);
@@ -402,19 +419,45 @@ ipcMain.handle('setGlobal', (event, key, value) => setGlobal(key, value));
 ipcMain.handle("getList", () => {
   return generateList();
 });
+ipcMain.handle('ask-ai', async (event, userMessage) => {
+  return await ai.askAI(userMessage, compileSystemInfo(), getAdminDocument().docText);
+});
+
+ipcMain.handle("reset-chat", () => {
+  ai.resetChat();
+  return true;
+});
+
+ipcMain.handle('get-chat-history', () => {
+  return ai.chatHistory;
+});
 
 ipcMain.on("dismiss-action", (event, { id, sleepDuration }) => {
   dismissAction(id, sleepDuration);
 });
 
-ipcMain.on('navigateDetailed', (event) => {
+ipcMain.on('navigate', (event, destination) => {
   const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/detailedView.html");
-});
 
-ipcMain.on('navigateSimple', (event) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  win.loadFile("src/simpleView.html");
+  switch (destination){
+    case 'simple':
+      win.loadFile("src/simpleView.html");
+      break;
+    case 'detailed':
+      win.loadFile("src/detailedView.html");
+      break;
+    case 'history':
+      win.loadFile("src/historyView.html");
+      break;
+    case 'arbetsmiljo':
+      win.loadFile("src/arbetsmiljoView.html");
+      break;
+    case 'settings':
+      win.loadFile("src/settingsView.html");
+      break;
+    default:
+      break;
+  }
 });
 
 //Events

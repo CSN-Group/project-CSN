@@ -27,17 +27,15 @@ async function initSystemInfo() {
                 <div id="teleLink">
                    <h2>Kontakt / Support</h2>
                    <div id="phoneDiv">
-                       <img src="./img/teleIcon.png" width="24px" height="24px"">
+                       <img src="./img/teleIcon.png" width="40px" height="40px"">
                        <span id="phoneSpan" class= "phoneContent">Telefonnummer: +467270001230 </span>
                    </div>
                    <div id="linkDiv">
-                       <img src="./img/webLinkIcon.png" width="24px" height="24px"">
+                       <img src="./img/webLinkIcon.png" width="40px" height="40px"">
                        <span id="linkSpan" class= "linkContent">Hemsida: www.hermans.support.se </span> 
                    </div>
                 </div>
                 <div id="aiSupportDisplay">
-                    <h2>AI-support</h2>
-                    <img src="../src/img/aiChatIcon.png" alt="Chat med AI här! " width="60" height="60">
                 </div>
         </div>`;
     await getPcValues();

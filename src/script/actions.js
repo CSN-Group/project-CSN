@@ -19,6 +19,10 @@ function getImage(imageString){
             return "img/check.png"
         case "break":
             return "img/fikaIcon.png"
+        case "social":
+            return "img/bubble.png"
+        case "ergonomy":
+            return "img/ergonomy.png"
         default:
              return "img/testIcon.png";
     }

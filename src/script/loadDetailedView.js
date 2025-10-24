@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', async () => {
     await initSystemInfo();
+    await initAIAssistant();
 
     window.updates.onUpdateDone(async () => {
         const pc = document.getElementById("pcInfoDisplay");
@@ -9,14 +10,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     const simpleButton = document.getElementById("simpleViewButton");
     const docButton = document.getElementById("documentationButton");
     const systemInfoDisp = document.getElementById("systemInfoButton");
-    
-    systemInfoDisp.addEventListener('click', async () => {
-        await initSystemInfo();
-    });
-  
-    const settingsButton = document.getElementById("settingsButton");
-    const graphButton = document.getElementById("graphsButton");
+    const settingsButton = document.getElementById("settingsButton");    
     const powerPauseButton = document.getElementById("powerPauseButton");
+    const aiAssistantButton = document.getElementById("aiAssistantButton");
 
     const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
     innerNavButtons.forEach(button => {
@@ -26,8 +22,26 @@ window.addEventListener('DOMContentLoaded', async () => {
         })
     })
 
-    simpleButton.addEventListener('click', () => {
+    // Navigation buttons
+    document.getElementById("simpleViewButton").addEventListener('click', () => {
         window.nav.simplePage();
+    });
+
+    document.getElementById("historyViewButton").addEventListener('click', () => {
+        window.nav.historyPage();
+    });
+
+    document.getElementById("arbetsmiljoViewButton").addEventListener('click', () => {
+        window.nav.arbetsmiljoPage();
+    });
+
+    document.getElementById("settingsViewButton").addEventListener('click', () => {
+        window.nav.settingsPage();
+    });
+
+    systemInfoDisp.addEventListener('click', async () => {
+        await initSystemInfo();
+        await initAIAssistant();
     });
   
     docButton.addEventListener('click', () => {
@@ -91,73 +105,7 @@ window.addEventListener('DOMContentLoaded', async () => {
            </div>
        </div> 
        `
-        const dataSpan = document.getElementById("dataUsedSpan");
-        const dataUsed = await window.systemInfo.getGlobal('dataSavedAmount');
-
-        dataSpan.innerText = (dataUsed / 1024).toFixed(0) + " KB";
-
-        const saveDataCheckbox = document.getElementById("saveDataCheckbox");
-        saveDataCheckbox.checked = !await window.systemInfo.getGlobal("shouldSaveData");
-
-        const shouldMeasureCheckbox = document.getElementById("shouldMeasureCheckbox");
-        shouldMeasureCheckbox.checked = !await window.systemInfo.getGlobal("shouldMeasure");
-
-        const shouldRemindErgonomiCheckbox = document.getElementById("remindErgonomiCheckbox");
-        shouldRemindErgonomiCheckbox.checked = await window.systemInfo.getGlobal("remindErgonomi");
-
-        const shouldRemindSocialCheckbox = document.getElementById("remindSocialCheckbox");
-        shouldRemindSocialCheckbox.checked = await window.systemInfo.getGlobal("remindSocial");
-
-        saveDataCheckbox.addEventListener('change', async () => {
-            await window.systemInfo.setGlobal("shouldSaveData", !saveDataCheckbox.checked);
-        });
-
-        shouldMeasureCheckbox.addEventListener('change', async () => {
-            await window.systemInfo.setGlobal("shouldMeasure", !shouldMeasureCheckbox.checked);
-        });
-
-        shouldRemindErgonomiCheckbox.addEventListener('change', async () => {
-            await window.systemInfo.setGlobal("remindErgonomi", shouldRemindErgonomiCheckbox.checked);
-        });
-
-        shouldRemindSocialCheckbox.addEventListener('change', async () => {
-            await window.systemInfo.setGlobal("remindSocial", shouldRemindSocialCheckbox.checked);
-        });
-    });
-
-
-    graphButton.addEventListener('click', () =>{
-        const contentDiv = document.getElementById("contentDiv");
-        contentDiv.innerHTML = `
-        <div id="graphGrid">
-            <div id = "timeRangeButtons">
-                <div class="dropdown">
-                    <button class="dropButton">Dag<img src="./img/dropdown.png"></img></button>
-                    <div id="dayDropdown" class="dropdownContent"></div>       
-                </div>
-                <div class="dropdown">
-                    <button class="dropButton">Vecka<img src="./img/dropdown.png"></button>
-                    <div id="weekDropdown" class="dropdownContent"></div>       
-                </div>
-                <div class="dropdown">
-                    <button class="dropButton">M&aring;nad<img src="./img/dropdown.png"></button>
-                    <div id="monthDropdown" class="dropdownContent"></div>       
-                </div> 
-            </div>
-            <div id = "metricButtons">
-                <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
-                <button id="graphUpspeedButton" class="graphButton">UPPLADDNING</button>
-                <button id="graphDownspeedButton" class="graphButton">NEDLADDNING</button>
-                <button id="graphPingButton" class="graphButton">SVARSTID</button>               
-                <button id="graphInterruptButton" class="graphButton">AVBROTT</button>
-                <button id="graphWorktimeButton" class="graphButton">PAUSER</button>
-            </div>                   
-            <canvas id="historyGraph"></canvas>
-        </div>
-        `
-        initDrop();
-        initGraph();
-    
+       
     });
 
     powerPauseButton.addEventListener('click', () => {
@@ -165,11 +113,33 @@ window.addEventListener('DOMContentLoaded', async () => {
         contentDiv.innerHTML = `
         <div id="powerDiv">
             <img src="img/exercise.png" alt="Workout" id="exercisePic">
-            <p>Här kan man få tillgång till enklare träningspass och stretch övningar som
+            <p>Här kan man få tillgång till enklare träningspass och stretchövningar som
             underlättar för kontorsarbetare</p>
         </div>
         `
-
     });
+
+    /*
+    aiAssistantButton.addEventListener('click', () => {
+        initAIAssistant();
+        loadChatHistory();
+
+        const sendBtn = document.getElementById('send-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const messageInput = document.getElementById('message-input');
+
+        sendBtn.addEventListener('click', async () => {
+            await sendToAI();
+        });
+
+        resetBtn.addEventListener('click', async () => {
+            await resetChat();
+        });
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+    });*/
+
     console.log('All done, Captain!');
 });

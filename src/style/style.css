@@ -52,6 +52,24 @@ h2{
     align-content: start;
 }
 
+#contentGrid{
+    display: grid;
+    grid-template-areas:
+        "buttons buttons"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "content content"
+        "footer footer";
+    grid-gap: 1rem;
+    height: 100%;
+    width: 100%;
+    background-color: #E5E5E5;
+    align-content: start;
+}
+
 
 footer{
     grid-area: footer;
@@ -124,7 +142,7 @@ footer{
     border-radius: 8px;
     height: 100%;
     box-sizing: border-box;
-    gap: 0.75rem; /* spacing between rows */
+    gap: 10px;
 }
 
 #lastUpdatedHeader {
@@ -143,7 +161,7 @@ footer{
 #lastUpdatedText {
     font-size: 1rem;
     font-weight: 500;
-    padding: 0.3rem 0.5rem;
+    padding: 0.2rem 0.3rem;
     border-radius: 4px;
     text-align: center;
 }
@@ -358,21 +376,20 @@ footer{
     margin-left: 2px;
 }
 
-#simpleViewButton,
-#advancedViewButton{    
+.outerNavButton{
     background: #cdcdcd;
     border: 1px solid #cdcdcd;
     border-bottom: none;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    width: 171px;
+    width: 150px;
     height: 38px;
     letter-spacing: 2px;
     font-size: 14px;
     font-weight: 500;
+    margin-left: 5px;
 }
-#simpleViewButton.currentPage,
-#advancedViewButton.currentPage{
+.outerNavButton.currentPage{
     background: #E5E5E5;
 }
 
@@ -433,13 +450,19 @@ footer{
         "range range range"
         "metric graph graph"
         "metric graph graph"
-        "metric graph graph";        
+        "metric graph graph"
+        "metric info info";        
     grid-gap: 1rem;
     height: 100%;
     width: 100%;    
     background-color: #F3F3F3F3;
     align-items: stretch;
     border-radius: 6px;
+}
+
+#metricInfoDiv{
+    grid-area: info;
+    display: flex;        
 }
 
 #timeRangeButtons {
@@ -452,8 +475,7 @@ footer{
 }
 
 #metricButtons {
-    grid-area: metric;
-    display: block;   
+    grid-area: metric;       
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -482,6 +504,14 @@ footer{
   font-weight: bold; 
   font-size: 1.1rem;   
 }
+.dropButton:hover,
+.graphButton:hover{
+    background-color: #E5E5E5;
+} 
+.activeMetricButton{    
+    background-color: #777171;
+}
+
 
 .dropButton{
     display: flex;
@@ -520,8 +550,11 @@ footer{
 #systemaInfoCont {
     display: grid;
     grid-template-areas:
-        "pcInfo teleLink"
-        "pcInfo teleLink"
+        "teleLink aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
+        "pcInfo aiSupport"
         "pcInfo aiSupport"
         "pcInfo aiSupport";
     grid-template-columns: 1fr 1fr;
@@ -529,7 +562,6 @@ footer{
     background-color: #E5E5E5;
     height: 100%;
     width: 100%;
-    border-radius: 8px;
 }
 
 #pcInfoDisplay {
@@ -544,19 +576,13 @@ footer{
     grid-area: teleLink;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    height: 90px; /* Added 'px' unit */
-    justify-content: space-around;
 }
 #aiSupportDisplay {
     background-color: #F3F3F3;
     grid-area: aiSupport;
-    padding: 15px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    height: 90px;
-    display: flex;
-    justify-content: space-around;
+    padding-top: 15px;
+    height: 550px;
 }
 #aiSupportDisplay img {
     align-items: right;
@@ -727,5 +753,99 @@ input:focus + .slider {
     padding: 5px;
 }
 
+#phoneSpan,
+#linkSpan{
+    font-size: 20px;
+}
+
+/* Chatbot Style */
+#aiAssistantDiv {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    border-top: 2px solid #a5a5a5;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #F3F3F3;
+    overflow: hidden;
+    margin-top: 15px
+}
+
+#messagesDiv {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #F3F3F3;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+
+.user-message {
+    align-self: flex-end;
+    background: #007bff;
+    color: #fff;
+    border-bottom-right-radius: 0;
+}
+
+.assistant-message {
+    position: relative; /* make this the anchor */
+    align-self: flex-start;
+    background: #e5e5ea;
+    color: #000;
+    display: inline-block;
+    max-width: 70%;
+    border-bottom-left-radius: 0;
+}
+
+#input-row {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+#send-btn, #reset-btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#send-btn {
+    background: #007bff;
+    color: #fff;
+}
+
+#reset-btn {
+    background: #dc3545;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.assistant-anchor {
+    position: absolute;
+    right: -45px;
+    bottom: 0;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    pointer-events: none;
+}
 
 

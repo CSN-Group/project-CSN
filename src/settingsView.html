@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+  <link rel="stylesheet" href="style/style.css">
+  <title>My Electron App</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<div id="contentGrid">
+  <div id="buttonDiv">
+    <nav>
+      <button id="simpleViewButton" class="outerNavButton">ÖVERSIKT</button>
+      <button id="advancedViewButton" class="outerNavButton">HJÄLP</button>
+      <button id="historyViewButton" class="outerNavButton">HISTORIK</button>
+      <button id="arbetsmiljoViewButton" class="outerNavButton">ARBETSMILJÖ</button>
+      <button id="settingsViewButton" class="outerNavButton currentPage">INSTÄLLNINGAR</button>
+    </nav>
+  </div>
+
+  <div id="contentDiv">
+     <div id="settingsGrid">
+           <div id="settingsLeft">
+               <h2>VERKTYG</h2>
+               <div class="settingsOption">
+                   <label for="saveDataCheckbox">Spara inte min data</label>
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="saveDataCheckbox">
+                       <span class="slider"></span>
+                   </label>
+              </div>
+            
+              <div class="settingsOption">
+                <label for="shouldMeasureCheckbox">Mät inte kontinuerligt</label>
+                <label class="slidetoggle">
+                       <input type="checkbox" id="shouldMeasureCheckbox">
+                       <span class="slider"></span>
+                </label>
+              </div>
+            
+              <div class="status">
+                <label>Sparad data:</label>
+                <span id="dataUsedSpan">-</span>
+              </div>
+                
+              <button id="clearDataButton">RENSA DATA</button>
+           </div>
+           <div id="settingsRight">
+               <h2>ARBETSMILJÖ</h2>
+               <div class="settingsOption">
+                   <label for="remindErgonomiCheckbox">Påminn om ergonomi</label>
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindErgonomiCheckbox">
+                       <span class="slider"></span>
+                   </label>
+               </div>
+            
+              <div class="settingsOption">
+                   <label for="remindSocialCheckbox">Påminn om social kontakt</label>
+                   <label class="slidetoggle">
+                       <input type="checkbox" id="remindSocialCheckbox">
+                       <span class="slider"></span>
+                   </label>
+              </div>
+           </div>
+       </div> 
+  </div>
+</div>
+
+<script src="script/loadSettingsView.js"></script>
+</body>
+</html>

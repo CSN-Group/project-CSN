@@ -10,7 +10,10 @@ contextBridge.exposeInMainWorld('systemInfo', {
 	//Speedtest
 	runSpeedtest: () => ipcRenderer.invoke('run-speedtest'),
 
-	
+	//AI
+	askAI: (message) => ipcRenderer.invoke('ask-ai', message),
+	resetChat: () => ipcRenderer.invoke("reset-chat"),
+	getChatHistory: () => ipcRenderer.invoke('get-chat-history')
 });
 
 contextBridge.exposeInMainWorld('dbManager', {
@@ -49,7 +52,13 @@ contextBridge.exposeInMainWorld('updates', {
 });
 
 contextBridge.exposeInMainWorld('nav', {
-	detailedPage: (channel) => ipcRenderer.send('navigateDetailed'),
-	simplePage: (channel) => ipcRenderer.send('navigateSimple'),
+	simplePage: () => ipcRenderer.send('navigate', 'simple'),
+	detailedPage: () => ipcRenderer.send('navigate', 'detailed'),
+	historyPage: () => ipcRenderer.send('navigate', 'history'),
+	arbetsmiljoPage: () => ipcRenderer.send('navigate', 'arbetsmiljo'),
+	settingsPage: () => ipcRenderer.send('navigate', 'settings'),
+
+
+	//Open in external browser
 	openExternalLink: (url) => shell.openExternal(url)
 });
