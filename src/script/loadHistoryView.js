@@ -23,5 +23,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     initDrop();
-    initGraph();
+    initHistory();
 });

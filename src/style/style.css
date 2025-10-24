@@ -466,16 +466,20 @@ footer{
     display: grid;
     grid-template-areas:
         "range range range"
+        "metric label label"
         "metric graph graph"
         "metric graph graph"
-        "metric graph graph"
-        "metric info info";
-    grid-gap: 1rem;
+        "metric info info";        
+    
     height: 100%;
     width: 100%;
     background-color: #F3F3F3F3;
     align-items: stretch;
     border-radius: 6px;
+}
+
+#labelDiv{
+    grid-area: label;
 }
 
 #metricInfoDiv{
@@ -490,6 +494,7 @@ footer{
     align-items: flex-end;
     gap: 5%;
     padding-right: 5%;
+    margin-bottom: 2%;
 }
 
 #metricButtons {
@@ -497,9 +502,8 @@ footer{
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1%;
-    padding-left: 10%;
-    gap: 2%;
+    padding: 8% 5% 0% 5%;    
+    gap: 2%;    
 }
 
 #historyGraph {
@@ -526,7 +530,8 @@ footer{
 .graphButton:hover{
     background-color: #E5E5E5;
 }
-.activeMetricButton{
+.activeGraphButton,
+.activeMetricButton{    
     background-color: #777171;
 }
 
@@ -865,6 +870,30 @@ input:focus + .slider {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     pointer-events: none;
 }
+
+#workTimeGrid {
+    display: grid;
+    grid-template-areas:
+    "title title title"
+    "daybutt graph graph"
+    "daybutt graph graph"
+    "daybutt graph graph"
+    "daybutt info info";    
+}
+#workTimeGrid h2{
+    grid-area: title;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#dayButtons{
+    grid-area: daybutt;
+    display: flex;
+    flex-direction: column;  
+    align-items: center; 
+    gap: 10px;                
+}
+
 
 .ping-container {
     text-align: center;

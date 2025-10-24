@@ -4,57 +4,102 @@ let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
 let currentGraphRange = 'day';
 let currentGraphYear = 2025; //Because why not.
 let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
+const label = document.getElementById("graphLabel");
+let timeRangeChosen = false;
+let metricChosen = false;
+
+function defaultMetric(){
+  metricChosen = true;
+  document.getElementById('graphUpspeedButton').classList.add('activeMetricButton');
+}
 
 
 async function initDrop(){
   const dayDrop = document.getElementById("dayDropdown");
   const weekDrop = document.getElementById("weekDropdown");
-  const monthDrop = document.getElementById("monthDropdown");  
+  const monthDrop = document.getElementById("monthDropdown");
+  
 
   const days = dbManager.getUniqueDateStamps();
   const months = await dbManager.fetchAvailableMonths();
   const monthsArray = ["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"]
  
   days.forEach(day => {
-    const button = document.createElement("button");
-    let dayString = day.toString();
-    dayString = `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`; //Format to 2025-12-22
-    button.textContent = dayString;    
+    const button = document.createElement("button");    
+    button.textContent = formatDateStamp(day);    
     button.addEventListener("click", () => {
       currentGraphDatestamp = day;
       currentGraphRange = 'day';
+      label.innerHTML = formatDateStamp(day)
+      if(!metricChosen){defaultMetric()};
       createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
     dayDrop.appendChild(button);
   });
 
   const weekButton = document.createElement("button");
-  weekButton.textContent = "Senaste 7 dagarna";
+  const weekText = "Senaste 7 dagarna";
+  weekButton.textContent = weekText;
   weekButton.addEventListener("click", () => {
     currentGraphRange = 'week';
+    label.innerHTML= weekText;
+    if(!metricChosen){defaultMetric()};
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
   })
   weekDrop.appendChild(weekButton);
 
     months.forEach(month => {
     const button = document.createElement("button");  
-        
-    button.textContent = monthsArray[parseInt(month.month)-1] + " "+ month.year;
+    const monthText = monthsArray[parseInt(month.month)-1] + " "+ month.year;
+    button.textContent = monthText;
     button.addEventListener("click", () => {
       currentGraphRange = 'month';
       currentGraphMonth = parseInt(month.month)
       currentGraphYear = month.year;
-           
+      label.innerHTML= monthText; 
+      if(!metricChosen){defaultMetric()};    
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);
   });  
 }
 
-async function initGraph(){
+async function initWorkGraph(){
+
+  const days = dbManager.getUniqueDateStamps();
+  const buttonDiv = document.getElementById("dayButtons");
+
+  days.forEach(day => {
+    const button = document.createElement("button");
+    button.classList.add("graphButton");    
+    button.textContent = formatDateStamp(day);    
+    button.addEventListener("click", () => {
+      currentGraphDatestamp = day;
+      currentGraphRange = 'day';
+      createDayGraph(currentGraphDatestamp, 'workingTime',currentGraphRange,currentGraphYear,currentGraphMonth);
+    });
+    buttonDiv.appendChild(button);
+  });
+
+  createDayGraph();
+}
+
+function formatDateStamp(datestamp) {
+  const dayString = datestamp.toString();
+  return `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`;
+}
+
+
+function defaultTimeRangeChosen(){
+  timeRangeChosen = true; 
+  label.innerHTML =  formatDateStamp(currentGraphDatestamp); 
+}
+
+async function initHistory(){
   //Databasestuff! Move somewhere else?
-  dbManager.syncLocalDatabase();   
+  dbManager.syncLocalDatabase(); 
   dbManager.cleanLocalDatabase(); 
+
   createDayGraph();
   const textbox = document.getElementById('metricInfo');
 
@@ -62,6 +107,7 @@ async function initGraph(){
   pingButton.addEventListener('click', () =>{
     currentGraphMetric = 'ping';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   pingButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
@@ -71,6 +117,7 @@ async function initGraph(){
   upSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'upSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   upSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din enhet<br>till internet. T.ex. när du delar filer eller videor."
@@ -80,6 +127,7 @@ async function initGraph(){
   downSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'downSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   downSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming, surfning eller filhämtning."
@@ -89,6 +137,7 @@ async function initGraph(){
   wifiButton.addEventListener('click', () =>{
     currentGraphMetric = 'wifiStr';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    
   });
   wifiButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Wifistyrka visar hur stark signalen mellan din enhet och routern är.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
@@ -98,18 +147,10 @@ async function initGraph(){
   interruptButton.addEventListener('click', () =>{
     currentGraphMetric = 'interrupts';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   interruptButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."
-  });
-
-  const workButton=document.getElementById('graphWorktimeButton')
-  workButton.addEventListener('click', () =>{
-    currentGraphMetric = 'workingTime';
-    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  });
-  workButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Visar mellan vilka tidpunkter du har varit aktiv.<br>NÅGOT MER!"
   });
   
   document.querySelectorAll('.graphButton').forEach(button => {
@@ -121,8 +162,6 @@ async function initGraph(){
             button.classList.add('activeMetricButton');
         })
   });
-
-
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -324,5 +363,3 @@ function createWorktimeData(sessions) {
   });
   return data;
 }
-
-//module.exports = {initDrop, initGraph };

@@ -6,13 +6,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         const pc = document.getElementById("pcInfoDisplay");
         if(pc !== null) await updateSystemInfo();
     });
-
-    const simpleButton = document.getElementById("simpleViewButton");
+    
     const docButton = document.getElementById("documentationButton");
     const systemInfoDisp = document.getElementById("systemInfoButton");
-    const settingsButton = document.getElementById("settingsButton");    
-    const powerPauseButton = document.getElementById("powerPauseButton");
-    const aiAssistantButton = document.getElementById("aiAssistantButton");
+    const settingsButton = document.getElementById("settingsButton");        
 
     const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
     innerNavButtons.forEach(button => {
@@ -106,19 +103,7 @@ window.addEventListener('DOMContentLoaded', async () => {
        </div> 
        `
        
-    });
-
-    powerPauseButton.addEventListener('click', () => {
-        const contentDiv = document.getElementById("contentDiv");
-        contentDiv.innerHTML = `
-        <div id="powerDiv">
-            <img src="img/exercise.png" alt="Workout" id="exercisePic">
-            <p>Här kan man få tillgång till enklare träningspass och stretchövningar som
-            underlättar för kontorsarbetare</p>
-        </div>
-        `
-    });
-
+    });   
     /*
     aiAssistantButton.addEventListener('click', () => {
         initAIAssistant();

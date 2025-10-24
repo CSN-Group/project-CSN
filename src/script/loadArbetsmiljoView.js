@@ -1,5 +1,14 @@
 window.addEventListener('DOMContentLoaded', async () => {
     //init
+    initRPause();
+
+    const innerNavButtons = document.querySelectorAll('.secondaryNavButton');
+    innerNavButtons.forEach(button => {
+        button.addEventListener('click', () =>{
+            document.querySelector('.activeNavButton').classList.remove('activeNavButton');
+            button.classList.add('activeNavButton');
+        })
+    })
 
     window.updates.onUpdateDone(async () => {
         //update
@@ -26,42 +35,41 @@ window.addEventListener('DOMContentLoaded', async () => {
     const graphButton = document.getElementById("graphsButton");
     const motionButton = document.getElementById("powerPauseButton");
 
-    graphButton.addEventListener('click', () => {
+    graphButton.addEventListener('click', () => {        
         contentDiv.innerHTML = `
-        <div id="graphGrid">
-            <div id = "timeRangeButtons">
-                <div class="dropdown">
-                    <button class="dropButton">Dagar<img src="./img/dropdown.png"></img></button>
-                    <div id="dayDropdown" class="dropdownContent"></div>       
-                </div>
-                <div class="dropdown">
-                    <button class="dropButton">Veckor<img src="./img/dropdown.png"></button>
-                    <div id="weekDropdown" class="dropdownContent"></div>       
-                </div>
-                <div class="dropdown">
-                    <button class="dropButton">Månader<img src="./img/dropdown.png"></button>
-                    <div id="monthDropdown" class="dropdownContent"></div>       
-                </div> 
-            </div>
-            <div id = "metricButtons">                
-                <button id="graphWorktimeButton" class="graphButton">PAUSER</button>
-            </div>                   
+        <div id="workTimeGrid">
+            <h2>ARBETSTID</h2>                        
+            <div id = "dayButtons"><h3>Välj dag:</h3></div>                   
             <canvas id="historyGraph"></canvas>
             <div id="metricInfoDiv">
-                <p id="metricInfo">Till vänster kan du välja vilket mätvärde du vill ska visas i grafen!<br>
-                Du kan även välja tidspann här ovan!
+                <p id="metricInfo">Här kan du se vilka tider du har jobbat aktivt, och när du tagit rast.</p>
             </div>
-        </div>
-    </div> `
+        </div>`
+        initWorkGraph();
+        initGraphButtons();
     })
     
     motionButton.addEventListener('click', () =>{
-        
+        initRPause();
     })
 });
 
-              //  <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
-              //  <button id="graphUpspeedButton" class="graphButton">UPPLADDNING</button>
-              //  <button id="graphDownspeedButton" class="graphButton">NEDLADDNING</button>
-              //  <button id="graphPingButton" class="graphButton">SVARSTID</button>               
-              //  <button id="graphInterruptButton" class="graphButton">AVBROTT</button>
+function initRPause(){
+    contentDiv.innerHTML = `
+        <div id="powerDiv">
+            <img src="img/exercise.png" alt="Workout" id="exercisePic">
+            <p>Här kan man få tillgång till enklare träningspass och stretchövningar som
+            underlättar för kontorsarbetare</p>
+        </div>`
+}
+
+function initGraphButtons(){
+    const graphButtons = document.querySelectorAll('.graphButton');
+    graphButtons.forEach(button => {
+        button.addEventListener('click', () =>{
+            document.querySelector('.activeGraphButton')?.classList.remove('activeGraphButton');
+            button.classList.add('activeGraphButton');            
+        })
+    })
+}
+   
