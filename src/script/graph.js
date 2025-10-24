@@ -4,12 +4,14 @@ let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
 let currentGraphRange = 'day';
 let currentGraphYear = 2025; //Because why not.
 let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
+let timeRangeChosen = false;
 
 
 async function initDrop(){
   const dayDrop = document.getElementById("dayDropdown");
   const weekDrop = document.getElementById("weekDropdown");
-  const monthDrop = document.getElementById("monthDropdown");  
+  const monthDrop = document.getElementById("monthDropdown");
+  const label = document.getElementById("graphLabel");
 
   const days = dbManager.getUniqueDateStamps();
   const months = await dbManager.fetchAvailableMonths();
@@ -23,28 +25,31 @@ async function initDrop(){
     button.addEventListener("click", () => {
       currentGraphDatestamp = day;
       currentGraphRange = 'day';
+      label.innerHTML = dayString;
       createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
     dayDrop.appendChild(button);
   });
 
   const weekButton = document.createElement("button");
-  weekButton.textContent = "Senaste 7 dagarna";
+  const weekText = "Senaste 7 dagarna";
+  weekButton.textContent = weekText;
   weekButton.addEventListener("click", () => {
     currentGraphRange = 'week';
+    label.innerHTML= weekText;
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
   })
   weekDrop.appendChild(weekButton);
 
     months.forEach(month => {
     const button = document.createElement("button");  
-        
-    button.textContent = monthsArray[parseInt(month.month)-1] + " "+ month.year;
+    const monthText = monthsArray[parseInt(month.month)-1] + " "+ month.year;
+    button.textContent = monthText;
     button.addEventListener("click", () => {
       currentGraphRange = 'month';
       currentGraphMonth = parseInt(month.month)
       currentGraphYear = month.year;
-           
+      label.innerHTML= monthText;     
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);

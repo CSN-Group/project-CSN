@@ -20,7 +20,7 @@
 
     <div id="contentDiv">
          <div id="graphGrid">
-            <div id = "timeRangeButtons">
+            <div id = "timeRangeButtons">                
                 <div class="dropdown">
                     <button class="dropButton">Dagar<img src="./img/dropdown.png"></img></button>
                     <div id="dayDropdown" class="dropdownContent"></div>       
@@ -32,19 +32,20 @@
                 <div class="dropdown">
                     <button class="dropButton">Månader<img src="./img/dropdown.png"></button>
                     <div id="monthDropdown" class="dropdownContent"></div>       
-                </div> 
+                </div>                
             </div>
+            <div id="labelDiv"><label id="graphLabel">Välj ett datum.</label></div>
             <div id = "metricButtons">
                 <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
                 <button id="graphUpspeedButton" class="graphButton">UPPLADDNING</button>
                 <button id="graphDownspeedButton" class="graphButton">NEDLADDNING</button>
                 <button id="graphPingButton" class="graphButton">SVARSTID</button>               
                 <button id="graphInterruptButton" class="graphButton">STÖRNINGAR</button>                
-            </div>                   
+            </div>                               
             <canvas id="historyGraph"></canvas>
             <div id="metricInfoDiv">
                 <p id="metricInfo">Till vänster kan du välja vilket mätvärde du vill ska visas i grafen!<br>
-                Du kan även välja tidspann här ovan!
+                Du kan även välja tidspann här ovan!</p>
             </div>
         </div>
     </div>

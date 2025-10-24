@@ -448,16 +448,20 @@ footer{
     display: grid;
     grid-template-areas: 
         "range range range"
-        "metric graph graph"
+        "metric label label"
         "metric graph graph"
         "metric graph graph"
         "metric info info";        
-    grid-gap: 1rem;
+    
     height: 100%;
     width: 100%;    
     background-color: #F3F3F3F3;
     align-items: stretch;
     border-radius: 6px;
+}
+
+#labelDiv{
+    grid-area: label;
 }
 
 #metricInfoDiv{
@@ -472,6 +476,7 @@ footer{
     align-items: flex-end;
     gap: 5%;
     padding-right: 5%;
+    margin-bottom: 2%;
 }
 
 #metricButtons {
@@ -479,8 +484,7 @@ footer{
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1%;
-    padding-left: 10%;
+    padding: 8% 5% 0% 5%;    
     gap: 2%;    
 }
 
