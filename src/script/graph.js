@@ -100,7 +100,7 @@ async function initGraph(){
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
   });
   interruptButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Visar vid vilka tidpunkter som dina mätvärden inte har varit så bra.<br>MER!"
+    textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."
   });
 
   const workButton=document.getElementById('graphWorktimeButton')
