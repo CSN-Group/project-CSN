@@ -404,8 +404,8 @@ function compileSystemInfo(){
 
 //Data used
 async function getDataUsed() {
-  try {
-    const stats = await fs.promises.stat("src/database/database.db");
+  try {    
+    const stats = await fs.promises.stat("./src/database/database.db");
     return stats.size;
   } catch (err) {
     console.error(`Error getting file size for database.db:`, err);

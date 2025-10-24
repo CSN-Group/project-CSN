@@ -24,6 +24,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const contentDiv = document.getElementById("contentDiv");
     const graphButton = document.getElementById("graphsButton");
+    const motionButton = document.getElementById("powerPauseButton");
 
     graphButton.addEventListener('click', () => {
         contentDiv.innerHTML = `
@@ -54,6 +55,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     </div> `
     })
     
+    motionButton.addEventListener('click', () =>{
+        
+    })
 });
 
               //  <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
