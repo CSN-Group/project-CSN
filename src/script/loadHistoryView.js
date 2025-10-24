@@ -22,6 +22,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         window.nav.settingsPage();
     });
 
-    const contentDiv = document.getElementById("contentDiv");
-
+    initDrop();
+    initGraph();
 });

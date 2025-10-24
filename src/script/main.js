@@ -213,15 +213,16 @@ function generateActionList() {
 
   //Soft Actions  
   if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
-    list.push(createAction("ergonomy", "notice", "Byt sittposition",true, globals['ergonomiCheckInterval'] , false));
+    list.push(createAction("ergonomy", "ergonomy", "Glöm inte att justera din arbetsställning regelbundet!",true, globals['ergonomiCheckInterval'] , false));
   }
 
+  const currentWorkTime = Math.floor((Date.now() - globals['userActiveStartTime'])/60000);  
   if((Date.now() - globals['userActiveStartTime']) > globals['pauseCheckInterval']){
-    list.push(createAction("pause", "break", "Du har jobbat x minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
+    list.push(createAction("pause", "break", "Du har jobbat " + currentWorkTime + " minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
   }
 
   if(!globals['socialCheck']){
-    list.push(createAction("social", "social", "Har du varit social idag?",true, 0, false));
+    list.push(createAction("social", "social", "Kom ihåg att vara social idag!",true, 0, false));
   }
   else{
     list.push(createAction("social", "check", "Du har varit social idag!",false, 0, false));
