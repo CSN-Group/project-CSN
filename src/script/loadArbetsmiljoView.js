@@ -46,6 +46,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             </div>
         </div>`
         initWorkGraph();
+        initGraphButtons();
     })
     
     motionButton.addEventListener('click', () =>{
@@ -62,8 +63,13 @@ function initRPause(){
         </div>`
 }
 
-              //  <button id="graphWifiButton" class="graphButton">WIFI-STYRKA</button>
-              //  <button id="graphUpspeedButton" class="graphButton">UPPLADDNING</button>
-              //  <button id="graphDownspeedButton" class="graphButton">NEDLADDNING</button>
-              //  <button id="graphPingButton" class="graphButton">SVARSTID</button>               
-              //  <button id="graphInterruptButton" class="graphButton">AVBROTT</button>
+function initGraphButtons(){
+    const graphButtons = document.querySelectorAll('.graphButton');
+    graphButtons.forEach(button => {
+        button.addEventListener('click', () =>{
+            document.querySelector('.activeGraphButton')?.classList.remove('activeGraphButton');
+            button.classList.add('activeGraphButton');            
+        })
+    })
+}
+   

@@ -511,7 +511,8 @@ footer{
 .dropButton:hover,
 .graphButton:hover{
     background-color: #E5E5E5;
-} 
+}
+.activeGraphButton,
 .activeMetricButton{    
     background-color: #777171;
 }

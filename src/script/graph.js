@@ -4,28 +4,34 @@ let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
 let currentGraphRange = 'day';
 let currentGraphYear = 2025; //Because why not.
 let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
+const label = document.getElementById("graphLabel");
 let timeRangeChosen = false;
+let metricChosen = false;
+
+function defaultMetric(){
+  metricChosen = true;
+  document.getElementById('graphUpspeedButton').classList.add('activeMetricButton');
+}
 
 
 async function initDrop(){
   const dayDrop = document.getElementById("dayDropdown");
   const weekDrop = document.getElementById("weekDropdown");
   const monthDrop = document.getElementById("monthDropdown");
-  const label = document.getElementById("graphLabel");
+  
 
   const days = dbManager.getUniqueDateStamps();
   const months = await dbManager.fetchAvailableMonths();
   const monthsArray = ["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"]
  
   days.forEach(day => {
-    const button = document.createElement("button");
-    let dayString = day.toString();
-    dayString = `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`; //Format to 2025-12-22
-    button.textContent = dayString;    
+    const button = document.createElement("button");    
+    button.textContent = formatDateStamp(day);    
     button.addEventListener("click", () => {
       currentGraphDatestamp = day;
       currentGraphRange = 'day';
-      label.innerHTML = dayString;
+      label.innerHTML = formatDateStamp(day)
+      if(!metricChosen){defaultMetric()};
       createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
     dayDrop.appendChild(button);
@@ -37,6 +43,7 @@ async function initDrop(){
   weekButton.addEventListener("click", () => {
     currentGraphRange = 'week';
     label.innerHTML= weekText;
+    if(!metricChosen){defaultMetric()};
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
   })
   weekDrop.appendChild(weekButton);
@@ -49,7 +56,8 @@ async function initDrop(){
       currentGraphRange = 'month';
       currentGraphMonth = parseInt(month.month)
       currentGraphYear = month.year;
-      label.innerHTML= monthText;     
+      label.innerHTML= monthText; 
+      if(!metricChosen){defaultMetric()};    
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);
@@ -63,10 +71,8 @@ async function initWorkGraph(){
 
   days.forEach(day => {
     const button = document.createElement("button");
-    button.classList.add("graphButton");
-    let dayString = day.toString();
-    dayString = `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`; //Format to 2025-12-22
-    button.textContent = dayString;    
+    button.classList.add("graphButton");    
+    button.textContent = formatDateStamp(day);    
     button.addEventListener("click", () => {
       currentGraphDatestamp = day;
       currentGraphRange = 'day';
@@ -78,10 +84,22 @@ async function initWorkGraph(){
   createDayGraph();
 }
 
+function formatDateStamp(datestamp) {
+  const dayString = datestamp.toString();
+  return `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`;
+}
+
+
+function defaultTimeRangeChosen(){
+  timeRangeChosen = true; 
+  label.innerHTML =  formatDateStamp(currentGraphDatestamp); 
+}
+
 async function initHistory(){
   //Databasestuff! Move somewhere else?
-  dbManager.syncLocalDatabase();   
+  dbManager.syncLocalDatabase(); 
   dbManager.cleanLocalDatabase(); 
+
   createDayGraph();
   const textbox = document.getElementById('metricInfo');
 
@@ -89,6 +107,7 @@ async function initHistory(){
   pingButton.addEventListener('click', () =>{
     currentGraphMetric = 'ping';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   pingButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
@@ -98,6 +117,7 @@ async function initHistory(){
   upSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'upSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   upSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din enhet<br>till internet. T.ex. när du delar filer eller videor."
@@ -107,6 +127,7 @@ async function initHistory(){
   downSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'downSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   downSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming, surfning eller filhämtning."
@@ -116,6 +137,7 @@ async function initHistory(){
   wifiButton.addEventListener('click', () =>{
     currentGraphMetric = 'wifiStr';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    
   });
   wifiButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Wifistyrka visar hur stark signalen mellan din enhet och routern är.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
@@ -125,6 +147,7 @@ async function initHistory(){
   interruptButton.addEventListener('click', () =>{
     currentGraphMetric = 'interrupts';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!timeRangeChosen){defaultTimeRangeChosen()};
   });
   interruptButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."

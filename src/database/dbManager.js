@@ -10,7 +10,8 @@ async function cleanLocalDatabase(){
     const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);    
     const oldDates = getUniqueDateStampsBefore(cutoffDate);   
     oldDates.forEach(date => {
-        summarizeDay(date);
+        const sumDay = summarizeDay(date);
+        window.db.addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);
     })
     deleteOldReadings(cutoffDate);
 }
