@@ -80,13 +80,13 @@ async function updateGauges(){
     }
 
     const uTooltip = document.getElementById("upTooltip");
-    if(downspeed > downHighTresh){
+    if(upspeed > upHighTresh){
         uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
         uTooltip.style.border = "5px solid green";
-    } else if(downspeed > downLowTresh){
+    } else if(upspeed > upLowTresh){
         uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
         uTooltip.style.border = "5px solid yellow";
-    } else if(downspeed > 0){
+    } else if(upspeed > 0){
         uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
         uTooltip.style.border = "5px solid red";
     } else if(upspeed.includes("test") || upspeed.includes("Test")){
