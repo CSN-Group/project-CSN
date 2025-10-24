@@ -51,7 +51,29 @@ async function initDrop(){
   });  
 }
 
-async function initGraph(){
+async function initWorkGraph(){
+
+  const days = dbManager.getUniqueDateStamps();
+  const buttonDiv = document.getElementById("dayButtons");
+
+  days.forEach(day => {
+    const button = document.createElement("button");
+    button.classList.add("graphButton");
+    let dayString = day.toString();
+    dayString = `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`; //Format to 2025-12-22
+    button.textContent = dayString;    
+    button.addEventListener("click", () => {
+      currentGraphDatestamp = day;
+      currentGraphRange = 'day';
+      createDayGraph(currentGraphDatestamp, 'workingTime',currentGraphRange,currentGraphYear,currentGraphMonth);
+    });
+    buttonDiv.appendChild(button);
+  });
+
+  createDayGraph();
+}
+
+async function initHistory(){
   //Databasestuff! Move somewhere else?
   dbManager.syncLocalDatabase();   
   dbManager.cleanLocalDatabase(); 
@@ -102,15 +124,6 @@ async function initGraph(){
   interruptButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."
   });
-
-  const workButton=document.getElementById('graphWorktimeButton')
-  workButton.addEventListener('click', () =>{
-    currentGraphMetric = 'workingTime';
-    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-  });
-  workButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Visar mellan vilka tidpunkter du har varit aktiv.<br>NÅGOT MER!"
-  });
   
   document.querySelectorAll('.graphButton').forEach(button => {
   button.addEventListener('mouseleave', () => {
@@ -121,8 +134,6 @@ async function initGraph(){
             button.classList.add('activeMetricButton');
         })
   });
-
-
 }
 
 // Helper functions to extract specific values from the readings. timeStamp, upSpeed, downSpeed, etc.
@@ -324,5 +335,3 @@ function createWorktimeData(sessions) {
   });
   return data;
 }
-
-//module.exports = {initDrop, initGraph };
