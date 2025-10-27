@@ -7,7 +7,7 @@ const fs = require('fs');
 const {execFile, exec} = require('child_process');
 const {addReading,addActiveTime, getAdminDocument} = require('../database/dbManager.js')
 const ai = require('../mainincludes/aiAssistant.js');
-const {initSupabase} = require("../database/supabaseHandler.js")
+
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -650,8 +650,7 @@ app.whenReady().then(() => {
     process.exit(1);
   }
 
-  ai.initOpenAI(config.OPENAI_KEY);
-  initSupabase(config.SUPABASE_KEY, config.DATABASE_IP);
+  ai.initOpenAI(config.OPENAI_KEY); 
 
   createWindow();
 
