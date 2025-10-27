@@ -107,7 +107,7 @@ async function initHistory(){
   pingButton.addEventListener('click', () =>{
     currentGraphMetric = 'ping';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    if(!timeRangeChosen){defaultTimeRangeChosen()};
+    if(!timeRangeChosen){defaultTimeRangeChosen()}
   });
   pingButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
