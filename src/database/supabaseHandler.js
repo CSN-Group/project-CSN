@@ -2,10 +2,15 @@ const { createClient } = require('@supabase/supabase-js')
 const {ipcRenderer} = require('electron');
 const {addAdminInfo,getAdminInfoTime,deleteAll} = require('../database/dbManager.js')
 
-const supabaseUrl = 'https://vawmwnetilhsxmgjrrmm.supabase.co' // Dont forget to change the way the key is shown?
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhd213bmV0aWxoc3htZ2pycm1tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTI2NjcyOSwiZXhwIjoyMDc0ODQyNzI5fQ.0ED6IBCcHgTo4mZO5Qx_x6QE9kWlaUd5gFUIZKAeGTk'
-const supabase = createClient(supabaseUrl, supabaseKey)
+let supabaseUrl,
+    supabaseKey,
+    supabase;
 
+function initSupabase(KEY, URL){
+  supabaseUrl = URL;
+  supabaseKey = KEY;
+  supabase = createClient(supabaseUrl, supabaseKey);
+}
 async function getGlobal(key){
   return await ipcRenderer.invoke('getGlobal', key);  
 }
@@ -108,4 +113,4 @@ async function syncLocalDatabase(){
     }    
 }
 
-module.exports = { addReadingSupabase, fetchMonthlyHistory, syncLocalDatabase, fetchAvailableMonths};
+module.exports = {initSupabase, addReadingSupabase, fetchMonthlyHistory, syncLocalDatabase, fetchAvailableMonths};

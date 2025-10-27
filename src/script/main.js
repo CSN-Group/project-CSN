@@ -7,6 +7,7 @@ const fs = require('fs');
 const {execFile, exec} = require('child_process');
 const {addReading,addActiveTime, getAdminDocument} = require('../database/dbManager.js')
 const ai = require('../mainincludes/aiAssistant.js');
+const {initSupabase} = require("../database/supabaseHandler.js")
 
 const util = require('util');
 const execProm = util.promisify(exec);
@@ -628,7 +629,30 @@ function createWindow() {
   });
 }
 
+function loadConfig() {
+  const configPath = path.join(__dirname, '../../config.json');
+
+  try {
+    const rawData = fs.readFileSync(configPath, 'utf8');
+    return JSON.parse(rawData);
+  } catch (err) {
+    console.error('Failed to load config file:', err);
+    return {};
+  }
+}
+
 app.whenReady().then(() => {
+  const config = loadConfig();
+
+  if (!config || Object.keys(config).length === 0) {
+    console.error('No valid configuration found. Exiting.');
+    app.quit();
+    process.exit(1);
+  }
+
+  ai.initOpenAI(config.OPENAI_KEY);
+  initSupabase(config.SUPABASE_KEY, config.DATABASE_IP);
+
   createWindow();
 
   powerMonitor.on('suspend', () => {

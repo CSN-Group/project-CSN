@@ -122,4 +122,7 @@ jest-html-reporters-*.html
 # Ignore Database
 src/database/*.db
 
+# Ignore config
+config.json
+
 

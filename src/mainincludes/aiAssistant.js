@@ -1,9 +1,12 @@
 const OpenAI = require("openai");
 
 let chatHistory = [];
-const API_KEY = "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";
-const MESSAGE_LIMIT = 100;
+let API_KEY;
+const MESSAGE_LIMIT = 50;
 
+function initOpenAI(KEY){
+    API_KEY = KEY;
+}
 function resetChat() {
     chatHistory.splice(0, chatHistory.length);
 }
@@ -43,4 +46,4 @@ async function askAI(userMessage, systemData, documentData) {
     }
 }
 
-module.exports = {resetChat, askAI, chatHistory}
+module.exports = {initOpenAI, resetChat, askAI, chatHistory}
