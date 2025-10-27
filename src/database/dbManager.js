@@ -10,7 +10,7 @@ async function cleanLocalDatabase(){
     const date = new Date().getTime();    
     const dateStamp = convertToDateStamp(date);    
     const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);        
-    const oldDates = getUniqueDateStampsBefore(cutoffDate);     
+    const oldDates = getUniqueDateStampsBefore(cutoffDate);    
     oldDates.forEach(date => {
         const sumDay = summarizeDay(date);       
         addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);

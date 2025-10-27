@@ -624,6 +624,10 @@ footer{
     overflow-x: hidden;
 }
 
+#docDiv h2{
+    padding-top: 8px;
+}
+
 #docDiv p {
     white-space: pre-wrap;
     word-wrap: break-word;

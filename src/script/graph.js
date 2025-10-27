@@ -94,7 +94,7 @@ function formatDateStamp(datestamp) {
 async function initHistory(){
   //Databasestuff! Move somewhere else?
   dbManager.syncLocalDatabase(); 
-  dbManager.cleanLocalDatabase(); 
+  dbManager.cleanLocalDatabase();    
 
   createDayGraph();
   const textbox = document.getElementById('metricInfo');
