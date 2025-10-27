@@ -47,7 +47,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         contentDiv.innerHTML = `
         <div id="docDiv">
-            <h2>Dokumentation</h2>
+            <h2>DOKUMENTATION</h2>
             <p>${adminDoc.docText}</p>
         <div id=docDiv">
         ` ;

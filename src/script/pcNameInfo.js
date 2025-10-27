@@ -13,7 +13,7 @@ async function initSystemInfo() {
     displayPcInfo.innerHTML = `
         <div id ="systemaInfoCont" class ="systemContent"> 
                 <div id="pcInfoDisplay">
-                    <h2>Systeminformation</h2>
+                    <h2>SYSTEMINFORMATION</h2>
                     <br>
                     <label id ="ipAddressLabel">IP-adress: Laddar... </label><br>
                     <label id="UserNameLabel">Användarnamn: Laddar... </label><br>
@@ -25,7 +25,7 @@ async function initSystemInfo() {
                     <label id="lastRebootLabel">Timmar sedan omstart: Laddar... </label><br>
                 </div>
                 <div id="teleLink">
-                   <h2>Kontakt / Support</h2>
+                   <h2>KONTAKT / SUPPORT</h2>
                    <div id="phoneDiv">
                        <img src="./img/teleIcon.png" width="40px" height="40px"">
                        <span id="phoneSpan" class= "phoneContent">Telefonnummer: +467270001230 </span>

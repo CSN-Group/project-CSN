@@ -169,19 +169,22 @@ footer{
 
 #speedtestToggle {
     position: absolute;
-    right: 0;
+    left: 0;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 3px;
     font-size: 1.1rem;
 }
 
 #lastUpdatedText {
+    display: inline-block;
+    width: auto;
     font-size: 1rem;
     font-weight: 500;
     padding: 0.2rem 0.3rem;
     border-radius: 4px;
     text-align: center;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 #runSpeedtestButton {
@@ -200,11 +203,18 @@ footer{
     background-color: #404040;
 }
 
+#speedtestButtonDisclaimer{
+    text-align: center;
+    font-style: italic;
+    font-size: 16px;
+}
+
 #pingRow {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    position: relative;
 }
 
 #pingIcon {
@@ -217,7 +227,7 @@ footer{
 }
 
 #pingValue {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
     background: #F3F3F3;
     padding: 0.3rem 0.6rem;
@@ -267,9 +277,10 @@ footer{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #878fe6;
+    background: #ffffff;
     padding: 0.4rem 0.6rem;
     border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .actionIcon {
@@ -280,7 +291,7 @@ footer{
 
 .actionText {
     flex-grow: 1;
-    color: #eee;
+    color: black;
     font-size: 1rem;
 }
 
@@ -362,6 +373,13 @@ footer{
     left: -5%;
 }
 
+#pingRow:hover .tooltip{
+    visibility: visible;
+    opacity: 1;
+    bottom: 200%;
+    left: 50%;
+}
+
 #contentDiv{
     grid-area: content;
     background-color: #F3F3F3;
@@ -417,6 +435,7 @@ footer{
     margin-left: 10px;
     font-size: 14px;
     padding: 0;
+    letter-spacing: 2px;
 }
 
 .activeNavButton{
@@ -434,9 +453,8 @@ footer{
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 1rem; /* spacing between the two gauges */
+    gap: 1rem;
     border-radius: 6px;
-    padding: 1rem;
     text-align: center;
 }
 
@@ -931,4 +949,6 @@ input:focus + .slider {
 #meetingLamp{
     border: 2px solid #8a0000;
     border-radius: 50%;
+    width: 20px;
+    height: 20px;
 }
