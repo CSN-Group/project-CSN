@@ -83,7 +83,7 @@ function attachAIListeners(){
 async function initAIAssistant() {
     const contentDiv = document.getElementById("aiSupportDisplay");
     contentDiv.innerHTML = `
-        <h2>AI-assistans</h2>
+        <h2>AI-ASSISTANS</h2>
         <div id="aiAssistantDiv">
             <div id="messagesDiv"></div>
             <div id="input-row">

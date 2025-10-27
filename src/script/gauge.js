@@ -29,6 +29,18 @@ let upHighTresh, upLowTresh;
 let wifiHighTresh, wifiLowTresh;
 
 async function initGauges() {
+    // Hårdkodat, ty electron är en mardröm.
+    downHighTresh = 30;
+    downLowTresh = 10;
+
+    upHighTresh = 15;
+    upLowTresh = 5;
+
+    wifiHighTresh = 90;
+    wifiLowTresh = 70;
+
+    //Tänkt lösning, men buggar
+    /*
     downHighTresh = await window.systemInfo.getGlobal('downHighTresh');
     downLowTresh = await window.systemInfo.getGlobal('downHighTresh');
 
@@ -37,6 +49,7 @@ async function initGauges() {
 
     wifiHighTresh = await window.systemInfo.getGlobal('wifiHighTresh');
     wifiLowTresh = await window.systemInfo.getGlobal('wifiLowTresh');
+     */
 
     upSpeedometerDOM = document.getElementById('upSpeedometer');
     upSpeedometer = new Gauge(upSpeedometerDOM).setOptions(gaugeOptions);

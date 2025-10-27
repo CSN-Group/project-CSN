@@ -203,7 +203,7 @@ function generateActionList() {
     list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
   }
 
-  if(globals['currentConnectionType'] != "Ethernet"){
+  if(globals['currentConnectionType'] !== "Ethernet"){
     list.push(createAction("conn-type", "notice", "Koppla in internetkabel för stabilare internet."));
   }
   
@@ -585,9 +585,13 @@ async function runFullUpdate() {
     //If globals are updated, update action list
     if(globalsUpdated){
       globalsUpdated = false;
+      updateActionEvent();
+      /*
       BrowserWindow.getAllWindows().forEach(win =>
           win.webContents.send("updateActions", generateActionList())
       );
+
+       */
     }
   } finally {
     currentlyUpdating = false;
@@ -599,6 +603,8 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 800,
+    title: "DistansBalans",
+    icon: path.join(__dirname, "../img/distansbalansLogo.png"),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -610,13 +616,15 @@ function createWindow() {
   win.loadFile('src/simpleView.html');
 
   win.webContents.on('did-finish-load', () => {
+    if(updateLoopRunning){
+      updateActionEvent();
+      updateDoneEvent();
+    }
+
     if(!updateLoopRunning){
       updateLoopRunning = true;
       setInterval(runFullUpdate, UPDATE_INTERVAL);
     }
-
-    if(!isStarted) isStarted = true;
-    else if(isStarted) updateActionEvent();
   });
 }
 

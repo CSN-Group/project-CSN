@@ -1,4 +1,6 @@
-// Get date 
+let pingLowTresh, pingHighTresh;
+
+// Get date
 function formatDate(timestamp){
     const date = new Date(Number(timestamp));
     return date.toLocaleDateString('sv-SE');
@@ -105,18 +107,39 @@ async function updateNetwork(){
     const level = document.getElementById('ping-level');
     const percent = calculatePingWidth(currentPing);
     level.style.width = `${percent}%`
+
+    const pingTooltip = document.getElementById("pingTooltip");
+
+    if(currentPing < pingLowTresh){
+        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping är bra!";
+        pingTooltip.style.border = "5px solid green";
+    } else if(currentPing >= upLowTresh && currentPing < pingHighTresh){
+        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till mindre problem.";
+        pingTooltip.style.border = "5px solid yellow";
+    } else if(currentPing > pingHighTresh){
+        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till stora störningar.";
+        pingTooltip.style.border = "5px solid red";
+    } else if(currentPing.includes("test") || currentPing.includes("Test")){
+        pingTooltip.innerHTML = "Ping: " + "-" + " ms<br> Din ping testas för tillfället...";
+        pingTooltip.style.border = "5px solid grey";
+    } else{
+        pingTooltip.innerHTML = "currentPing: " + "-" + " ms<br> Ingen ping är förmodligen inte så bra...";
+        pingTooltip.style.border = "5px solid grey";
+    }
 }
 
 function calculatePingWidth(ping) {
-    const lowPingThres = 15;
-    const highPingThres = 30;
-    if(ping < lowPingThres) return 85;
-    if(ping > lowPingThres && ping < highPingThres) return 45;
+    if(ping < pingLowTresh) return 85;
+    if(ping >= pingLowTresh && ping < pingHighTresh) return 45;
     if(ping.includes("test") || ping.includes("Test") || ping === "-") return 0;
     return 15;
 }
 
 async function initNetworkInfo() {
+    // Hårdkodat, ty electron är en mardröm.
+    pingLowTresh = 15;
+    pingHighTresh = 30;
+
     document.getElementById('runSpeedtestButton').addEventListener(
         'click',
         await window.systemInfo.runSpeedtest);
