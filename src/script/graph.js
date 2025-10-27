@@ -1,16 +1,19 @@
 let graph = null;
-let currentGraphMetric = 'upSpeed';
+let currentGraphMetric = null;
+let currentGraphRange = null;
 let currentGraphDatestamp = dbManager.convertToDateStamp(new Date().getTime());
-let currentGraphRange = 'day';
 let currentGraphYear = 2025; //Because why not.
 let currentGraphMonth = 10 //Hardcoded, but can be found with Date()! If time we make nice.
 const label = document.getElementById("graphLabel");
-let timeRangeChosen = false;
-let metricChosen = false;
 
 function defaultMetric(){
-  metricChosen = true;
+  currentGraphMetric = 'upSpeed';
   document.getElementById('graphUpspeedButton').classList.add('activeMetricButton');
+}
+
+function defaultTimeRangeChosen(){
+  currentGraphRange = 'day';
+  label.innerHTML =  formatDateStamp(currentGraphDatestamp); 
 }
 
 
@@ -18,7 +21,6 @@ async function initDrop(){
   const dayDrop = document.getElementById("dayDropdown");
   const weekDrop = document.getElementById("weekDropdown");
   const monthDrop = document.getElementById("monthDropdown");
-  
 
   const days = dbManager.getUniqueDateStamps();
   const months = await dbManager.fetchAvailableMonths();
@@ -31,7 +33,7 @@ async function initDrop(){
       currentGraphDatestamp = day;
       currentGraphRange = 'day';
       label.innerHTML = formatDateStamp(day)
-      if(!metricChosen){defaultMetric()};
+      if(!currentGraphMetric){defaultMetric()};
       createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
     dayDrop.appendChild(button);
@@ -43,7 +45,7 @@ async function initDrop(){
   weekButton.addEventListener("click", () => {
     currentGraphRange = 'week';
     label.innerHTML= weekText;
-    if(!metricChosen){defaultMetric()};
+    if(!currentGraphMetric){defaultMetric()};
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
   })
   weekDrop.appendChild(weekButton);
@@ -57,7 +59,7 @@ async function initDrop(){
       currentGraphMonth = parseInt(month.month)
       currentGraphYear = month.year;
       label.innerHTML= monthText; 
-      if(!metricChosen){defaultMetric()};    
+      if(!currentGraphMetric){defaultMetric()};    
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);
@@ -89,12 +91,6 @@ function formatDateStamp(datestamp) {
   return `${dayString.slice(0,4)}-${dayString.slice(4,6)}-${dayString.slice(6)}`;
 }
 
-
-function defaultTimeRangeChosen(){
-  timeRangeChosen = true; 
-  label.innerHTML =  formatDateStamp(currentGraphDatestamp); 
-}
-
 async function initHistory(){
   //Databasestuff! Move somewhere else?
   dbManager.syncLocalDatabase(); 
@@ -107,7 +103,7 @@ async function initHistory(){
   pingButton.addEventListener('click', () =>{
     currentGraphMetric = 'ping';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    if(!timeRangeChosen){defaultTimeRangeChosen()}
+    if(!currentGraphRange){defaultTimeRangeChosen()}
   });
   pingButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
@@ -117,7 +113,7 @@ async function initHistory(){
   upSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'upSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    if(!timeRangeChosen){defaultTimeRangeChosen()};
+    if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   upSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din enhet<br>till internet. T.ex. när du delar filer eller videor."
@@ -127,7 +123,7 @@ async function initHistory(){
   downSpeedButton.addEventListener('click', () =>{
     currentGraphMetric = 'downSpeed';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    if(!timeRangeChosen){defaultTimeRangeChosen()};
+    if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   downSpeedButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming, surfning eller filhämtning."
@@ -147,7 +143,7 @@ async function initHistory(){
   interruptButton.addEventListener('click', () =>{
     currentGraphMetric = 'interrupts';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    if(!timeRangeChosen){defaultTimeRangeChosen()};
+    if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   interruptButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."

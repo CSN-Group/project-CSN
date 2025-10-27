@@ -1,17 +1,19 @@
 const sqlite = require('better-sqlite3');
 const path = require('path');
 
+
 const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite(dbPath);
 
 async function cleanLocalDatabase(){
-    const date = new Date().getTime();
-    const dateStamp = convertToDateStamp(date);
-    const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);    
-    const oldDates = getUniqueDateStampsBefore(cutoffDate);   
+    const {addReadingSupabase} = require('../database/supabaseHandler.js')    
+    const date = new Date().getTime();    
+    const dateStamp = convertToDateStamp(date);    
+    const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);        
+    const oldDates = getUniqueDateStampsBefore(cutoffDate);     
     oldDates.forEach(date => {
-        const sumDay = summarizeDay(date);
-        window.db.addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);
+        const sumDay = summarizeDay(date);       
+        addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);
     })
     deleteOldReadings(cutoffDate);
 }
@@ -122,6 +124,7 @@ function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime
     statement.run(cutoffTime);
 }
 
+
 function deleteAll(table) { //Delete all rows from a table in the local DB
     const sql = 'DELETE FROM ' + table;
     const statement = db.prepare(sql);
@@ -172,4 +175,4 @@ function addAdminInfo(docText, suppNr, suppLink, timeStamp){
 }
 
 
-module.exports = { getActiveSessions, getAdminDocument, getAdminSupportInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
+module.exports = { deleteAll,getActiveSessions, getAdminDocument, getAdminSupportInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
