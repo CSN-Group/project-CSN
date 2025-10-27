@@ -1,17 +1,19 @@
 const sqlite = require('better-sqlite3');
 const path = require('path');
 
+
 const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite(dbPath);
 
 async function cleanLocalDatabase(){
-    const date = new Date().getTime();
-    const dateStamp = convertToDateStamp(date);
-    const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);    
-    const oldDates = getUniqueDateStampsBefore(cutoffDate);   
+    const {addReadingSupabase} = require('../database/supabaseHandler.js')    
+    const date = new Date().getTime();    
+    const dateStamp = convertToDateStamp(date);    
+    const cutoffDate = subtractDaysFromDatestamp(dateStamp,6);        
+    const oldDates = getUniqueDateStampsBefore(cutoffDate);    
     oldDates.forEach(date => {
-        const sumDay = summarizeDay(date);
-        window.db.addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);
+        const sumDay = summarizeDay(date);       
+        addReadingSupabase(sumDay.upSpeed,sumDay.downSpeed,sumDay.ping,sumDay.wifiStr,sumDay.dateStamp);
     })
     deleteOldReadings(cutoffDate);
 }
@@ -47,30 +49,30 @@ function getAdminSupportInfo(){
 //get today's readings? Might be needed.
 function getDayReadings(dateStamp) {    
     const sql = 'SELECT * FROM readings WHERE dateStamp = ?';
-    const stmt = db.prepare(sql);
-    let res = stmt.all(dateStamp);
-    return res;
+    const statement = db.prepare(sql);
+    let result = statement.all(dateStamp);
+    return result;
 }
 
 function getUniqueDateStampsBefore(limit) {
     const sql = 'SELECT DISTINCT dateStamp FROM readings WHERE dateStamp < ? ORDER BY dateStamp';
-    const stmt = db.prepare(sql);
-    const res = stmt.all(limit);
-    return res.map(row => row.dateStamp);
+    const statement = db.prepare(sql);
+    const result = statement.all(limit);
+    return result.map(row => row.dateStamp);
 }
 
 function getUniqueDateStamps() {
     const sql = 'SELECT DISTINCT dateStamp FROM readings ORDER BY dateStamp';
-    const stmt = db.prepare(sql);
-    const res = stmt.all();
-    return res.map(row => row.dateStamp);
+    const statement = db.prepare(sql);
+    const result = statement.all();
+    return result.map(row => row.dateStamp);
 }
 
 function getActiveSessions(datestamp){
     const sql = 'SELECT startTime, stopTime FROM activeTime WHERE dateStamp = ?';
-    const stmt = db.prepare(sql);
-    let res = stmt.all(datestamp);
-    return res;
+    const statement = db.prepare(sql);
+    let result = statement.all(datestamp);
+    return result;
 }
 
 
@@ -79,8 +81,8 @@ async function addReading(upSpeed, downSpeed, wifiStr, ping, connectType) { //Ad
     const dateStamp = convertToDateStamp(unixStamp);
     const sql = `INSERT INTO readings (timeStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp)
     VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    const stmt = db.prepare(sql);
-    stmt.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
+    const statement = db.prepare(sql);
+    statement.run(unixStamp, upSpeed, downSpeed, wifiStr, ping, connectType, dateStamp);    
 }
 
 async function addActiveTime(start, stop, totMin){
@@ -88,8 +90,8 @@ async function addActiveTime(start, stop, totMin){
     VALUES (?, ?, ?, ?)`;
     const dateStamp = convertToDateStamp(start);
     console.log(dateStamp);
-    const stmt = db.prepare(sql);
-    stmt.run(start,stop,totMin,dateStamp);
+    const statement = db.prepare(sql);
+    statement.run(start,stop,totMin,dateStamp);
 }
 
 
@@ -118,14 +120,15 @@ function summarizeDay(dateStamp) {
 
 function deleteOldReadings(cutoffTime) { //Delete readings older than cutoffTime. Needed?
     const sql = 'DELETE FROM readings WHERE dateStamp < ?';
-    const stmt = db.prepare(sql);
-    stmt.run(cutoffTime);
+    const statement = db.prepare(sql);
+    statement.run(cutoffTime);
 }
+
 
 function deleteAll(table) { //Delete all rows from a table in the local DB
     const sql = 'DELETE FROM ' + table;
-    const stmt = db.prepare(sql);
-    stmt.run();
+    const statement = db.prepare(sql);
+    statement.run();
 }
 
 function convertToDateStamp(unixStamp) {
@@ -167,9 +170,9 @@ function subtractDaysFromDatestamp(dateStamp, dayAmount){
 function addAdminInfo(docText, suppNr, suppLink, timeStamp){
     const sql = `INSERT INTO admin (docText, suppNr, suppLink,timeStamp)
     VALUES (?, ?, ?, ?)`;
-    const stmt = db.prepare(sql);
-    stmt.run(docText, suppNr, suppLink, timeStamp);
+    const statement = db.prepare(sql);
+    statement.run(docText, suppNr, suppLink, timeStamp);
 }
 
 
-module.exports = { getActiveSessions, getAdminDocument, getAdminSupportInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, deleteAll, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };
+module.exports = { deleteAll,getActiveSessions, getAdminDocument, getAdminSupportInfo, getAdminInfoTime,getReadings,getDayReadings, getUniqueDateStamps, getUniqueDateStampsBefore, addReading, deleteOldReadings, convertToDateStamp, summarizeDay, cleanLocalDatabase, addAdminInfo, addActiveTime };

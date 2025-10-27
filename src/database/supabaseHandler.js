@@ -14,7 +14,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp) {  
+async function addReadingSupabase(upSpeed, downSpeed, ping, wifiStr, dateStamp) {  
   let mac = await getGlobal('mac'); //Spin to WIN!
   while(!mac || mac=== null){
     sleep(5);
@@ -22,7 +22,7 @@ async function addReadingSupabase(avgUpSpeed, avgDownSpeed, avgPing, avgWifi, da
   }  
   const result = await supabase
     .from('readings') // Name of the table in Supabase
-    .insert([{avgUpSpeed, avgDownSpeed, avgPing, avgWifi, dateStamp, mac}]);
+    .insert([{upSpeed, downSpeed, ping, wifiStr, dateStamp, mac}]);
   const data = result.data;
   const error = result.error;
   if (error) {
