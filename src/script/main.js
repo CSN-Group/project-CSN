@@ -147,7 +147,7 @@ function generateActionList() {
   // END TEST //
 
   //Tech Actions
-  if(globals['currentWifiStrength'] < globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
+  if(globals['currentWifiStrength'] <= globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
     list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg. Kan du flytta närmare routern?"));
     allValuesGood = false;
   }
@@ -156,7 +156,7 @@ function generateActionList() {
     allValuesGood = false;
   }
   
-  if(globals['lastUpspeed'] > globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
+  if(globals['lastUpspeed'] >= globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
     list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
@@ -165,7 +165,7 @@ function generateActionList() {
     allValuesGood = false;
   }
   
-  if(globals['lastDownspeed'] > globals['upDownLowTresh'] && globals['lastDownspeed'] < globals['upDownHighTresh']){
+  if(globals['lastDownspeed'] >= globals['upDownLowTresh'] && globals['lastDownspeed'] < globals['upDownHighTresh']){
     list.push(createAction("down-high", "light-error", "Din nedladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
@@ -174,8 +174,8 @@ function generateActionList() {
     allValuesGood = false;
   }
   
-  if(globals['lastPing'] < globals['pingHighTresh'] && globals['lastPing'] > globals['pingLowTresh']){
-    list.push(createAction("ping-medium", "light-error", "Din ping är ganska hög."));
+  if(globals['lastPing'] <= globals['pingHighTresh'] && globals['lastPing'] > globals['pingLowTresh']){
+    list.push(createAction("ping-medium", "light-error", "Din svarstid är ganska hög."));
     allValuesGood = false;
   }
   else if(globals['lastPing'] > globals['pingHighTresh']){
