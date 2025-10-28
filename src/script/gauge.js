@@ -154,16 +154,16 @@ async function updateWifiDisplay() {
 
     let level, color;
 
-    if(wifiStr > 90){
+    if(wifiStr >= 90){
         level = 4;
         color = 2;
-    } else if(wifiStr > 70){
+    } else if(wifiStr >= 70){
         level = 3;
         color = 1;
-    } else if(wifiStr > 50){
+    } else if(wifiStr >= 50){
         level = 2
         color = 1
-    } else if(wifiStr > 30){
+    } else if(wifiStr >= 30){
         level = 1;
         color = 1;
     } else{

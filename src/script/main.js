@@ -179,7 +179,7 @@ function generateActionList() {
     allValuesGood = false;
   }
   else if(globals['lastPing'] > globals['pingHighTresh']){
-    list.push(createAction("ping-high", "error", "Din svarstid är väldigt hög!"));
+    list.push(createAction("ping-high", "error", "Din ping är väldigt hög!"));
     allValuesGood = false;
   }
 
