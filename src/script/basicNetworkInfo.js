@@ -114,7 +114,7 @@ async function updateNetwork(){
         pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping är bra!";
         pingTooltip.style.border = "5px solid green";
     } else if(currentPing >= upLowTresh && currentPing < pingHighTresh){
-        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till mindre problem.";
+        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till störningar.";
         pingTooltip.style.border = "5px solid yellow";
     } else if(currentPing > pingHighTresh){
         pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till stora störningar.";
