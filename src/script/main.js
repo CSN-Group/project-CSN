@@ -156,20 +156,20 @@ function generateActionList() {
     allValuesGood = false;
   }
   
-  if(globals['lastUpspeed'] >= globals['upDownLowTresh'] && globals['lastUpspeed'] < globals['upDownHighTresh']){
+  if(globals['lastUpspeed'] >= globals['upLowTresh'] && globals['lastUpspeed'] < globals['upHighTresh']){
     list.push(createAction("up-medium", "light-error", "Din uppladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['lastUpspeed'] < globals['upDownLowTresh']){
+  else if(globals['lastUpspeed'] < globals['upLowTresh']){
     list.push(createAction("up-low", "error", "Din uppladdningshastighet är väldigt låg!"));
     allValuesGood = false;
   }
   
-  if(globals['lastDownspeed'] >= globals['upDownLowTresh'] && globals['lastDownspeed'] < globals['upDownHighTresh']){
+  if(globals['lastDownspeed'] >= globals['downLowTresh'] && globals['lastDownspeed'] < globals['downHighTresh']){
     list.push(createAction("down-high", "light-error", "Din nedladdningshastighet är ganska låg."));
     allValuesGood = false;
   }
-  else if(globals['lastDownspeed'] < globals['upDownLowTresh']){
+  else if(globals['lastDownspeed'] < globals['downLowTresh']){
     list.push(createAction("down-low", "error", "Din nedladdnignshastighet är väldigt låg!"));
     allValuesGood = false;
   }
