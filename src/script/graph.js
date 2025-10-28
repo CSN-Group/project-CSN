@@ -133,7 +133,7 @@ async function initHistory(){
   wifiButton.addEventListener('click', () =>{
     currentGraphMetric = 'wifiStr';
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
-    
+    if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   wifiButton.addEventListener('mouseenter', () =>{
     textbox.innerHTML = "Wifistyrka visar hur stark signalen mellan din enhet och routern är.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
