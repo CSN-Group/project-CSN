@@ -42,7 +42,9 @@ window.addEventListener('DOMContentLoaded', async () => {
             <div id = "dayButtons"><h3>Välj dag:</h3></div>                   
             <canvas id="historyGraph"></canvas>
             <div id="metricInfoDiv">
-                <p id="metricInfo">Här kan du se vilka tider du har jobbat aktivt, och när du tagit rast.</p>
+                <p id="metricInfo">Här kan du se under vilka tider du varit aktiv vid datorn. Om ditt arbete inte <br>sker framför 
+                skärmen hela tiden kan dessa värden vara mindre representativa <br>för din faktiska arbetstid.
+                </p>
             </div>
         </div>`
         initWorkGraph();

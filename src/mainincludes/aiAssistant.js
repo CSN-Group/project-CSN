@@ -1,8 +1,13 @@
 const OpenAI = require("openai");
+const {encoding_for_model} = require("tiktoken");
+const model = "gpt-4o-mini";
+
+const enc = encoding_for_model(model);
+const TOKEN_LIMIT = 12000;
+const MESSAGE_LIMIT = 50;
 
 let chatHistory = [];
 let API_KEY;
-const MESSAGE_LIMIT = 50;
 
 function initOpenAI(KEY){
     API_KEY = KEY;
@@ -11,9 +16,17 @@ function resetChat() {
     chatHistory.splice(0, chatHistory.length);
 }
 
+function countTokens(messages) {
+    return messages.reduce((sum, msg) => sum + enc.encode(msg.content).length, 0);
+}
+
 async function askAI(userMessage, systemData, documentData) {
-    const systemPrompt =
-        "You are a helpful technical assistant named Herman. Keep responses brief, and in swedish by default unless the user uses another language.\n\nSystem info:\n" +
+    const systemPrompt = "You are a helpful technical assistant named Herman. " +
+        "Keep responses brief if possible. Answer in swedish by default, UNLESS the user uses another language, " +
+        "then answer in that language instead. Make sure to properly format longer answers," +
+        " and don't use any emote icons." +
+        "Please provide answers with additional spacing between items in lists for better readability." +
+        "\n\nSystem info:\n" +
         Object.entries(systemData)
             .map(([k, v]) => `${k}: ${v}`)
             .join("\n");
@@ -26,11 +39,13 @@ async function askAI(userMessage, systemData, documentData) {
         ...chatHistory
     ];
 
-    if(chatHistory.length < MESSAGE_LIMIT) {
+    const totalTokens = countTokens(fullMessage);
+
+    if(chatHistory.length < MESSAGE_LIMIT && totalTokens < TOKEN_LIMIT) {
         const client = new OpenAI({apiKey: API_KEY});
 
         const completion = await client.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: model,
             messages: fullMessage,
             temperature: 0.4
         });
@@ -40,7 +55,7 @@ async function askAI(userMessage, systemData, documentData) {
 
         return assistantMessage;
     } else {
-        const errorMsg = "Message limit reached. Please reset the chat.";
+        const errorMsg = "Token or message limit reached. Please reset the chat.";
         chatHistory.push({ role: "assistant", content: errorMsg});
         return errorMsg;
     }
