@@ -605,6 +605,8 @@ function createWindow() {
     width: 800,
     height: 800,
     title: "DistansBalans",
+    maximizable: false,
+    resizable: false,
     icon: path.join(__dirname, "../img/distansbalansLogo.png"),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
