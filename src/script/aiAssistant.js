@@ -7,7 +7,7 @@ function addMessage(content, role) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', role === 'user' ? 'user-message' : 'assistant-message');
 
-    msgDiv.innerHTML = content.replaceAll("**", "");
+    msgDiv.innerHTML = content.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
 
     if (role === 'assistant') {
         const avatar = document.createElement('img');
