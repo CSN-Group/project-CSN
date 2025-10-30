@@ -3,7 +3,7 @@ const {encoding_for_model} = require("tiktoken");
 const model = "gpt-4o-mini";
 
 const enc = encoding_for_model(model);
-const TOKEN_LIMIT = 16384;
+const TOKEN_LIMIT = 12000;
 const MESSAGE_LIMIT = 50;
 
 let chatHistory = [];
