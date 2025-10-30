@@ -76,16 +76,16 @@ async function updateGauges(){
 
     const dTooltip = document.getElementById("downTooltip");
     if(downspeed > downHighTresh){
-        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
+        dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
         dTooltip.style.border = "5px solid green";
     } else if(downspeed > downLowTresh){
-        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
+        dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
         dTooltip.style.border = "5px solid yellow";
     } else if(downspeed > 0){
-        dTooltip.innerHTML = "Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
+        dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
         dTooltip.style.border = "5px solid red";
     } else if(downspeed.includes("test") || downspeed.includes("Test")){
-        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";
+        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Nedladdningshastigheten testas för tillfället.";
         dTooltip.style.border = "5px solid grey";
     } else{
         dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Ingen nedladdningshastighet finns.";
@@ -94,13 +94,13 @@ async function updateGauges(){
 
     const uTooltip = document.getElementById("upTooltip");
     if(upspeed > upHighTresh){
-        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
+        uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till det mesta!";
         uTooltip.style.border = "5px solid green";
     } else if(upspeed > upLowTresh){
-        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
+        uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet räcker till samtal med ljud.";
         uTooltip.style.border = "5px solid yellow";
     } else if(upspeed > 0){
-        uTooltip.innerHTML = "Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
+        uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
         uTooltip.style.border = "5px solid red";
     } else if(upspeed.includes("test") || upspeed.includes("Test")){
         uTooltip.innerHTML = "Uppladdningsshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";

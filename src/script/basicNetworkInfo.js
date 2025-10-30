@@ -54,6 +54,7 @@ async function updateNetwork(){
 
     const wifiText = document.getElementById("wifiText");
     const ethText = document.getElementById("ethernetText");
+    const conntedBy = document.getElementById("telConnTyp");
 
     const ethImage = document.getElementById("ethernetIcon");
 
@@ -63,10 +64,12 @@ async function updateNetwork(){
         wifiText.innerText = await window.systemInfo.getGlobal("currentWifiStrength") + "%";
 
         ethText.innerText = "EJ ANSLUTEN";
-        ethImage.src = "img/ethernet_trans.png"
+        conntedBy.innerText = "Ditt nätverk är anslutet via Wifi!";
+        ethImage.src = "img/ethernet_trans.png";
         ethImage.style.opacity = "0.3";
     } else if(connType === "Ethernet"){
         ethText.innerText = "ANSLUTEN";
+        conntedBy.innerText = "Ditt nätverk är anslutet via Kabel!";
         ethText.innerHTML = "<b>ANSLUTEN</b>"
 
         ethImage.src = "img/greenEthernet_trans.png"
@@ -77,6 +80,7 @@ async function updateNetwork(){
         await updateWifiDisplay();
     } else{
         await updateWifiDisplay();
+        conntedBy.innerText = "Ditt nätverk är anslutet via "+ connType;
 
         wifiText.innerText = "EJ WIFI";
 
@@ -129,13 +133,13 @@ async function updateNetwork(){
     const pingTooltip = document.getElementById("pingTooltip");
 
     if(currentPing < pingLowTresh){
-        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping är bra!";
+        pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>Ping: " + currentPing + " ms<br> Denna ping är bra!";
         pingTooltip.style.border = "5px solid green";
     } else if(currentPing >= upLowTresh && currentPing < pingHighTresh){
-        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till störningar.";
+        pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>Ping: " + currentPing + " ms<br> Denna ping kan bidra till störningar.";
         pingTooltip.style.border = "5px solid yellow";
     } else if(currentPing > pingHighTresh){
-        pingTooltip.innerHTML = "Ping: " + currentPing + " ms<br> Denna ping kan bidra till stora störningar.";
+        pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>Ping: " + currentPing + " ms<br> Denna ping kan bidra till stora störningar.";
         pingTooltip.style.border = "5px solid red";
     } else if(currentPing.includes("test") || currentPing.includes("Test")){
         pingTooltip.innerHTML = "Ping: " + "-" + " ms<br> Din ping testas för tillfället...";
