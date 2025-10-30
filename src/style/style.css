@@ -126,6 +126,12 @@ footer{
     gap: 0.75rem;
     flex: 1;
 }
+#telConnTyp{
+    text-align: center;
+    font-family: Arial;
+    display: block;
+
+}
 
 #techDiv{
     grid-area: tech;
