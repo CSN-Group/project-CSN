@@ -11,6 +11,15 @@ function defaultMetric(){
   document.getElementById('graphUpspeedButton').classList.add('activeMetricButton');
 }
 
+function hideWorkButton(){
+  if(currentGraphMetric === 'workingTime'){
+    defaultMetric()
+  }
+  const workButton =document.getElementById('graphWorkButton');
+  workButton.classList.remove('activeMetricButton');
+  workButton.style.display = 'none';
+}
+
 function defaultTimeRangeChosen(){
   currentGraphRange = 'day';
   label.innerHTML =  formatDateStamp(currentGraphDatestamp); 
@@ -34,6 +43,7 @@ async function initDrop(){
       currentGraphRange = 'day';
       label.innerHTML = formatDateStamp(day)
       if(!currentGraphMetric){defaultMetric()};
+      document.getElementById('graphWorkButton').style.display = 'block';
       createDayGraph(currentGraphDatestamp, currentGraphMetric);
     });
     dayDrop.appendChild(button);
@@ -46,6 +56,7 @@ async function initDrop(){
     currentGraphRange = 'week';
     label.innerHTML= weekText;
     if(!currentGraphMetric){defaultMetric()};
+    hideWorkButton();
     createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange);
   })
   weekDrop.appendChild(weekButton);
@@ -59,7 +70,8 @@ async function initDrop(){
       currentGraphMonth = parseInt(month.month)
       currentGraphYear = month.year;
       label.innerHTML= monthText; 
-      if(!currentGraphMetric){defaultMetric()};    
+      if(!currentGraphMetric){defaultMetric()}; 
+      hideWorkButton();   
       createDayGraph(currentGraphDatestamp, currentGraphMetric, 'month', currentGraphYear, currentGraphMonth);
     });
     monthDrop.append(button);
@@ -106,7 +118,7 @@ async function initHistory(){
     if(!currentGraphRange){defaultTimeRangeChosen()}
   });
   pingButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Ping mäter hur lång tid det tar för en signal att resa till en server och tillbaka.<br>Låg ping betyder snabb respons."
+    textbox.innerHTML = "Ping mäter hur lång tid det tar en signal att resa till en server och <br>tillbaka. Låg ping betyder snabb respons."
    });
   
   const upSpeedButton = document.getElementById('graphUpspeedButton');
@@ -116,7 +128,7 @@ async function initHistory(){
     if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   upSpeedButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din enhet<br>till internet. T.ex. när du delar filer eller videor."
+    textbox.innerHTML = "Uppladdningshastighet mäter hur snabbt data skickas från din<br>enhet till internet. T.ex. när du delar filer eller videor."
   });
 
   const downSpeedButton = document.getElementById('graphDownspeedButton');
@@ -126,7 +138,7 @@ async function initHistory(){
     if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   downSpeedButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming, surfning eller filhämtning."
+    textbox.innerHTML = "Nedladdningshastighet anger hur snabbt data hämtas från<br>internet till din enhet. Som vid streaming eller filhämtning."
   });
 
   const wifiButton=document.getElementById('graphWifiButton');
@@ -136,7 +148,7 @@ async function initHistory(){
     if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   wifiButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "Wifistyrka visar hur stark signalen mellan din enhet och routern är.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
+    textbox.innerHTML = "Wifistyrka visar hur stark signalen routern och din enhet.<br>Svag signal ger ofta långsammare och instabil uppkoppling."
   });
 
   const interruptButton=document.getElementById('graphInterruptButton');
@@ -146,12 +158,22 @@ async function initHistory(){
     if(!currentGraphRange){defaultTimeRangeChosen()};
   });
   interruptButton.addEventListener('mouseenter', () =>{
-    textbox.innerHTML = "En störning är ett då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."
+    textbox.innerHTML = "En störning är då en mätning inte nådde de godkända värdena.<br>Detta kan innebära svårigheter att arbeta."
+  });
+
+  const workButton=document.getElementById('graphWorkButton');
+  workButton.addEventListener('click', () =>{
+    currentGraphMetric = 'workingTime';
+    createDayGraph(currentGraphDatestamp, currentGraphMetric, currentGraphRange,currentGraphYear,currentGraphMonth);
+    if(!currentGraphRange){defaultTimeRangeChosen()};
+  });
+  workButton.addEventListener('mouseenter', () =>{
+    textbox.innerHTML = "Aktiv arbetstid visar när du har varit aktiv vid datorn.<br>Rast och pauser är viktiga för att må bra under arbetsdagen."
   });
   
   document.querySelectorAll('.graphButton').forEach(button => {
   button.addEventListener('mouseleave', () => {
-    textbox.innerHTML = "Till vänster kan du välja vilket mätvärde du vill ska visas i grafen!<br>Du kan även välja tidspann här ovan!";
+    textbox.innerHTML = "Välj mätvärde till vänster.<br>Du kan även välja tidspann här ovan!";
   });
   button.addEventListener('click', () =>{
             document.querySelector('.activeMetricButton')?.classList.remove('activeMetricButton');
@@ -236,7 +258,8 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
 
   const mainData = metrics[mainMetric];
 
-  graph = new Chart(graphContainer, {
+  Chart.defaults.color = '#000000ff';
+  graph = new Chart(graphContainer, {    
     type: "line",
     data: {
       labels: times,
@@ -244,14 +267,17 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
         label: labels[mainMetric],
         data: mainData,
         borderColor: borderColors[mainMetric],
-        borderWidth: 1,
+        borderWidth: mainMetric === 'workingTime' ? 24 : 1,
         tension: 0,
-        pointRadius: 1,
+        pointRadius: mainMetric === 'workingTime' ? 0 : 1,
         stepped: mainMetric === 'interrupts' || mainMetric === 'workingTime',  //Binary look on graph..?
         spanGaps: false
       }]
     },
     options: {
+      interaction: mainMetric === 'workingTime' ? {
+            mode: 'index',
+            intersect: false} : {},
       scales: { 
         x: { 
           type: 'time', 
@@ -291,37 +317,55 @@ async function createDayGraph(dateStamp, mainMetric, range = "day", year=2025, m
                  text: titleText[mainMetric],
                  font: { size: 14 } },
         tooltip: {
-
           displayColors: false,
           callbacks: {
-          label: function(context) {
-          const i = context.dataIndex;
-
-          if (mainMetric === 'workingTime' && workingTime?.length > 0) {  
-            const sessionIndex = Math.floor(i / 2);
-            const start = new Date(workingTime[sessionIndex * 2].x);
-            const stop = new Date(workingTime[sessionIndex * 2 + 1].x);
-            const startStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-            const stopStr = stop.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false  });
-
-            return `Start: ${startStr} – Slut: ${stopStr}`;
-          }
+            label: function(context) {
+              const i = context.dataIndex;              
+              if (mainMetric === 'workingTime' && workingTime?.length > 0) {
+                console.log(workingTime);
+                let start, end;
+                if (i % 3 === 0){
+                  start = new Date(workingTime[i].x);
+                  end = new Date(workingTime[i+1].x);
+                }
+                else if (i % 3 === 1){
+                  start = new Date(workingTime[i-1].x);
+                  end = new Date(workingTime[i].x);
+                }
+                else{return 0;} //Skippin' them null points
+                
+                const startStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                const stopStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false  });
+                
+                return `Start: ${startStr} – Slut: ${stopStr}`;                
+              }
 
           
-         // Build all the tooltip lines
-          const tooltipLines = {          
-          upSpeed: `Uppladdning: ${upSpeeds[i]} Mbps`,
-          downSpeed: `Nedladdning: ${downSpeeds[i]} Mbps`,
-          ping: `Ping: ${pings[i]} ms`,
-          wifiStr: `WiFi Styrka: ${wifiStrs[i]}%`
-        };
+              // Build all the tooltip lines
+              const tooltipLines = {          
+              upSpeed: `Uppladdning: ${upSpeeds[i]} Mbps`,
+              downSpeed: `Nedladdning: ${downSpeeds[i]} Mbps`,
+              ping: `Ping: ${pings[i]} ms`,
+              wifiStr: `WiFi Styrka: ${wifiStrs[i]}%`
+            };
 
-        // Put the main metric first
-        const order = ['wifiStr', 'downSpeed','upSpeed', 'ping'].filter(k => k !== mainMetric);
-        return [tooltipLines[mainMetric], ...order.map(k => tooltipLines[k])].filter(Boolean); //Filter Boolean removes undefined number on interrupt and workingtime.
+            // Put the main metric first
+            const order = ['wifiStr', 'downSpeed','upSpeed', 'ping'].filter(k => k !== mainMetric);
+            return [tooltipLines[mainMetric], ...order.map(k => tooltipLines[k])].filter(Boolean); //Filter Boolean removes undefined number on interrupt and workingtime.
+          },
+          title: function(context){
+            if(mainMetric === "workingTime"){
+              return "Arbetspass";
+            }
+            else if((range === 'week') || range === 'month'){              
+              return context[0].label.slice(0,6) + " (Dagligt genomsnitt)";
+            }           
+            return context.label;
           }
-          }
+          
+
         }
+      }
       }
       }
   });
