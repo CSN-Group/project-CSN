@@ -14,6 +14,18 @@ function formatTime(timestamp){
     }
     return updTime.toLocaleString('sv-SE', options);
 }
+
+function setSpeedtestButtonState(currentlyTesting){
+    const speedtestButton = document.getElementById("runSpeedtestButton");
+    if(currentlyTesting){
+        speedtestButton.innerText = "MÄTNING UTFÖRS";
+        speedtestButton.style.backgroundColor = "#343434";
+    } else{
+        speedtestButton.innerText = "MÄT NU";
+        speedtestButton.style.backgroundColor = "#707070";
+    }
+}
+
 function timeSince(timestamp) {
     const now = new Date();
     const past = new Date(Number(timestamp));
@@ -76,15 +88,18 @@ async function updateNetwork(){
     const speedtestTextDOM = document.getElementById('lastUpdatedText');
     const speedtestTextValue = await window.systemInfo.getGlobal('speedtestText');
     let speedText;
-
    
     if(isNumericTimestamp(speedtestTextValue)) {
         const updateDate = formatDate(speedtestTextValue);
         const updateTime = formatTime(speedtestTextValue);
         const updateSince = timeSince(speedtestTextValue);
         speedText = ` ${updateDate} ${updateTime} \n ${updateSince}`;
+
+        setSpeedtestButtonState(false);
+
     } else {
         speedText = speedtestTextValue;
+        setSpeedtestButtonState(true);
     }
 
     speedtestTextDOM.innerText = speedText; 
