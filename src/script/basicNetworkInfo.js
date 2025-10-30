@@ -142,10 +142,10 @@ async function updateNetwork(){
         pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>Ping: " + currentPing + " ms<br> Denna ping kan bidra till stora störningar.";
         pingTooltip.style.border = "5px solid red";
     } else if(currentPing.includes("test") || currentPing.includes("Test")){
-        pingTooltip.innerHTML = "Ping: " + "-" + " ms<br> Din ping testas för tillfället...";
+        pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>Ping: " + "-" + " ms<br> Din ping testas för tillfället...";
         pingTooltip.style.border = "5px solid grey";
     } else{
-        pingTooltip.innerHTML = "currentPing: " + "-" + " ms<br> Ingen ping är förmodligen inte så bra...";
+        pingTooltip.innerHTML = "Hur lång tid det tar för en signal att<br>resa till en server och tillbaka.<br>currentPing: " + "-" + " ms<br> Ingen ping är förmodligen inte så bra...";
         pingTooltip.style.border = "5px solid grey";
     }
 }

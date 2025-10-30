@@ -85,10 +85,10 @@ async function updateGauges(){
         dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + downspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
         dTooltip.style.border = "5px solid red";
     } else if(downspeed.includes("test") || downspeed.includes("Test")){
-        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Nedladdningshastigheten testas för tillfället.";
+        dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + "-" + " Mbps<br> Nedladdningshastigheten testas för tillfället.";
         dTooltip.style.border = "5px solid grey";
     } else{
-        dTooltip.innerHTML = "Nedladdningshastighet: " + "-" + " Mbps<br> Ingen nedladdningshastighet finns.";
+        dTooltip.innerHTML = "Hur snabbt data hämtas från internet till datorn.<br>Nedladdningshastighet: " + "-" + " Mbps<br> Ingen nedladdningshastighet finns.";
         dTooltip.style.border = "5px solid grey";
     }
 
@@ -103,10 +103,10 @@ async function updateGauges(){
         uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + upspeed + " Mbps<br> Denna hastighet är för låg för många ändamål.";
         uTooltip.style.border = "5px solid red";
     } else if(upspeed.includes("test") || upspeed.includes("Test")){
-        uTooltip.innerHTML = "Uppladdningsshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";
+        uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + "-" + " Mbps<br> Uppladdningshastigheten testas för tillfället.";
         uTooltip.style.border = "5px solid grey";
     } else{
-        uTooltip.innerHTML = "Uppladdningsshastighet: " + "-" + " Mbps<br> Ingen uppladdningshastighet finns.";
+        uTooltip.innerHTML = "Hur snabbt data skickas från datorn till internet.<br>Uppladdningsshastighet: " + "-" + " Mbps<br> Ingen uppladdningshastighet finns.";
         uTooltip.style.border = "5px solid grey";
     }
 }
