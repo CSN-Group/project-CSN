@@ -89,8 +89,8 @@ const globals = {
   pingLowTresh: 15,
 
   //Soft Timers
-  ergonomiCheckInterval: 120, //2 minutes, for testing.
-  pauseCheckInterval: 180, //3min for testing
+  ergonomiCheckInterval: 1800000, //30 minutes, for testing.
+  pauseCheckInterval: 3600000, //60 minutes
   socialCheck: false,
   //Local data
   dataSavedAmount: 0,
@@ -213,7 +213,7 @@ function generateActionList() {
   }
 
   //Soft Actions  
-  if( (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
+  if( globals['remindErgonomi'] && (Date.now() - globals['userActiveStartTime']) > globals['ergonomiCheckInterval']){
     list.push(createAction("ergonomy", "ergonomy", "Glöm inte att justera din arbetsställning regelbundet!",true, globals['ergonomiCheckInterval'] , false));
   }
 
@@ -222,10 +222,10 @@ function generateActionList() {
     list.push(createAction("pause", "break", "Du har jobbat " + currentWorkTime + " minuter, dags för rast?",true, globals['pauseCheckInterval'] , false));
   }
 
-  if(!globals['socialCheck']){
+  if( globals['remindSocial'] && !globals['socialCheck']){
     list.push(createAction("social", "social", "Kom ihåg att vara social idag!",true, 0, false));
   }
-  else{
+  else if (globals['remindSocial']){
     list.push(createAction("social", "check", "Du har varit social idag!",false, 0, false));
   }
   
