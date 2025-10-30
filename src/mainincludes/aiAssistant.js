@@ -12,8 +12,12 @@ function resetChat() {
 }
 
 async function askAI(userMessage, systemData, documentData) {
-    const systemPrompt =
-        "You are a helpful technical assistant named Herman. Keep responses brief, and in swedish by default unless the user uses another language.\n\nSystem info:\n" +
+    const systemPrompt = "You are a helpful technical assistant named Herman. " +
+        "Keep responses brief if possible. Answer in swedish by default, UNLESS the user uses another language, " +
+        "then answer in that language instead. Make sure to properly format longer answers," +
+        " and don't use any emoteicons or any unnecesarry special symbols. " +
+        "Responses must never include the symbol used for emphasis, regardless of context." +
+        "\n\nSystem info:\n" +
         Object.entries(systemData)
             .map(([k, v]) => `${k}: ${v}`)
             .join("\n");

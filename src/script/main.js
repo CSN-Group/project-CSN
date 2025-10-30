@@ -148,7 +148,7 @@ function generateActionList() {
 
   //Tech Actions
   if(globals['currentWifiStrength'] <= globals['wifiHighTresh'] && globals['currentWifiStrength'] > globals['wifiLowTresh'] ){
-    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg. Kan du flytta närmare routern?"));
+    list.push(createAction("wifi-medium", "light-error", "Din wifisingal är ganska låg. Kan du flytta dig närmare routern?"));
     allValuesGood = false;
   }
   else if(globals['currentWifiStrength'] < globals['wifiLowTresh']){
@@ -193,15 +193,15 @@ function generateActionList() {
     list.push(createAction("no-ip", "light-error", "Du har för närvarande ingen IP address."));
   }
   else if(!validIpStarts.includes(ipStart)){
-    list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router."));
+    list.push(createAction("invalid-ip", "error", "Din IP kanske inte är kopplad via en router. Åtgärda omedelbart!"));
   }
 
   if(globals['usingBattery']){
-    list.push(createAction("using-battery", "notice", "Anslut laddaren"));
+    list.push(createAction("using-battery", "notice", "Du använder batteriet - anslut laddaren."));
   }
 
   if(globals['compOnTimeHours'] > 4){
-    list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge, testa omstart"));
+    list.push(createAction("comp-hour", "light-error", "Datorn har varit igång länge - starta om snarast."));
   }
 
   if(globals['currentConnectionType'] !== "Ethernet"){
@@ -209,7 +209,7 @@ function generateActionList() {
   }
   
   if(globals['updatesAvailable']){    
-    list.push(createAction("update-available", "light-error", "Windowsuppdatering tillgänglig!"));
+    list.push(createAction("update-available", "light-error", "En Windowsuppdatering finns tillgänglig!"));
   }
 
   //Soft Actions  

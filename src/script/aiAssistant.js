@@ -7,7 +7,7 @@ function addMessage(content, role) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', role === 'user' ? 'user-message' : 'assistant-message');
 
-    msgDiv.textContent = content;
+    msgDiv.textContent = content.replaceAll("*", "");
 
     if (role === 'assistant') {
         const avatar = document.createElement('img');
@@ -46,6 +46,16 @@ async function loadChatHistory() {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+function clearInputField() {
+    const input = document.getElementById('message-input')
+    input.value = "";
+    input.scrollTop = 0;
+    input.setSelectionRange(0, 0);
+
+    input.blur();
+    setTimeout(() => input.focus(), 0);
+}
+
 async function sendToAI() {
     const messageInput = document.getElementById('message-input');
 
@@ -53,7 +63,7 @@ async function sendToAI() {
     if (!text || waitingForResponse) return;
 
     addMessage(text, 'user');
-    messageInput.value = '';
+    clearInputField();
 
     waitingForResponse = true;
     const reply = await window.systemInfo.askAI(text);
@@ -66,9 +76,11 @@ function attachAIListeners(){
     const sendBtn = document.getElementById('send-btn');
     const resetBtn = document.getElementById('reset-btn');
     const messageInput = document.getElementById('message-input');
+    const input = document.getElementById('message-input');
 
     sendBtn.addEventListener('click', async () => {
         await sendToAI();
+        messageInput.innerText = "";
     });
 
     resetBtn.addEventListener('click', async () => {
@@ -76,7 +88,23 @@ function attachAIListeners(){
     });
 
     messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) sendBtn.click();
+        if (e.key === 'Enter' && !e.shiftKey) {
+            const message = input.value.trim();
+
+            e.preventDefault();
+
+            if (message !== "") {
+                sendBtn.click();
+            } else {
+                input.setSelectionRange(0, 0);
+                input.scrollTop = 0;
+            }
+        }
+    });
+
+    input.addEventListener('focus', () => {
+        input.setSelectionRange(0, 0);
+        input.scrollTop = 0;
     });
 }
 
@@ -87,9 +115,9 @@ async function initAIAssistant() {
         <div id="aiAssistantDiv">
             <div id="messagesDiv"></div>
             <div id="input-row">
-                <input type="text" id="message-input" placeholder="Ställ en fråga..." />
-                <button id="send-btn">Send</button>
-                <button id="reset-btn">Reset</button>
+                <textarea id="message-input" rows="5" placeholder="Ställ en fråga här!"></textarea>
+                <button id="send-btn">Skicka</button>
+                <button id="reset-btn">Rensa</button>
             </div>
         </div>
         `;

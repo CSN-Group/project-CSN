@@ -107,12 +107,15 @@ async function updateNetwork(){
     const downSpeed = await window.systemInfo.getGlobal("lastDownspeed");
     const upSpeed = await window.systemInfo.getGlobal("lastUpspeed");
 
-    if(downSpeed > 0 && upSpeed > 0){
-        const downDiv = document.getElementById('downloadValue');
-        const upDiv = document.getElementById('uploadValue');
+    const downDiv = document.getElementById('downloadValue');
+    const upDiv = document.getElementById('uploadValue');
 
+    if(downSpeed > 0 && upSpeed > 0){
         downDiv.innerText = downSpeed + " Mb/s";
         upDiv.innerText = upSpeed + " Mb/s"
+    } else{
+        downDiv.innerText = "Testar...";
+        upDiv.innerText = "Testar...";
     }
 
     const pingValue = document.getElementById('pingValue');
